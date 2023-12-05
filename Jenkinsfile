@@ -1,54 +1,60 @@
-def component = [
-		Preprocess: false,
-		Hyper: false,
-		Train: false,
-		Test: false,
-		Bento: false
-]
+podTemplate(label: 'docker-build', 
+  containers: [
+    containerTemplate(
+      name: 'git',
+      image: 'alpine/git',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+    containerTemplate(
+      name: 'docker',
+      image: 'docker',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+  ],
+  volumes: [ 
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), 
+  ]
+) {
+    node('docker-build') {
+        def dockerHubCred = <your_dockerhub_cred>
+        def appImage
+        
+        stage('Checkout'){
+            container('git'){
+                checkout scm
+            }
+        }
+        
+        stage('Build'){
+            container('docker'){
+                script {
+                    appImage = docker.build("kiyoung92/node-hello-world")
+                }
+            }
+        }
+        
+        stage('Test'){
+            container('docker'){
+                script {
+                    appImage.inside {
+                        sh 'yarn install'
+                        sh 'yarn build'
+                    }
+                }
+            }
+        }
 
-pipeline {
-	agent any
-	stages {
-		stage("Checkout") {
-			steps {
-				checkout scm
-			}
-		}
-		stage("Build") {
-			steps {
+        stage('Push'){
+            container('docker'){
                 script {
-					component.each{ entry ->
-						stage ("${entry.key} Build"){
-							if(entry.value){
-								var = entry.key
-								sh "docker-compose build ${var.toLowerCase()}"
-							}	
-						}
-					}
-				}
-			}
-		}
-		stage("Tag and Push") {
-			steps {
-                script {
-					component.each{ entry ->
-						stage ("${entry.key} Push"){
-							if(entry.value){
-								var = entry.key
-								withCredentials([[$class: 'UsernamePasswordMultiBinding',
-								credentialsId: 'docker_credentials',
-								usernameVariable: 'DOCKER_USER_ID',
-								passwordVariable: 'DOCKER_USER_PASSWORD'
-								]]){
-								sh "docker tag spaceship_pipeline_${var.toLowerCase()}:latest ${DOCKER_USER_ID}/spaceship_pipeline_${var.toLowerCase()}:${BUILD_NUMBER}"
-								sh "docker login -u ${DOCKER_USER_ID} -p ${DOCKER_USER_PASSWORD}"
-								sh "docker push ${DOCKER_USER_ID}/spaceship_pipeline_${var.toLowerCase()}:${BUILD_NUMBER}"
-								}
-							}
-						}
-					}
-				}
-			}	
-		}
-	}
+                    docker.withRegistry('https://registry.hub.docker.com', dockerHubCred){
+                        appImage.push("${env.BUILD_NUMBER}")
+                        appImage.push("latest")
+                    }
+                }
+            }
+        }
+    }
 }
