@@ -1,0 +1,17 @@
+version: "3"
+services:
+  preprocess:
+    build: ./preprocess
+    container_name: spaceship-preprocess
+  hyper:
+    build: ./hyper-tuning
+    container_name: spaceship-hyper-tuning
+  train:
+    build: ./train
+    container_name: spaceship-train
+  test:
+    build: ./test
+    container_name: spaceship-test
+  bento:
+    build: ./bento
+    container_name: spaceship-bento
