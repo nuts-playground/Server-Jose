@@ -10,7 +10,7 @@
 # CMD ["yarn", "start:prod"]
 
 
-FROM node:18.16.0-alpine As development
+FROM node:18.16.0 As development
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ COPY . .
 
 RUN yarn build
 
-FROM node:18.16.0-alpine as production
+FROM node:18.16.0 as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
