@@ -3,6 +3,7 @@ WORKDIR /app
 
 COPY package.json .
 COPY .yarn .
+ADD . .
 RUN yarn install
 RUN yarn build
 
