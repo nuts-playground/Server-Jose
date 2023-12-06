@@ -1,6 +1,8 @@
 FROM node:18.16.0-alpine
 WORKDIR /
 
+COPY package.json .
+ADD . .
 RUN yarn install
 RUN yarn build
 
