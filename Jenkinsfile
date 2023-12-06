@@ -9,11 +9,14 @@ node {
         steps {
             sh 'docker run --name nest-server -d -p 3000:3000 kiyoung92/nestjs:latest'
         }
+
+        post {
+            success {
+                echo 'docker run success'
+            }
+            failure {
+                echo 'docker run failed'
+            }
+        }
     }
-    // stage('Push image') {
-    //     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
-    //         app.push('${env.BUILD_NUMBER}')
-    //         app.push('latest')
-    //     }
-    // }
- }
+}
