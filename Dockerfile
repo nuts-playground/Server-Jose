@@ -6,7 +6,6 @@ WORKDIR /dist
 # 복사할 파일 경로 : 이미지에서 파일이 위치할 경로
 COPY package.json .
 ADD . .
-RUN npm install @nestjs/cli yarn -g
 RUN yarn install
 EXPOSE 3000
 CMD ["yarn", "start"]
