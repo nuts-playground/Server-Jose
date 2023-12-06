@@ -1,9 +1,13 @@
 pipeline {
     stage('Clone repository') {
-        checkout scm
+        steps {
+            checkout scm
+        }
     }
     stage('Build image') {
-        app = docker.build('kiyoung92/nestjs')
+        steps {
+            app = docker.build('kiyoung92/nestjs')
+        }
     }
     stage('Deploy') {
         steps {
