@@ -10,7 +10,7 @@
 # CMD ["yarn", "start:prod"]
 
 
-FROM node:18.16.0 As development
+FROM node:18.16.0
 
 WORKDIR /app
 
@@ -22,14 +22,11 @@ COPY . .
 
 RUN yarn build
 
-FROM node:18.16.0 as production
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+FROM node:18.16.0
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json ./
 
 RUN yarn install --only=production
 
