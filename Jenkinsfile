@@ -3,7 +3,7 @@ node {
         checkout scm
     }
     stage("Build image") {
-        app = docker.build("NestJS")
+        app = docker.build("nestjs")
     }
     // stage("Docker Run") {
     //     steps {
