@@ -3,7 +3,7 @@ node {
         checkout scm
     }
     stage("Build image") {
-        app = docker.build("kiyoung/jenkins")
+        app = docker.build("kiyoung92/jenkins")
     }
     stage("Push image") {
         docker.withRegistry("https://registry.hub.docker.com", "docker-hub") {
