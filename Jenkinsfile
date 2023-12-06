@@ -16,7 +16,9 @@ pipeline {
             }
         }
         stage('Build Image') {
-            app = docker.build('kiyoung92/nestjs')
+            steps {
+                app = docker.build('kiyoung92/nestjs')
+            }
         }
         stage('Deploy') {
             sh 'docker run --name nest-server -d -p 3000:3000 kiyoung92/nestjs:latest'
