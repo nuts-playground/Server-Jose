@@ -3,8 +3,8 @@ WORKDIR /app
 
 COPY package.json .
 COPY .yarn .
-ADD . .
-RUN yarn install
+COPY . .
+RUN yarn install --production
 RUN yarn build
 
 CMD ["yarn", "start:prod"]
