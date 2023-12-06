@@ -5,9 +5,9 @@ node {
     stage('Build image') {
         app = docker.build('kiyoung92/nestjs')
     }
-    stage('Run Image') {
+    stage('Deploy') {
         steps {
-            docker 'run -p 3000:3000 nestjs'
+            sh 'docker run --name nest-server -d -p 3000:3000 kiyoung92/nestjs:latest'
         }
     }
     // stage('Push image') {
