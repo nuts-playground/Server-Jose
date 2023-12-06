@@ -3,11 +3,12 @@ node {
         checkout scm
     }
     stage("Build image") {
-        app = docker.build("nestjs")
+        app = docker.build("kiyoung92/nestjs")
     }
-    // stage("Docker Run") {
-    //     steps {
-    //         docker run --name NestJS -p 3000:3001 -p 40000:3000 -u root Nestjs
+    // stage("Push image") {
+    //     docker.withRegistry("https://registry.hub.docker.com", "docker-hub") {
+    //         app.push("${env.BUILD_NUMBER}")
+    //         app.push("latest")
     //     }
     // }
  }
