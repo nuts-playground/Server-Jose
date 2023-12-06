@@ -7,7 +7,7 @@ node {
     }
     stage('Run Image') {
         steps {
-            sh 'docker run -p 3000:3000 nestjs'
+            docker run -p 3000:3000 nestjs
         }
     }
     // stage('Push image') {
