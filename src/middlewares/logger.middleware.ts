@@ -8,14 +8,13 @@ export class LoggerMiddleware implements NestMiddleware {
   use(request: Request, response: Response, next: NextFunction): void {
     const { ip, method, originalUrl } = request;
     const userAgent = request.get('user-agent') || '';
-
+    
     response.on('finish', () => {
       const { statusCode } = response;
       const contentLength = response.get('content-length');
       this.logger.log(
-        `[METHOD: ${method}] [ORIGIN_URL: ${decodeURIComponent(originalUrl)}] [STATUS_CODE: ${statusCode}] [CONTENT_LENGTH: ${contentLength}] ::: [AGENT: ${userAgent}] [IP: ${ip}]`,
+        `[METHOD: ${method}] [ORIGIN_URL: ${originalUrl === undefined ? decodeURIComponent(originalUrl) : '/'}] [STATUS_CODE: ${statusCode}] [CONTENT_LENGTH: ${contentLength}] ::: [AGENT: ${userAgent}] [IP: ${request.socket.remoteAddress}]`,
       );
-      this.logger.log(response)
     });
 
     next();
