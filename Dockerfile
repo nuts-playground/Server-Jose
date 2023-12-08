@@ -1,5 +1,8 @@
 FROM node:18.16.0-alpine
 
+RUN apk add --no-cache tzdata && \
+    echo 'Etc/UTC' > /etc/timezone
+
 WORKDIR /usr/src/app
 
 COPY . .
