@@ -12,7 +12,7 @@ RUN yarn build
 
 FROM node:18.16.0-alpine
 
-WORKDIR /app
+WORKDIR /
 
 COPY --from=build /usr/src/app/dist /app/dist
 COPY --from=build /usr/src/app/.pnp.cjs /app/.pnp.cjs
