@@ -1,10 +1,12 @@
 FROM node:18.16.0-alpine AS build
 
+ENV NODE_ENV production
+
 WORKDIR /app
 
 COPY . .
 
-RUN yarn install
+RUN yarn install --immutable
 
 RUN yarn build
 
@@ -20,9 +22,8 @@ COPY --from=build /app/.yarn ./.yarn
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/yarn.lock ./yarn.lock
 
-RUN ls .yarn
-RUN ls ./.yarn
-
 EXPOSE 3000
+
+ENV NODE_ENV production
 
 CMD ["yarn", "start:prod"]
