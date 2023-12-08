@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN yarn install
+RUN yarn install --immutable
 
 RUN yarn build
 
@@ -19,7 +19,7 @@ COPY --from=build /usr/src/app/dist /app/dist
 COPY --from=build /usr/src/app/.pnp.cjs /app/.pnp.cjs
 # COPY --from=build /usr/src/app/.pnp.loader.mjs /app/.pnp.loader.mjs
 COPY --from=build /usr/src/app/.yarnrc.yml /app/.yarnrc.yml
-COPY --from=build /usr/src/app/.yarn /app/.yarn 
+COPY --from=build /usr/src/app/.yarn /app/.yarn
 COPY --from=build /usr/src/app/package.json /app/package.json
 COPY --from=build /usr/src/app/yarn.lock /app/yarn.lock
 
