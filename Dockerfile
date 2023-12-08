@@ -1,4 +1,4 @@
-FROM node:18.16.0-alpine
+FROM node:18.16.0-alpine AS build
 
 RUN apk add --no-cache tzdata && \
     echo 'Etc/UTC' > /etc/timezone
