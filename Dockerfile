@@ -20,6 +20,9 @@ COPY --from=build /app/.yarn ./.yarn
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/yarn.lock ./yarn.lock
 
+RUN ls .yarn
+RUN ls ./.yarn
+
 EXPOSE 3000
 
 CMD ["yarn", "start:prod"]
