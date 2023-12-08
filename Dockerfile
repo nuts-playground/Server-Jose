@@ -15,7 +15,7 @@ FROM node:18.16.0-alpine
 WORKDIR /app
 
 COPY --from=build /app/dist ./dist
-# COPY --from=build /app/.pnp.cjs ./.pnp.cjs
+COPY --from=build /app/.pnp.cjs ./.pnp.cjs
 # COPY --from=build /app/.pnp.loader.mjs /app/.pnp.loader.mjs
 COPY --from=build /app/.yarnrc.yml ./.yarnrc.yml
 COPY --from=build /app/.yarn ./.yarn
