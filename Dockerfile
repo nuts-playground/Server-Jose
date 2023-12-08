@@ -1,4 +1,4 @@
-FROM node:18.16.0-alpine AS build
+FROM node:18.16.0-alpine
 
 WORKDIR /usr/src/app
 
@@ -10,7 +10,7 @@ RUN yarn build
 
 FROM node:18.16.0-alpine
 
-WORKDIR /nest-dev/app
+WORKDIR /app
 
 COPY --from=build /usr/src/app/dist /nest-dev/app/dist
 COPY --from=build /usr/src/app/.pnp.cjs /nest-dev/app/.pnp.cjs
