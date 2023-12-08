@@ -10,19 +10,15 @@ RUN yarn build
 
 FROM node:18.16.0-alpine
 
-WORKDIR /app
+WORKDIR /nest-dev/app
 
-COPY --from=build /usr/src/app/dist /app/dist
-COPY --from=build /usr/src/app/.pnp.cjs /app/.pnp.cjs
-COPY --from=build /usr/src/app/.pnp.loader.mjs /app/.pnp.loader.mjs
-COPY --from=build /usr/src/app/.yarnrc.yml /app/.yarnrc.yml
-RUN ls
-COPY --from=build /usr/src/app/.yarn /app/.yarn
-RUN ls
-COPY --from=build /usr/src/app/package.json /app/package.json
-RUN ls
-COPY --from=build /usr/src/app/yarn.lock /app/yarn.lock
-RUN ls
+COPY --from=build /usr/src/app/dist /nest-dev/app/dist
+COPY --from=build /usr/src/app/.pnp.cjs /nest-dev/app/.pnp.cjs
+COPY --from=build /usr/src/app/.pnp.loader.mjs /nest-dev/app/.pnp.loader.mjs
+COPY --from=build /usr/src/app/.yarnrc.yml /nest-dev/app/.yarnrc.yml
+COPY --from=build /usr/src/app/.yarn /nest-dev/app/.yarn
+COPY --from=build /usr/src/app/package.json /nest-dev/app/package.json
+COPY --from=build /usr/src/app/yarn.lock /nest-dev/app/yarn.lock
 
 EXPOSE 3000
 
