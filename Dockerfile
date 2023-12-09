@@ -18,7 +18,7 @@ FROM node:18.16.0 AS builder
 WORKDIR /usr/src/app
 
 COPY pnpm-lock.yaml ./
-COPY /usr/src/app/node_modules ./node_modules
+COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY . .
 
 RUN pnpm build
@@ -31,6 +31,6 @@ RUN pnpm install --prod
 FROM node:18.16.0-alpine AS production
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/dist ./dist
 
 CMD ["node", "dist/main.js"]
