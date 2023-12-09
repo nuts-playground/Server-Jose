@@ -34,7 +34,7 @@ RUN pnpm install --prod
 # Production
 FROM node:18.16.0-alpine AS production
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
