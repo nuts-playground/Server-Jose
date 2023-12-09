@@ -5,24 +5,18 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - ${SERVER_PORT}:${LOCAL_PORT}
-    # volumes:
-    #   - ${SERVER_VOLUMES_ROOT}/${SERVER_SECRET_KEY}-${NODE_ENV}:${SERVER_DEFAULT_ROOT}
+      - ${SERVER_PORT}
     depends_on:
       - mysql
       - redis
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_LOCAL_PORT: ${MYSQL_LOCAL_PORT}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
-      REDIS_LOCAL_PORT: ${REDIS_LOCAL_PORT}
-      MYSQL_VOLUMES_ROOT: ${MYSQL_VOLUMES_ROOT}
-      REDIS_VOLUMES_ROOT: ${REDIS_VOLUMES_ROOT}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
   mysql:
@@ -33,13 +27,13 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - ${MYSQL_PORT}:${MYSQL_LOCAL_PORT}
+      - ${MYSQL_PORT}
     volumes:
-      - ${SERVER_VOLUMES_ROOT}/${DB_SECRET_KEY}-${NODE_ENV}/mysql:${MYSQL_DEFAULT_ROOT}
+      - ${MYSQL_VOLUMES_ROOT}
 
   redis:
     image: redis:latest
     ports:
-      - ${REDIS_PORT}:${REDIS_LOCAL_PORT}
+      - ${REDIS_PORT}
     volumes:
-      - ${SERVER_VOLUMES_ROOT}/${DB_SECRET_KEY}-${NODE_ENV}/redis:${REDIS_DEFAULT_ROOT}
+      - ${REDIS_VOLUMES_ROOT}
