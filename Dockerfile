@@ -1,5 +1,6 @@
 # Build Local
 FROM node:18.16.0 AS development
+RUN npm install -g pnpm
 
 WORKDIR /usr/src/app
 
