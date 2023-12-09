@@ -6,8 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${SERVER_PORT}:${LOCAL_PORT}
-    volumes:
-      - ${NESTJS_VOLUMES}
+    # volumes:
+    #   - ${NESTJS_VOLUMES}
     depends_on:
       - mysql
       - redis
