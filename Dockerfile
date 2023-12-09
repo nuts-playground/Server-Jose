@@ -1,8 +1,6 @@
 # Build Local
 FROM node:18.16.0 AS development
 
-RUN curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=8.12.0 sh -
-
 WORKDIR /usr/src/app
 
 COPY pnpm-lock.yaml ./
@@ -20,7 +18,9 @@ FROM node:18.16.0 AS builder
 WORKDIR /usr/src/app
 
 COPY pnpm-lock.yaml ./
+
 COPY --from=development /usr/src/app/node_modules ./node_modules
+
 COPY . .
 
 RUN pnpm build
