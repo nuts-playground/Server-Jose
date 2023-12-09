@@ -35,11 +35,11 @@ services:
     ports:
       - ${MYSQL_PORT}:${MYSQL_LOCAL_PORT}
     volumes:
-      - ${SERVER_VOLUMES_ROOT}/${DB_SECRET_KEY}-${NODE_ENV}:${MYSQL_DEFAULT_ROOT}
+      - ${SERVER_VOLUMES_ROOT}/${DB_SECRET_KEY}-${NODE_ENV}/mysql:${MYSQL_DEFAULT_ROOT}
 
   redis:
     image: redis:latest
     ports:
       - ${REDIS_PORT}:${REDIS_LOCAL_PORT}
     volumes:
-      - ${REDIS_VOLUMES_ROOT}
+      - ${SERVER_VOLUMES_ROOT}/${DB_SECRET_KEY}-${NODE_ENV}/redis:${REDIS_DEFAULT_ROOT}
