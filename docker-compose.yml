@@ -2,7 +2,7 @@ version: '3.7'
 services:
   nestjs-app:
     build:
-      context: /app
+      context: .
       dockerfile: Dockerfile
     ports:
       - ${SERVER_PORT}:${LOCAL_PORT}
