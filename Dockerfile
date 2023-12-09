@@ -1,32 +1,36 @@
-FROM node:18.16.0-alpine AS build
-
-ENV NODE_ENV production
+# Build Local
+FROM node:18.16.0 AS development
 
 WORKDIR /usr/src/app
 
+COPY pnpm-lock.yaml ./
+
+RUN pnpm fetch --prod
+
 COPY . .
 
-RUN yarn install
+RUN pnpm install
 
-RUN yarn build
 
-FROM node:18.16.0-alpine
+# Build Production
+FROM node:18.16.0 AS builder
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY --from=build /usr/src/app/dist ./dist
-# COPY --from=build /usr/src/app/.pnp.cjs ./.pnp.cjs
-# COPY --from=build /usr/src/app/.pnp.loader.mjs /app/.pnp.loader.mjs
-COPY --from=build /usr/src/app/.yarnrc.yml ./.yarnrc.yml
-COPY --from=build /usr/src/app/.yarn ./.yarn
-COPY --from=build /usr/src/app/package.json ./package.json
-COPY --from=build /usr/src/app/yarn.lock ./yarn.lock
+COPY pnpm-lock.yaml ./
+COPY /usr/src/app/node_modules ./node_modules
+COPY . .
 
-# yarn berry 4.x 부터는 Zero Install 지원하지 않음
-RUN yarn install
-
-EXPOSE 3000
+RUN pnpm build
 
 ENV NODE_ENV production
 
-CMD ["yarn", "start:prod"]
+RUN pnpm install --prod
+
+# Production
+FROM node:18.16.0-alpine AS production
+
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main.js"]
