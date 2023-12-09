@@ -1,13 +1,13 @@
 version: '3.7'
 services:
-  nest-server:
+  server:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - ${SERVER_PORT}:${LOCAL_PORT}
-    volumes:
-      - ${SERVER_VOLUMES_ROOT}/${SERVER_SECRET_KEY}-${NODE_ENV}:${SERVER_DEFAULT_ROOT}
+    # volumes:
+    #   - ${SERVER_VOLUMES_ROOT}/${SERVER_SECRET_KEY}-${NODE_ENV}:${SERVER_DEFAULT_ROOT}
     depends_on:
       - mysql
       - redis
