@@ -14,6 +14,7 @@ RUN pnpm install
 
 # Production
 FROM node:18.16.0-alpine AS production
+RUN npm install -g pnpm@8.12.0
 
 WORKDIR /usr/src/app
 
