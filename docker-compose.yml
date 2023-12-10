@@ -6,9 +6,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${SERVER_PORT}
-    depends_on:
-      - mysql
-      - redis
+    # depends_on:
+    #   - mysql
+    #   - redis
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
