@@ -20,8 +20,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - ${SERVER_VOLUME_ROOT}
-    command:
-      - pnpm prisma generate
 
   mysql:
     image: mysql:latest
