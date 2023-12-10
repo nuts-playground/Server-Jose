@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${SERVER_PORT}
+    volumes:
+      - ${SERVER_VOLUMES_ROOT}
     depends_on:
       - mysql
       - redis
