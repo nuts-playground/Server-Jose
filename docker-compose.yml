@@ -6,9 +6,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${SERVER_PORT}
-    # depends_on:
-    #   - mysql
-    #   - redis
+    depends_on:
+      - mysql
+      - redis
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
@@ -20,26 +20,28 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - ${SERVER_VOLUME_ROOT}
+    command:
+      - pnpm prisma generate
 
-  # mysql:
-  #   image: mysql:latest
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
-  #     MYSQL_USER: ${MYSQL_USER}
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  #     TZ: Asia/Seoul
-  #   ports:
-  #     - ${MYSQL_PORT}
-  #   volumes:
-  #     - ${MYSQL_VOLUMES_ROOT}
-  #   command:
-  #     - --character-set-server=utf8mb4
-  #     - --collation-server=utf8mb4_unicode_ci
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - ${MYSQL_PORT}
+    volumes:
+      - ${MYSQL_VOLUMES_ROOT}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
 
-  # redis:
-  #   image: redis:latest
-  #   ports:
-  #     - ${REDIS_PORT}
-  #   volumes:
-  #     - ${REDIS_VOLUMES_ROOT}
+  redis:
+    image: redis:latest
+    ports:
+      - ${REDIS_PORT}
+    volumes:
+      - ${REDIS_VOLUMES_ROOT}
