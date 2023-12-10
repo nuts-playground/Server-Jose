@@ -1,6 +1,6 @@
 # Build Local
 FROM node:18.16.0 AS development
-# RUN npm install -g pnpm@8.12.0
+RUN npm install -g pnpm@8.12.0
 
 WORKDIR /usr/src/app
 
@@ -18,7 +18,7 @@ RUN pnpm install
 
 # Build Production
 FROM node:18.16.0 AS builder
-# RUN npm install -g pnpm@8.12.0
+RUN npm install -g pnpm@8.12.0
 
 WORKDIR /usr/src/app
 
