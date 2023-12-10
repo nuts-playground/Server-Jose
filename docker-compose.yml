@@ -18,6 +18,9 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ${SERVER_VOLUME_ROOT}
+      - ${SERVER_VOLUME_ROOT_TEST}
 
   mysql:
     image: mysql:latest

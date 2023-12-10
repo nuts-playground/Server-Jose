@@ -12,9 +12,9 @@ COPY . .
 
 RUN pnpm install
 
-RUN pnpm prisma init --datasource-provider mysql
+# RUN pnpm prisma init --datasource-provider mysql
 
-RUN pnpm prisma generate
+# RUN pnpm prisma generate
 
 # Build Production
 FROM node:18.16.0 AS builder
@@ -26,7 +26,7 @@ COPY pnpm-lock.yaml ./
 
 COPY --from=development /usr/src/app/node_modules ./node_modules
 
-COPY --from=development /usr/src/app/prisma ./prisma
+# COPY --from=development /usr/src/app/prisma ./prisma
 
 COPY . .
 
@@ -41,6 +41,6 @@ WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/prisma ./prisma
+# COPY --from=builder /usr/src/app/prisma ./prisma
 
 CMD ["node", "dist/main.js"]
