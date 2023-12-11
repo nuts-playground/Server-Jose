@@ -27,7 +27,7 @@ services:
       - host.docker.internal:host-gateway
     networks:
       server-net:
-        ipv4_address: 172.20.0.1
+        ipv4_address: 172.20.0.6
 
   mysql:
     image: mysql:latest
@@ -52,18 +52,18 @@ services:
       server-net:
         ipv4_address: 172.20.0.2
 
-  redis:
-    image: redis:latest
-    container_name: ${REDIS_NAME}
-    ports:
-      - ${REDIS_PORT}
-    volumes:
-      - ${REDIS_VOLUMES_ROOT}
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    networks:
-      server-net:
-        ipv4_address: 172.20.0.3
+  # redis:
+  #   image: redis:latest
+  #   container_name: ${REDIS_NAME}
+  #   ports:
+  #     - ${REDIS_PORT}
+  #   volumes:
+  #     - ${REDIS_VOLUMES_ROOT}
+  #   extra_hosts:
+  #     - host.docker.internal:host-gateway
+  #   networks:
+  #     server-net:
+  #       ipv4_address: 172.20.0.8
 
 networks:
   server-net:
