@@ -28,7 +28,7 @@ services:
       - server-net
 
   mysql:
-    image: mysql:mysql:5.7
+    image: mysql:5.7-debian
     container_name: ${MYSQL_NAME}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
