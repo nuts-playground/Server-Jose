@@ -58,4 +58,3 @@ services:
 networks:
   our_net:
     driver: bridge
-    external: true
