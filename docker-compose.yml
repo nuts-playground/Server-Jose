@@ -38,8 +38,6 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-    networks:
-      - our_net
 
   redis:
     image: redis:latest
@@ -47,8 +45,7 @@ services:
       - ${REDIS_PORT}
     volumes:
       - ${REDIS_VOLUMES_ROOT}
-    networks:
-      - our_net
+
 networks:
   our_net:
     driver: bridge
