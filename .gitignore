@@ -36,3 +36,7 @@ lerna-debug.log*
 
 # env
 .env
+src/config/env
+
+# prisma
+schema.prisma

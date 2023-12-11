@@ -1,40 +1,46 @@
-# Build Local
-FROM node:18.16.0 AS development
-RUN npm install -g pnpm@8.12.0
+# # Build Local
+# FROM node:18.16.0 AS development
+# RUN npm install -g pnpm@8.12.0
 
-WORKDIR /usr/src/app
+# WORKDIR /usr/src/app
 
-COPY pnpm-lock.yaml ./
+# COPY pnpm-lock.yaml ./
 
-RUN pnpm fetch --prod
+# RUN pnpm fetch --prod
 
-COPY . .
+# COPY . .
 
-RUN pnpm install
+# RUN pnpm install
 
+# # RUN pnpm prisma init --datasource-provider mysql
 
-# Build Production
-FROM node:18.16.0 AS builder
-RUN npm install -g pnpm@8.12.0
+# # RUN pnpm prisma generate
 
-WORKDIR /usr/src/app
+# # Build Production
+# FROM node:18.16.0 AS builder
+# RUN npm install -g pnpm@8.12.0
 
-COPY pnpm-lock.yaml ./
+# WORKDIR /usr/src/app
 
-COPY --from=development /usr/src/app/node_modules ./node_modules
+# COPY pnpm-lock.yaml ./
 
-COPY . .
+# COPY --from=development /usr/src/app/node_modules ./node_modules
 
-RUN pnpm build
+# # COPY --from=development /usr/src/app/prisma ./prisma
 
-RUN pnpm install --prod
+# COPY . .
+
+# RUN pnpm build
+
+# RUN pnpm install --prod
 
 # Production
 FROM node:18.16.0-alpine AS production
 
 WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist ./dist
+# COPY --from=builder /usr/src/app/node_modules ./node_modules
+# COPY --from=builder /usr/src/app/dist ./dist
+# COPY --from=builder /usr/src/app/prisma ./prisma
 
 CMD ["node", "dist/main.js"]

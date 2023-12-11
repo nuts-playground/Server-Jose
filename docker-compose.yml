@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: ${SERVER_NAME}
+    restart: always
     ports:
       - ${SERVER_PORT}
     depends_on:
@@ -18,22 +20,54 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ${SERVER_VOLUME_ROOT}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      server-net:
+        ipv4_address: ${SERVER_IP}
 
   mysql:
     image: mysql:latest
+    container_name: ${MYSQL_NAME}
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
     ports:
       - ${MYSQL_PORT}
     volumes:
       - ${MYSQL_VOLUMES_ROOT}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      server-net:
+        ipv4_address: ${MYSQL_IP}
 
   redis:
     image: redis:latest
+    container_name: ${REDIS_NAME}
+    restart: always
     ports:
       - ${REDIS_PORT}
     volumes:
       - ${REDIS_VOLUMES_ROOT}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      server-net:
+        ipv4_address: ${REDIS_IP}
+
+networks:
+  server-net:
+    ipam:
+      config:
+        - subnet: ${SUBNET_IP}
