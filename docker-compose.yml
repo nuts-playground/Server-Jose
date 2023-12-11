@@ -10,7 +10,7 @@ services:
       - ${SERVER_PORT}
     depends_on:
       - mysql
-      # - redis
+      - redis
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
@@ -27,7 +27,7 @@ services:
       - host.docker.internal:host-gateway
     networks:
       server-net:
-        ipv4_address: 172.20.0.6
+        ipv4_address: ${SERVER_IP}
 
   mysql:
     image: mysql:latest
@@ -50,23 +50,24 @@ services:
       - host.docker.internal:host-gateway
     networks:
       server-net:
-        ipv4_address: 172.20.0.2
+        ipv4_address: ${MYSQL_IP}
 
-  # redis:
-  #   image: redis:latest
-  #   container_name: ${REDIS_NAME}
-  #   ports:
-  #     - ${REDIS_PORT}
-  #   volumes:
-  #     - ${REDIS_VOLUMES_ROOT}
-  #   extra_hosts:
-  #     - host.docker.internal:host-gateway
-  #   networks:
-  #     server-net:
-  #       ipv4_address: 172.20.0.8
+  redis:
+    image: redis:latest
+    container_name: ${REDIS_NAME}
+    restart: always
+    ports:
+      - ${REDIS_PORT}
+    volumes:
+      - ${REDIS_VOLUMES_ROOT}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      server-net:
+        ipv4_address: ${REDIS_IP}
 
 networks:
   server-net:
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: ${SUBNET_IP}
