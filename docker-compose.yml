@@ -21,7 +21,7 @@ services:
     volumes:
       - ${SERVER_VOLUME_ROOT}
     networks:
-      - nest-networks
+      - our_net
 
   mysql:
     image: mysql:latest
@@ -39,7 +39,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     networks:
-      - nest-networks
+      - our_net
 
   redis:
     image: redis:latest
@@ -50,5 +50,5 @@ services:
     networks:
       - nest-networks
 networks:
-  nest-networks:
+  our_net:
     driver: bridge
