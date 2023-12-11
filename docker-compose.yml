@@ -23,8 +23,7 @@ services:
     volumes:
       - ${SERVER_VOLUME_ROOT}
     networks:
-      - default
-      - our_net
+      - server-net
 
   mysql:
     image: mysql:latest
@@ -43,7 +42,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     networks:
-      - our_net
+      - server-net
 
   redis:
     image: redis:latest
@@ -53,8 +52,8 @@ services:
     volumes:
       - ${REDIS_VOLUMES_ROOT}
     networks:
-      - our_net
+      - server-net
 
 networks:
-  our_net:
+  server-net:
     driver: bridge
