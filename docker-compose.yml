@@ -22,6 +22,7 @@ services:
     volumes:
       - ${SERVER_VOLUME_ROOT}
     networks:
+      - default
       - our_net
 
   mysql:
