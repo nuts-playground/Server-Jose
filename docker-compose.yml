@@ -6,10 +6,10 @@ services:
       dockerfile: Dockerfile
     container_name: ${SERVER_NAME}
     ports:
-      - 3000:3000
+      - ${SERVER_PORT}
     depends_on:
       - mysql
-      # - redis
+      - redis
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
@@ -37,7 +37,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       TZ: Asia/Seoul
     ports:
-      - 3306:3306
+      - ${MYSQL_PORT}
     volumes:
       - ${MYSQL_VOLUMES_ROOT}
     command:
@@ -48,17 +48,17 @@ services:
     networks:
       - server-net
 
-  # redis:
-  #   image: redis:latest
-  #   container_name: ${REDIS_NAME}
-  #   ports:
-  #     - ${REDIS_PORT}
-  #   volumes:
-  #     - ${REDIS_VOLUMES_ROOT}
-  #   networks:
-  #     - server-net
-  #   extra_hosts:
-  #     - host.docker.internal:host-gateway
+  redis:
+    image: redis:latest
+    container_name: ${REDIS_NAME}
+    ports:
+      - ${REDIS_PORT}
+    volumes:
+      - ${REDIS_VOLUMES_ROOT}
+    networks:
+      - server-net
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
 networks:
   server-net:
