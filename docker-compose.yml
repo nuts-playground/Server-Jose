@@ -48,7 +48,7 @@ services:
     volumes:
       - ${REDIS_VOLUMES_ROOT}
     networks:
-      - nest-networks
+      - our_net
 networks:
   our_net:
     driver: bridge
