@@ -23,7 +23,7 @@ services:
     volumes:
       - ${SERVER_VOLUME_ROOT}
     extra_hosts:
-      - 'host.docker.internal:3041'
+      - host.docker.internal:host-gateway
     networks:
       - server-net
 
@@ -44,7 +44,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     extra_hosts:
-      - 'host.docker.internal:3302'
+      - host.docker.internal:host-gateway
     networks:
       - server-net
 
@@ -58,7 +58,7 @@ services:
     networks:
       - server-net
     extra_hosts:
-      - 'host.docker.internal:6370'
+      - host.docker.internal:host-gateway
 
 networks:
   server-net:
