@@ -11,4 +11,8 @@
 </div>
 <div style="padding: 10px; background: #333; color: #fff; display: flex; flex-direction: column; border-radius: 5px;">
   <h3 style="padding: 10px 5px; margin: 0px;">Service</h3>
+  <p style="padding: 5px 15px; margin: 0px; text-decoration: line-through; color: #aaa;">Join</p>
+  <p style="padding: 5px 15px; margin: 0px; text-decoration: line-through; color: #aaa;">Login</p>
 </div>
+
+Check Scraping Module
