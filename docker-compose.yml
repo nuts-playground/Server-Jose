@@ -21,6 +21,7 @@ services:
       REDIS_PORT: ${REDIS_PORT}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       DATABASE_URL: ${DATABASE_URL}
+      TZ: Asia/Seoul
     volumes:
       - ${SERVER_VOLUME_ROOT}
     extra_hosts:
@@ -33,6 +34,11 @@ services:
     image: mysql:latest
     container_name: ${MYSQL_NAME}
     restart: always
+    # healthcheck:
+    #   test: mysqladmin ping -h localhost -uroot -ppass
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 20
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -56,6 +62,13 @@ services:
     image: redis:latest
     container_name: ${REDIS_NAME}
     restart: always
+    # healthcheck:
+    #   test: redis-cli ping
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 20
+    environment:
+      TZ: Asia/Seoul
     ports:
       - ${REDIS_PORT}
     volumes:
@@ -68,6 +81,7 @@ services:
 
 networks:
   server-net:
+    name: ${NETWORK_NAME}
     ipam:
       config:
         - subnet: ${SUBNET_IP}
