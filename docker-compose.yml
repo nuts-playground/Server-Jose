@@ -80,7 +80,7 @@ services:
 
 networks:
   server-net:
-    name: server-network
+    name: ${NETWORK_NAME}
     ipam:
       config:
         - subnet: ${SUBNET_IP}
