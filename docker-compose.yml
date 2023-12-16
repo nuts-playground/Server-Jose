@@ -36,7 +36,7 @@ services:
     container_name: ${MYSQL_NAME}
     restart: always
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uroot', '-ppass']
+      test: mysqladmin ping -h localhost -uroot -ppass
       interval: 5s
       timeout: 5s
       retries: 20
@@ -64,7 +64,7 @@ services:
     container_name: ${REDIS_NAME}
     restart: always
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: redis-cli ping
       interval: 5s
       timeout: 5s
       retries: 20
