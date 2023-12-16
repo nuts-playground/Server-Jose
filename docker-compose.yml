@@ -33,11 +33,11 @@ services:
     image: mysql:latest
     container_name: ${MYSQL_NAME}
     restart: always
-    healthcheck:
-      test: mysqladmin ping -h localhost -uroot -ppass
-      interval: 5s
-      timeout: 5s
-      retries: 20
+    # healthcheck:
+    #   test: mysqladmin ping -h localhost -uroot -ppass
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 20
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -61,11 +61,11 @@ services:
     image: redis:latest
     container_name: ${REDIS_NAME}
     restart: always
-    healthcheck:
-      test: redis-cli ping
-      interval: 5s
-      timeout: 5s
-      retries: 20
+    # healthcheck:
+    #   test: redis-cli ping
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 20
     ports:
       - ${REDIS_PORT}
     volumes:
