@@ -40,3 +40,6 @@ src/config/env
 
 # prisma
 schema.prisma
+
+# http request
+request.http
