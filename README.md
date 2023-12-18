@@ -8,7 +8,7 @@
 > ~~CI/CD: Docker Compose~~  
 > ~~CI/CD: Dockerfile~~  
 > ~~Prisma for MySQL~~  
-> Connect Redis
+> ~~Connect Redis~~
 
 <br/>
 
