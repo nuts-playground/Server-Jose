@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
@@ -17,7 +17,7 @@ export class UserService extends UserServiceUtil {
     const isAlreadyUser = await this.findOne(dto.getEmail());
 
     if (isAlreadyUser) {
-      return ResponseDto.fail('이미 가입된 이메일입니다.');
+      throw new UnauthorizedException('이미 가입된 메일입니다.');
     }
 
     const hashedPassword: string = await BcryptUtil.hash(dto.getPassword());
