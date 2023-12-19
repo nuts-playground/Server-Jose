@@ -36,6 +36,10 @@ export class ResponseDto {
     return new ResponseDto('error', message);
   }
 
+  static exception(message: string): ResponseDto {
+    return new ResponseDto('exception', message);
+  }
+
   @ApiProperty()
   @Expose()
   get status(): ResponseStatus {
