@@ -14,7 +14,7 @@
 
 ### Service
 
-> Join  
+> Join - Redis for Email Authentication
 > Login  
 > Board Create  
 > Board Delete  

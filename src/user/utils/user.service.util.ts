@@ -1,4 +1,5 @@
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SignUpInterface } from '../interface/sign.interface';
 
 export class UserServiceUtil {
   constructor(private readonly prisma: PrismaService) {}
@@ -10,26 +11,25 @@ export class UserServiceUtil {
       });
 
       return user;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
   }
 
-  async saveUser(name: string, password: string, email: string) {
+  async saveUser(dto: SignUpInterface) {
     try {
       const newUser = await this.prisma.user.create({
         data: {
-          id: '4',
-          email: email,
-          name: name,
-          password: password,
-          signup_verify_token: 'test',
+          id: dto.id,
+          email: dto.email,
+          name: dto.name,
+          password: dto.password,
         },
       });
 
       return newUser;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
   }
 }

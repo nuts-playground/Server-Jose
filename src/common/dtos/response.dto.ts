@@ -6,10 +6,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ResponseDto {
   @Exclude() private readonly _status: ResponseStatus;
   @Exclude() private readonly _message?: string;
-  @Exclude() private readonly _data?: [object];
+  @Exclude() private readonly _data?: object;
   @Exclude() private readonly _date: DateUtil;
 
-  constructor(status: ResponseStatus, message?: string, data?: [object]) {
+  constructor(status: ResponseStatus, message?: string, data?: object) {
     this._status = status;
     this._message = message;
     this._data = data;
@@ -20,7 +20,11 @@ export class ResponseDto {
     return new ResponseDto('success');
   }
 
-  static successWithData(data: [object], message?: string): ResponseDto {
+  static successWithArrayJSON(data: object, message?: string): ResponseDto {
+    return new ResponseDto('success', message, [data]);
+  }
+
+  static successWithJSON(data: object, message?: string): ResponseDto {
     return new ResponseDto('success', message, data);
   }
 
@@ -46,7 +50,7 @@ export class ResponseDto {
 
   @ApiProperty()
   @Expose()
-  get data(): [object] {
+  get data(): object {
     return this._data;
   }
 

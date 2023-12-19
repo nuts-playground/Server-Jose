@@ -4,6 +4,8 @@ import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { UserServiceUtil } from './utils/user.service.util';
+import { UUIDUtil } from 'src/common/utils/uuid.util';
+import { BcryptUtil } from 'src/common/utils/bcrypt.util';
 
 @Injectable()
 export class UserService extends UserServiceUtil {
@@ -18,13 +20,14 @@ export class UserService extends UserServiceUtil {
       return ResponseDto.fail('이미 가입된 이메일입니다.');
     }
 
-    const { email, name } = await this.saveUser(
-      dto.getName(),
-      dto.getPassword(),
-      dto.getEmail(),
-    );
+    const hashedPassword: string = await BcryptUtil.hash(dto.getPassword());
+    await this.saveUser({
+      id: UUIDUtil.generate(),
+      password: hashedPassword,
+      ...dto.getSignUpInfo(),
+    });
 
-    return ResponseDto.successWithData([{ email, name }]);
+    return ResponseDto.successWithJSON(dto.getSignUpInfo());
   }
 
   async signIn(dto: SignInDto) {
