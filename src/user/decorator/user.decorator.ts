@@ -44,7 +44,7 @@ export const ValidateSignIn = createParamDecorator(
     }
 
     if (!passwordRegex.test(request.body.password)) {
-      throw new UnauthorizedException('패스워드 형식이 올바르지 않습니다.');
+      throw new UnauthorizedException('사용자 정보가 올바르지 않습니다.');
     }
 
     return new SignInDto(request.body.email, request.body.password);
