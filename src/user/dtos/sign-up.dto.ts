@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SignUpResponseInterface } from '../interface/sign.interface';
+import { SignUpResponseInterface } from '../interface/sign-up.interface';
 
 export class SignUpDto {
   private readonly email: string;

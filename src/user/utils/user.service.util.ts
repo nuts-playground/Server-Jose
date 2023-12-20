@@ -1,5 +1,5 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SignUpInterface } from '../interface/sign.interface';
+import { SignUpInterface } from '../interface/sign-up.interface';
 
 export class UserServiceUtil {
   constructor(private readonly prisma: PrismaService) {}

@@ -1,7 +1,5 @@
 import * as uuid_1 from 'uuid';
 
-export class UUIDUtil {
-  static generate(): string {
-    return uuid_1.v4();
-  }
-}
+export const uuid_v4_generate = (): string => {
+  return uuid_1.v4();
+};
