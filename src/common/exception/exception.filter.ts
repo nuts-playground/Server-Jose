@@ -4,7 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { instanceToPlain } from 'class-transformer';
 import { ResponseDto } from '../dtos/response.dto';
 
@@ -13,7 +13,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    // 사용할 때 추가하자
+    // const request = ctx.getRequest<Request>();
     const status =
       exception instanceof HttpException ? exception.getStatus() : 500;
     const exceptionToPlain = instanceToPlain(exception);

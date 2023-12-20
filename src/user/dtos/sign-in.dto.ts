@@ -1,12 +1,7 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class SignInDto {
-  @IsEmail()
-  @IsNotEmpty()
   private readonly email: string;
-
-  @IsNotEmpty()
   private readonly password: string;
 
   constructor(email: string, password: string) {
