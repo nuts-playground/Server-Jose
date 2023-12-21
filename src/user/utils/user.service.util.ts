@@ -1,13 +1,18 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SignUpInterface } from '../interface/sign-up.interface';
+import {
+  SignUpServiceResponseInterface,
+  SignUpInterface,
+} from '../interface/sign-up.interface';
 
 export class UserServiceUtil {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(email: string) {
+  async findOne(email: string): Promise<SignUpServiceResponseInterface> {
     try {
       const user = await this.prisma.user.findFirst({
-        where: { email: email },
+        where: {
+          email,
+        },
       });
 
       return user;
@@ -16,7 +21,9 @@ export class UserServiceUtil {
     }
   }
 
-  async saveUser(dto: SignUpInterface) {
+  async saveUser(
+    dto: SignUpInterface,
+  ): Promise<SignUpServiceResponseInterface> {
     try {
       const newUser = await this.prisma.user.create({
         data: {
@@ -24,6 +31,11 @@ export class UserServiceUtil {
           email: dto.email,
           name: dto.name,
           password: dto.password,
+          about_me: dto.about_me,
+          profile_image_url: dto.profile_image_url,
+          created_at: dto.created_at,
+          updated_at: dto.updated_at,
+          delete_yn: dto.delete_yn,
         },
       });
 

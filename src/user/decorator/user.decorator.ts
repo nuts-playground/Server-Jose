@@ -8,7 +8,7 @@ import { SignUpDto } from 'src/user/dtos/sign-up.dto';
 import { SignInDto } from '../dtos/sign-in.dto';
 
 export const ValidateSignUp = createParamDecorator(
-  (d: unknown, ctx: ExecutionContext): SignUpDto => {
+  (_: unknown, ctx: ExecutionContext): SignUpDto => {
     const request = ctx.switchToHttp().getRequest();
     const emailRegex = /\S+@\S+\.\S+/;
     const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;
@@ -27,14 +27,19 @@ export const ValidateSignUp = createParamDecorator(
 
     return new SignUpDto(
       request.body.email,
-      request.body.password,
       request.body.name,
+      request.body.password,
+      request.body.about_me,
+      request.body.profile_image_url,
+      request.body.created_at,
+      request.body.updated_at,
+      request.body.delete_yn,
     );
   },
 );
 
 export const ValidateSignIn = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): SignInDto => {
+  (_: unknown, ctx: ExecutionContext): SignInDto => {
     const request = ctx.switchToHttp().getRequest();
     const emailRegex = /\S+@\S+\.\S+/;
     const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;

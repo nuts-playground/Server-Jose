@@ -7,6 +7,7 @@ import {
   ValidateSignIn,
   ValidateSignUp,
 } from 'src/user/decorator/user.decorator';
+import { ResponseDto } from 'src/common/dtos/response.dto';
 
 @Controller('user')
 export class UserController {
@@ -16,7 +17,7 @@ export class UserController {
   ) {}
 
   @Post('/sign-up')
-  async signUp(@ValidateSignUp() dto: SignUpDto): Promise<any> {
+  async signUp(@ValidateSignUp() dto: SignUpDto): Promise<ResponseDto> {
     return await this.userService.signUp(dto);
   }
 
