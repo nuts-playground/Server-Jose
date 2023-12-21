@@ -19,4 +19,16 @@ export class RedisService {
   getRedisClient(): Redis {
     return this.client;
   }
+
+  async setExpire(key: string, value: string, time: number) {
+    await this.client.set(key, value, 'EX', time);
+  }
+
+  async getExpire(key: string) {
+    return await this.client.get(key);
+  }
+
+  async delExpire(key: string) {
+    await this.client.del(key);
+  }
 }

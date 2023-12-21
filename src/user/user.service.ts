@@ -10,10 +10,7 @@ import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class UserService extends UserServiceUtil {
-  constructor(
-    prisma: PrismaService,
-    private readonly redisService: RedisService,
-  ) {
+  constructor(prisma: PrismaService, private readonly redis: RedisService) {
     super(prisma);
   }
 
@@ -34,25 +31,21 @@ export class UserService extends UserServiceUtil {
     return ResponseDto.successWithJSON(dto.responseUserInfo());
   }
 
-  // Need Create Controller
-  async sendVerificationEmail(email: string): Promise<any> {
-    const redis = this.redisService.getRedisClient();
+  async sendVerificationCode(email: string): Promise<any> {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await redis.set(email, code, 'EX', 60 * 5);
+    await this.redis.setExpire(email, code, 60 * 5);
 
     return;
   }
 
-  // Need Create Controller
   async verifyEmail(email: string, verificationsCode: string): Promise<any> {
-    const redis = this.redisService.getRedisClient();
-    const storedCode = await redis.get(email);
+    const storedCode = await this.redis.getExpire(email);
 
     if (storedCode !== verificationsCode) {
       throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     } else {
-      await redis.del(email);
+      await this.redis.delExpire(email);
     }
 
     return;

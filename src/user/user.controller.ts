@@ -16,14 +16,24 @@ export class UserController {
     private redisService: RedisService,
   ) {}
 
-  @Post('/sign-up')
+  @Post('/signUp')
   async signUp(@ValidateSignUp() dto: SignUpDto): Promise<ResponseDto> {
     return await this.userService.signUp(dto);
   }
 
-  @Post('/sign-in')
+  @Post('/signIn')
   async signIn(@ValidateSignIn() dto: SignInDto): Promise<any> {
     return await this.userService.signIn(dto);
+  }
+
+  @Post('/sendVerificationCode')
+  async sendVerificationCode(email: string): Promise<any> {
+    return await this.userService.sendVerificationCode(email);
+  }
+
+  @Post('/verifyEmail')
+  async verifyEmail(email: string, verificationsCode: string): Promise<any> {
+    return await this.userService.verifyEmail(email, verificationsCode);
   }
 
   @Patch()
