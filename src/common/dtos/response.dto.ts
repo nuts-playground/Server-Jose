@@ -16,8 +16,8 @@ export class ResponseDto {
     this._date = time_now();
   }
 
-  static success(): ResponseDto {
-    return new ResponseDto('success');
+  static success(message: string): ResponseDto {
+    return new ResponseDto('success', message);
   }
 
   static successWithArrayJSON(data: object, message?: string): ResponseDto {

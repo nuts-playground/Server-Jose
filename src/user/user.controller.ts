@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RedisService } from 'src/redis/redis.service';
 import { SignUpDto } from './dtos/sign-up.dto';
@@ -16,24 +16,38 @@ export class UserController {
     private redisService: RedisService,
   ) {}
 
+  /**
+   * Sign up a user.
+   *
+   * @param dto - The sign up data.
+   * @returns A promise that resolves to a ResponseDto.
+   */
   @Post('/signUp')
   async signUp(@ValidateSignUp() dto: SignUpDto): Promise<ResponseDto> {
     return await this.userService.signUp(dto);
   }
 
+  /**
+   * Sign in with the provided credentials.
+   *
+   * @param dto - The sign-in data.
+   * @returns A promise that resolves to the result of the sign-in operation.
+   */
   @Post('/signIn')
   async signIn(@ValidateSignIn() dto: SignInDto): Promise<any> {
     return await this.userService.signIn(dto);
   }
 
+  // TODO: Create DTO for the following methods
   @Post('/sendVerificationCode')
-  async sendVerificationCode(email: string): Promise<any> {
-    return await this.userService.sendVerificationCode(email);
+  async sendVerificationCode(@Body() dto): Promise<any> {
+    return await this.userService.sendVerificationCode(dto.email);
   }
 
+  // TODO: Create DTO for the following methods
   @Post('/verifyEmail')
-  async verifyEmail(email: string, verificationsCode: string): Promise<any> {
-    return await this.userService.verifyEmail(email, verificationsCode);
+  async verifyEmail(@Body() dto): Promise<any> {
+    return await this.userService.verifyEmail(dto.email, dto.verificationsCode);
   }
 
   @Patch()
