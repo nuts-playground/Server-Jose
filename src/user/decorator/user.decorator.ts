@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpDto } from 'src/user/dtos/sign-up.dto';
-import { SignInDto } from '../dtos/sign-in.dto';
+import { SendVerificationCodeDto } from '../dtos/send-verification-code.dto';
 
 export const ValidateSignUp = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): SignUpDto => {
@@ -38,20 +38,33 @@ export const ValidateSignUp = createParamDecorator(
   },
 );
 
-export const ValidateSignIn = createParamDecorator(
-  (_: unknown, ctx: ExecutionContext): SignInDto => {
+export const ValidateSendVerificationCode = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext): SendVerificationCodeDto => {
     const request = ctx.switchToHttp().getRequest();
     const emailRegex = /\S+@\S+\.\S+/;
-    const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;
 
     if (!emailRegex.test(request.body.email)) {
-      throw new UnauthorizedException('사용자 정보가 올바르지 않습니다.');
+      throw new UnauthorizedException('이메일 형식이 올바르지 않습니다.');
     }
 
-    if (!passwordRegex.test(request.body.password)) {
-      throw new UnauthorizedException('사용자 정보가 올바르지 않습니다.');
+    return new SendVerificationCodeDto(request.body.email);
+  },
+);
+
+export const ValidateCheckVerificationCode = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext): any => {
+    const request = ctx.switchToHttp().getRequest();
+    const emailRegex = /\S+@\S+\.\S+/;
+    const verificationCodeRegex = /^\d{6}$/;
+
+    if (!emailRegex.test(request.body.email)) {
+      throw new UnauthorizedException('이메일 형식이 올바르지 않습니다.');
     }
 
-    return new SignInDto(request.body.email, request.body.password);
+    if (!verificationCodeRegex.test(request.body.verificationCode)) {
+      throw new UnauthorizedException('검증 코드 형식이 올바르지 않습니다.');
+    }
+
+    return new SendVerificationCodeDto(request.body.email);
   },
 );

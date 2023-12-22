@@ -1,26 +1,21 @@
-import { Controller, Get, Patch, Post, Body } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { RedisService } from 'src/redis/redis.service';
 import { SignUpDto } from './dtos/sign-up.dto';
-import { SignInDto } from './dtos/sign-in.dto';
 import {
-  ValidateSignIn,
+  ValidateCheckVerificationCode,
+  ValidateSendVerificationCode,
   ValidateSignUp,
 } from 'src/user/decorator/user.decorator';
 import { ResponseDto } from 'src/common/dtos/response.dto';
+import { SendVerificationCodeDto } from './dtos/send-verification-code.dto';
+import { CheckVerificationCodeDto } from './dtos/check-verification-code.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private redisService: RedisService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   /**
-   * Sign up a user.
-   *
-   * @param dto - The sign up data.
-   * @returns A promise that resolves to a ResponseDto.
+   * COMPELTE
    */
   @Post('/signUp')
   async signUp(@ValidateSignUp() dto: SignUpDto): Promise<ResponseDto> {
@@ -28,38 +23,30 @@ export class UserController {
   }
 
   /**
-   * Sign in with the provided credentials.
-   *
-   * @param dto - The sign-in data.
-   * @returns A promise that resolves to the result of the sign-in operation.
+   * COMPELTE
    */
-  @Post('/signIn')
-  async signIn(@ValidateSignIn() dto: SignInDto): Promise<any> {
-    return await this.userService.signIn(dto);
-  }
-
-  // TODO: Create DTO for the following methods
   @Post('/sendVerificationCode')
-  async sendVerificationCode(@Body() dto): Promise<any> {
-    return await this.userService.sendVerificationCode(dto.email);
+  async sendVerificationCode(
+    @ValidateSendVerificationCode() dto: SendVerificationCodeDto,
+  ): Promise<ResponseDto> {
+    return await this.userService.sendVerificationCode(dto);
   }
 
-  // TODO: Create DTO for the following methods
-  @Post('/verifyEmail')
-  async verifyEmail(@Body() dto): Promise<any> {
-    return await this.userService.verifyEmail(dto.email, dto.verificationsCode);
+  /**
+   * COMPELTE
+   */
+  @Post('/checkVerificationCode')
+  async checkVerificationCode(
+    @ValidateCheckVerificationCode() dto: CheckVerificationCodeDto,
+  ): Promise<ResponseDto> {
+    return await this.userService.checkVerificationCode(dto);
   }
 
-  @Patch()
-  async patch() {
-    return await this.userService.patch();
-  }
-
-  @Get('/')
-  async test() {
-    const redisClient = this.redisService.getRedisClient();
-    await redisClient.set('test', 'zz');
-    const rs = await redisClient.get('test');
-    console.log(rs);
+  /**
+   * TODO
+   */
+  @Post('/patchUser')
+  async patchUser(): Promise<ResponseDto> {
+    return await this.userService.patchUser();
   }
 }

@@ -3,15 +3,17 @@ import {
   SignUpServiceResponseInterface,
   SignUpInterface,
 } from '../interface/sign-up.interface';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UserServiceUtil {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(email: string): Promise<SignUpServiceResponseInterface> {
+  async findByEmail(email: string): Promise<SignUpServiceResponseInterface> {
     try {
       const user = await this.prisma.user.findFirst({
         where: {
-          email,
+          email: email,
         },
       });
 

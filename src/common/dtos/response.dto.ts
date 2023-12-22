@@ -1,19 +1,19 @@
 import { Exclude, Expose } from 'class-transformer';
 import { ResponseStatus } from '../union/response.union';
 import { ApiProperty } from '@nestjs/swagger';
-import { time_now } from '../utils/date.util';
+// import { time_now } from '../utils/date.util';
 
 export class ResponseDto {
   @Exclude() private readonly _status: ResponseStatus;
   @Exclude() private readonly _message?: string;
   @Exclude() private readonly _data?: object;
-  @Exclude() private readonly _date: string;
+  // @Exclude() private readonly _date: string;
 
   constructor(status: ResponseStatus, message?: string, data?: object) {
     this._status = status;
     this._message = message;
     this._data = data;
-    this._date = time_now();
+    // this._date = time_now();
   }
 
   static success(message: string): ResponseDto {
@@ -58,9 +58,9 @@ export class ResponseDto {
     return this._data;
   }
 
-  @ApiProperty()
-  @Expose()
-  get date(): string {
-    return this._date;
-  }
+  // @ApiProperty()
+  // @Expose()
+  // get date(): string {
+  //   return this._date;
+  // }
 }
