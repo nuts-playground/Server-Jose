@@ -16,7 +16,7 @@ export class ResponseDto {
     // this._date = time_now();
   }
 
-  static success(message: string): ResponseDto {
+  static success(message?: string): ResponseDto {
     return new ResponseDto('success', message);
   }
 

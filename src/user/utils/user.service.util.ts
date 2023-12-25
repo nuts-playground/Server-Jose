@@ -23,6 +23,20 @@ export class UserServiceUtil {
     }
   }
 
+  async findByName(name: string): Promise<SignUpServiceResponseInterface> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          name: name,
+        },
+      });
+
+      return user;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async saveUser(
     dto: SignUpInterface,
   ): Promise<SignUpServiceResponseInterface> {

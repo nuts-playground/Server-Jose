@@ -1,12 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { SignUpDto } from './dtos/sign-up.dto';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { UserServiceUtil } from './utils/user.service.util';
-import { uuid_v4_generate } from 'src/common/utils/uuid.util';
-import { bcrypt_hash } from 'src/common/utils/bcrypt.util';
 import { RedisService } from 'src/redis/redis.service';
 import { SendVerificationCodeDto } from './dtos/send-verification-code.dto';
-import { CheckVerificationCodeDto } from './dtos/check-verification-code.dto';
+import { sendEmail } from 'src/common/utils/email.util';
+import { CheckEmailDto } from './dtos/check-email.dto';
+import { CheckPasswordDto } from './dtos/check-password.dto';
+import { CheckNameDto } from './dtos/check-name.dto';
 
 @Injectable()
 export class UserService {
@@ -15,67 +19,100 @@ export class UserService {
     private readonly redis: RedisService,
   ) {}
 
-  /**
-   * COMPELTE
-   */
-  async signUp(dto: SignUpDto): Promise<ResponseDto> {
-    const email = dto.getEmail();
-    const isAlreadyUser = await this.serviceUtil.findByEmail(email);
+  async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
+    const isAlreadyUser = await this.serviceUtil.findByEmail(dto.getEmail());
 
     if (isAlreadyUser) {
-      throw new UnauthorizedException('이미 가입된 메일입니다.');
+      throw new UnauthorizedException('가입할 수 없는 이메일입니다.');
     }
-    const password = dto.getPassword();
-    const hashedPassword = await bcrypt_hash(password);
 
-    await this.serviceUtil.saveUser({
-      id: uuid_v4_generate(),
-      password: hashedPassword,
-      ...dto.getSignUpInfo(),
-    });
-
-    const response = dto.responseUserInfo();
-
-    return ResponseDto.successWithJSON(response);
+    return ResponseDto.success();
   }
 
-  /**
-   * TODO: Need to apply email service (node-mailer)
-   */
+  async checkName(dto: CheckNameDto): Promise<ResponseDto> {
+    const isAlreadyUser = await this.serviceUtil.findByName(dto.getName());
+
+    if (isAlreadyUser) {
+      throw new UnauthorizedException('가입할 수 없는 이름입니다.');
+    }
+
+    return ResponseDto.success();
+  }
+
+  checkPassword(dto: CheckPasswordDto): ResponseDto {
+    const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;
+
+    if (!passwordRegex.test(dto.getPassword())) {
+      throw new BadRequestException('패스워드 형식이 올바르지 않습니다.');
+    }
+
+    return ResponseDto.success();
+  }
+
   async sendVerificationCode(
     dto: SendVerificationCodeDto,
   ): Promise<ResponseDto> {
-    const email = dto.getEmail();
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await this.redis.setExpire(email, code, 60 * 5);
+    await this.redis.setExpire(dto.getEmail(), code, 60 * 5);
+    await sendEmail(dto.getEmail(), '[APP] 인증번호 안내', code);
 
-    return ResponseDto.success('인증번호가 발송되었습니다.');
+    return ResponseDto.success();
   }
 
-  /**
-   * COMPELTE
-   */
-  async checkVerificationCode(
-    dto: CheckVerificationCodeDto,
-  ): Promise<ResponseDto> {
-    const email = dto.getEmail();
-    const verificationCode = dto.getVerificationCode();
-    const storedCode = await this.redis.getExpire(email);
+  // ======================================================
+  // async signUp(dto: SignUpDto): Promise<ResponseDto> {
+  //   const email = dto.getEmail();
+  //   const isAlreadyUser = await this.serviceUtil.findByEmail(email);
 
-    if (storedCode !== verificationCode) {
-      throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
-    } else {
-      await this.redis.delExpire(email);
-    }
+  //   if (isAlreadyUser) {
+  //     throw new UnauthorizedException('이미 가입된 메일입니다.');
+  //   }
+  //   const password = dto.getPassword();
+  //   const hashedPassword = await bcrypt_hash(password);
 
-    return ResponseDto.success('이메일 인증이 완료되었습니다.');
-  }
+  //   await this.serviceUtil.saveUser({
+  //     id: uuid_v4_generate(),
+  //     password: hashedPassword,
+  //     ...dto.getSignUpInfo(),
+  //   });
 
-  /**
-   * TODO
-   */
-  async patchUser(): Promise<ResponseDto> {
-    return ResponseDto.success('patchUser');
-  }
+  //   const response = dto.responseUserInfo();
+
+  //   return ResponseDto.successWithJSON(response);
+  // }
+
+  // async sendVerificationCode(
+  //   dto: SendVerificationCodeDto,
+  // ): Promise<ResponseDto> {
+  //   const email = dto.getEmail();
+  //   const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  //   await this.redis.setExpire(email, code, 60 * 5);
+
+  //   await sendEmail(dto.getEmail(), '[APP] 인증번호 안내', code);
+
+  //   return ResponseDto.success('인증번호가 발송되었습니다.');
+  // }
+
+  // async checkVerificationCode(
+  //   dto: CheckVerificationCodeDto,
+  // ): Promise<ResponseDto> {
+  //   const email = dto.getEmail();
+  //   const verificationCode = dto.getVerificationCode();
+
+  //   const storedCode = await this.redis.getExpire(email);
+
+  //   if (storedCode !== verificationCode) {
+  //     throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
+  //   } else {
+  //     await this.redis.delExpire(email);
+  //   }
+
+  //   return ResponseDto.success('이메일 인증이 완료되었습니다.');
+  // }
+
+  // async patchUser(): Promise<ResponseDto> {
+  //   return ResponseDto.success('patchUser');
+  // }
 }

@@ -16,19 +16,31 @@ export class RedisService {
     });
   }
 
-  getRedisClient(): Redis {
+  getClient(): Redis {
     return this.client;
   }
 
   async setExpire(key: string, value: string, time: number) {
-    await this.client.set(key, value, 'EX', time);
+    try {
+      await this.client.set(key, value, 'EX', time);
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getExpire(key: string) {
-    return await this.client.get(key);
+    try {
+      return await this.client.get(key);
+    } catch (err) {
+      throw err;
+    }
   }
 
   async delExpire(key: string) {
-    await this.client.del(key);
+    try {
+      await this.client.del(key);
+    } catch (err) {
+      throw err;
+    }
   }
 }
