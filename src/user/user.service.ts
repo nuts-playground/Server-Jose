@@ -11,6 +11,8 @@ import { sendEmail } from 'src/common/utils/email.util';
 import { CheckEmailDto } from './dtos/check-email.dto';
 import { CheckPasswordDto } from './dtos/check-password.dto';
 import { CheckNameDto } from './dtos/check-name.dto';
+import { time_now } from 'src/common/utils/date.util';
+import { uuid_v4_generate } from 'src/common/utils/uuid.util';
 
 @Injectable()
 export class UserService {
@@ -18,6 +20,21 @@ export class UserService {
     private readonly serviceUtil: UserServiceUtil,
     private readonly redis: RedisService,
   ) {}
+
+  // TODO: sha256 hash
+  async getSignUpToken(): Promise<ResponseDto> {
+    const token = Buffer.from(
+      `${uuid_v4_generate()}${Math.floor(
+        100000000 + Math.random() * 900000000,
+      ).toString()}${Math.floor(
+        100000000 + Math.random() * 900000000,
+      ).toString()}`,
+      'utf-8',
+    ).toString('base64');
+    console.log(token);
+
+    return;
+  }
 
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
     const isAlreadyUser = await this.serviceUtil.findByEmail(dto.getEmail());

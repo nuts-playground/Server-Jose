@@ -11,6 +11,11 @@ import { CheckNameDto } from './dtos/check-name.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post('/getSignUpToken')
+  async getSignUpToken() {
+    return await this.userService.getSignUpToken();
+  }
+
   @Post('/isAlreadyEmail')
   async isAlreadyEmail(
     @ValidateEmail() dto: CheckEmailDto,
