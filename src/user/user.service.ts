@@ -21,7 +21,7 @@ export class UserService {
     private readonly redis: RedisService,
   ) {}
 
-  // TODO: sha256 hash
+  // TODO: sha256 hash || cookie || http only
   async getSignUpToken(): Promise<ResponseDto> {
     const token = Buffer.from(
       `${uuid_v4_generate()}${Math.floor(
