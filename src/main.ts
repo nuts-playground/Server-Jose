@@ -8,6 +8,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
-  await app.listen(3000);
+  // TODO: setting cors
+  await app.listen(3001);
 }
 bootstrap();
