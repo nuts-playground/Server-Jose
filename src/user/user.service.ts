@@ -23,7 +23,7 @@ export class UserService {
 
   // TODO: sha256 hash || cookie || http only
   async getSignUpToken(): Promise<ResponseDto> {
-    const token = Buffer.from(
+    const signUpToken = Buffer.from(
       `${uuid_v4_generate()}${Math.floor(
         100000000 + Math.random() * 900000000,
       ).toString()}${Math.floor(
@@ -31,9 +31,8 @@ export class UserService {
       ).toString()}`,
       'utf-8',
     ).toString('base64');
-    console.log(token);
 
-    return;
+    return ResponseDto.successWithJSON({ signUpToken });
   }
 
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
@@ -57,7 +56,8 @@ export class UserService {
   }
 
   checkPassword(dto: CheckPasswordDto): ResponseDto {
-    const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,18}$/;
 
     if (!passwordRegex.test(dto.getPassword())) {
       throw new BadRequestException('패스워드 형식이 올바르지 않습니다.');
