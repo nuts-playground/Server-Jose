@@ -16,6 +16,7 @@ export interface SignUpResponseInterface {
 }
 
 export interface SignUpServiceResponseInterface {
+  id: string;
   email: string;
   name: string;
   password: string;

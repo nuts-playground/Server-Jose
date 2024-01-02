@@ -15,7 +15,7 @@ export const ValidateEmail = createParamDecorator(
       throw new BadRequestException('The email format is incorrect');
     }
 
-    return new CheckEmailDto(request.body.email, request.body.authToken);
+    return new CheckEmailDto(request.body.email);
   },
 );
 
@@ -28,7 +28,7 @@ export const ValidateName = createParamDecorator(
       throw new BadRequestException('The name format is incorrect');
     }
 
-    return new CheckNameDto(request.body.name, request.body.authToken);
+    return new CheckNameDto(request.body.name);
   },
 );
 
