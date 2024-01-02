@@ -5,6 +5,7 @@ export class SignUpDto {
   private readonly email: string;
   private readonly name: string;
   private readonly password: string;
+  private readonly verificationCode: string;
   private readonly about_me?: string;
   private readonly profile_image_url?: string;
   private readonly created_at?: string;
@@ -15,6 +16,7 @@ export class SignUpDto {
     email: string,
     name: string,
     password: string,
+    verificationCode: string,
     about_me?: string,
     profile_image_url?: string,
     created_at?: string,
@@ -24,6 +26,7 @@ export class SignUpDto {
     this.email = email;
     this.name = name;
     this.password = password;
+    this.verificationCode = verificationCode;
     this.about_me = about_me;
     this.profile_image_url = profile_image_url;
     this.created_at = created_at;
@@ -69,6 +72,11 @@ export class SignUpDto {
   @ApiProperty()
   getDeleteYn(): string {
     return this.delete_yn;
+  }
+
+  @ApiProperty()
+  getVerificationCode(): string {
+    return this.verificationCode;
   }
 
   @ApiProperty()
