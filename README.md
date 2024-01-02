@@ -20,7 +20,7 @@
 
 ### Service
 
-> Join - Redis for Email Authentication
+> Join - Redis for Email Authentication  
 > Login  
 > Board Create  
 > Board Delete  
@@ -34,4 +34,5 @@
 
 ### ETC
 
+> File System
 > Check Scraping Module
