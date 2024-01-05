@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
   Res,
@@ -37,7 +38,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/profile')
+  @Get('/profile')
   async getProfile(@Body() dto: SignInDto): Promise<ResponseDto> {
     return await this.authService.getProfile(dto);
   }
