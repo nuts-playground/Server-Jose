@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { IsEmailAlreadyExist } from '../decorator/user.decorator';
 
 export class CheckEmailDto {
+  @IsEmailAlreadyExist()
   private readonly email: string;
 
   constructor(email: string) {

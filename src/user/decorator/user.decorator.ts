@@ -1,100 +1,99 @@
+import { UnauthorizedException } from '@nestjs/common';
 import {
-  BadRequestException,
-  createParamDecorator,
-  ExecutionContext,
-} from '@nestjs/common';
-import { CheckEmailDto } from '../dtos/check-email.dto';
-import { CheckNameDto } from '../dtos/check-name.dto';
+  ValidationOptions,
+  registerDecorator,
+  ValidationArguments,
+} from 'class-validator';
+import { prisma } from 'src/common/utils/prisma.util';
 
-export const ValidateEmail = createParamDecorator(
-  (_: unknown, ctx: ExecutionContext): CheckEmailDto => {
-    const request = ctx.switchToHttp().getRequest();
-    const emailRegex = /\S+@\S+\.\S+/;
+export const IsEmailAlreadyExist =
+  (validationOptions?: ValidationOptions) =>
+  (object: object, propertyName: string) => {
+    registerDecorator({
+      name: 'IsEmailAlreadyExist',
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: {
+        async validate(
+          value: string,
+          validationArguments?: ValidationArguments,
+        ) {
+          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          const isEmail = emailRegex.test(value);
 
-    if (!emailRegex.test(request.body.email)) {
-      throw new BadRequestException('The email format is incorrect');
-    }
+          if (!isEmail)
+            throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
 
-    return new CheckEmailDto(request.body.email);
-  },
-);
+          const isAlreadyEmail = await prisma.user.findFirst({
+            where: {
+              email: value,
+            },
+          });
 
-export const ValidateName = createParamDecorator(
-  (_: unknown, ctx: ExecutionContext): CheckNameDto => {
-    const request = ctx.switchToHttp().getRequest();
-    const nameRegex = /^.{4,15}$/;
+          if (isAlreadyEmail) {
+            throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
+          }
 
-    if (!nameRegex.test(request.body.name)) {
-      throw new BadRequestException('The name format is incorrect');
-    }
+          return true;
+        },
+      },
+    });
+  };
 
-    return new CheckNameDto(request.body.name);
-  },
-);
+export const IsNameAlreadyExist =
+  (validationOptions?: ValidationOptions) =>
+  (object: object, propertyName: string) => {
+    registerDecorator({
+      name: 'IsNameAlreadyExist',
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: {
+        async validate(
+          value: string,
+          validationArguments?: ValidationArguments,
+        ) {
+          const nameRegex = /^[가-힣a-zA-Z0-9]{3,14}$/;
+          const isName = nameRegex.test(value);
 
-//========================================================
+          if (!isName)
+            throw new UnauthorizedException('사용할 수 없는 이름입니다.');
 
-// export const ValidateSignUp = createParamDecorator(
-//   (_: unknown, ctx: ExecutionContext): SignUpDto => {
-//     const request = ctx.switchToHttp().getRequest();
-//     const emailRegex = /\S+@\S+\.\S+/;
-//     const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;
+          const isAlreadyName = await prisma.user.findFirst({
+            where: {
+              name: value,
+            },
+          });
 
-//     if (!emailRegex.test(request.body.email)) {
-//       throw new BadRequestException('이메일 형식이 올바르지 않습니다.');
-//     }
+          if (isAlreadyName) {
+            throw new UnauthorizedException('사용할 수 없는 이름입니다.');
+          }
 
-//     if (!passwordRegex.test(request.body.password)) {
-//       throw new BadRequestException('패스워드 형식이 올바르지 않습니다.');
-//     }
+          return true;
+        },
+      },
+    });
+  };
 
-//     if (request.body.name.length < 2) {
-//       throw new BadRequestException('이름이 너무 짧습니다.');
-//     }
+export const IsPassword =
+  (validationOptions?: ValidationOptions) =>
+  (object: object, propertyName: string) => {
+    registerDecorator({
+      name: 'IsPassword',
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: string, validationArguments?: ValidationArguments) {
+          const passwordRegex = /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{6,18}/;
+          const isPassword = passwordRegex.test(value);
 
-//     return new SignUpDto(
-//       request.body.email,
-//       request.body.name,
-//       request.body.password,
-//       request.body.about_me,
-//       request.body.profile_image_url,
-//       request.body.created_at,
-//       request.body.updated_at,
-//       request.body.delete_yn,
-//     );
-//   },
-// );
+          if (!isPassword)
+            throw new UnauthorizedException('사용할 수 없는 비밀번호입니다.');
 
-// export const ValidateSendVerificationCode = createParamDecorator(
-//   (_: unknown, ctx: ExecutionContext): SendVerificationCodeDto => {
-//     const request = ctx.switchToHttp().getRequest();
-//     const emailRegex = /\S+@\S+\.\S+/;
-
-//     if (!emailRegex.test(request.body.email)) {
-//       throw new UnauthorizedException('이메일 형식이 올바르지 않습니다.');
-//     }
-
-//     return new SendVerificationCodeDto(request.body.email);
-//   },
-// );
-
-// export const ValidateCheckVerificationCode = createParamDecorator(
-//   (_: unknown, ctx: ExecutionContext): CheckVerificationCodeDto => {
-//     const request = ctx.switchToHttp().getRequest();
-//     const emailRegex = /\S+@\S+\.\S+/;
-//     const verificationCodeRegex = /^\d{6}$/;
-
-//     if (!emailRegex.test(request.body.email)) {
-//       throw new UnauthorizedException('이메일 형식이 올바르지 않습니다.');
-//     }
-
-//     if (!verificationCodeRegex.test(request.body.verificationCode)) {
-//       throw new UnauthorizedException('검증 코드 형식이 올바르지 않습니다.');
-//     }
-
-//     return new CheckVerificationCodeDto(
-//       request.body.email,
-//       request.body.verificationCode,
-//     );
-//   },
-// );
+          return true;
+        },
+      },
+    });
+  };
