@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { ResponseStatus } from '../union/response.union';
+import { ResponseStatus } from '../unions/response.union';
 import { ApiProperty } from '@nestjs/swagger';
 // import { time_now } from '../utils/date.util';
 
