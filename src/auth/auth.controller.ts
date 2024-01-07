@@ -1,45 +1,31 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignInDto } from './dtos/sign-in.dto';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
-import { AuthGuard } from './guard/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  @HttpCode(200)
+  @UseGuards(AuthGuard('local'))
   @Post('/signIn')
   async signIn(
-    @Body() dto: SignInDto,
+    @Req() request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<ResponseDto> {
-    const tokens = await this.authService.signIn(dto);
-
-    response.cookie('access_token', tokens.access_token, {
+    response.cookie('access_token', request.user.access_token, {
       httpOnly: true,
       maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_NUMBER_IN),
     });
-    response.cookie('refresh_token', tokens.refresh_token, {
+    response.cookie('refresh_token', request.user.refresh_token, {
       httpOnly: true,
       maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_NUMBER_IN),
     });
 
-    return ResponseDto.success();
+    return ResponseDto.successWithJSON({ email: request.user.email });
   }
 
-  @UseGuards(AuthGuard)
-  @Get('/profile')
-  async getProfile(@Body() dto: SignInDto): Promise<ResponseDto> {
-    return await this.authService.getProfile(dto);
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/profile')
+  async getProfile(@Req() request): Promise<ResponseDto> {
+    return ResponseDto.success();
   }
 }
