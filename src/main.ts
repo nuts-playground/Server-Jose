@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/exception.filter';
 import * as cookieParser from 'cookie-parser';
+import { prismaOnModuleInit } from './common/utils/prisma.util';
+import { getConfig } from './common/config/global-config.util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,9 +13,10 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use(cookieParser());
   app.enableCors({
-    origin: [process.env.CLIENT_URL],
+    origin: [getConfig('CLIENT_URL')],
     credentials: true,
   });
+  await prismaOnModuleInit();
   await app.listen(process.env.PORT);
 }
 bootstrap();
