@@ -6,15 +6,16 @@ import { UserModule } from 'src/user/user.module';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { getConfig } from 'src/common/config/global-config.util';
 
 @Module({
   imports: [
     UserModule,
+    PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: getConfig<string>('JWT_ACCESS_SECRET'),
       global: false,
     }),
-    PassportModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],

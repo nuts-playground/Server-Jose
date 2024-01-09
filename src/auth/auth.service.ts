@@ -1,43 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { bcrypt_compare } from 'src/common/utils/bcrypt.util';
-import { AccessToken } from './interface/auth.guard.interface';
-import { redisSetExpire } from 'src/common/utils/redis.util';
-import { findByEmail } from 'src/user/utils/user.service.util';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ResponseDto } from 'src/common/dtos/response.dto';
+import { getTokens, verifyToken } from 'src/common/utils/jwt.util';
+import { findById } from 'src/common/utils/prisma.util';
+import { AccessToken } from './interface/local.strategy.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  async getProfile(id: string) {
+    const { email, name, about_me, profile_image_url, created_at, updated_at } =
+      await findById(id);
+    return { email, name, about_me, profile_image_url, created_at, updated_at };
+  }
 
-  async signIn(email: string, password: string): Promise<AccessToken> | null {
-    const user = await findByEmail(email);
+  async refreshToken(refreshToken: string): Promise<AccessToken> {
+    try {
+      const payload = await verifyToken(refreshToken);
 
-    if (user) {
-      const isPassword = await bcrypt_compare(password, user.password);
+      const { access_token, refresh_token } = await getTokens(payload);
 
-      if (isPassword) {
-        const payload = { email: user.email, sub: user.id };
-        const access_token = await this.jwtService.signAsync(payload, {
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-        });
-        const refresh_token = await this.jwtService.signAsync(payload, {
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
-        });
-
-        await redisSetExpire(
-          user.id,
-          refresh_token,
-          Number(process.env.REFRESH_TOKEN_EXPIRES_NUMBER_IN),
-        );
-
-        return {
-          access_token,
-          refresh_token,
-          email,
-        };
-      }
+      return { access_token, refresh_token };
+    } catch (err) {
+      throw new UnauthorizedException('The token is not valid');
     }
-
-    return null;
   }
 }
