@@ -10,7 +10,11 @@ import { bcrypt_hash } from 'src/common/utils/bcrypt.util';
 import { redisDelExpire, redisGetExpire } from 'src/common/utils/redis.util';
 import { verificationCodeToEmail } from 'src/common/utils/verification-code.util';
 import { PasswordStrength } from 'src/common/unions/password-strength.union';
-import { findByEmail, findByName, saveUser } from './utils/user.service.util';
+import {
+  findByEmail,
+  findByName,
+  saveUser,
+} from 'src/common/utils/prisma.util';
 
 @Injectable()
 export class UserService {

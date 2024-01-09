@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use(cookieParser());
   app.enableCors({
-    origin: [getConfig('CLIENT_URL')],
+    origin: [getConfig<string>('CLIENT_URL')],
     credentials: true,
   });
   await prismaOnModuleInit();
