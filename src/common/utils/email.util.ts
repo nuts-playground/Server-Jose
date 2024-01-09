@@ -1,5 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { getConfig } from '../config/global-config.util';
 
 export const sendEmail = async (
   email: string,
@@ -7,16 +8,16 @@ export const sendEmail = async (
   html: string,
 ) => {
   const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
+    service: getConfig<string>('EMAIL_SERVICE'),
     auth: {
-      user: process.env.EMAIL_AUTH_USER,
-      pass: process.env.EMAIL_AUTH_PASSWORD,
+      user: getConfig<string>('EMAIL_AUTH_USER'),
+      pass: getConfig<string>('EMAIL_AUTH_PASSWORD'),
     },
   });
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_AUTH_USER,
+      from: getConfig<string>('EMAIL_AUTH_USER'),
       to: email,
       subject: subject,
       html: html,
