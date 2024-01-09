@@ -1,23 +1,30 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
-import { AuthService } from '../auth.service';
+import { findByEmail } from 'src/common/utils/prisma.util';
+import { AccessToken } from '../interface/local.strategy.interface';
+import { getConfig } from 'src/common/config/global-config.util';
+import { redisSetExpire } from 'src/common/utils/redis.util';
+import { getTokens } from 'src/common/utils/jwt.util';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly authService: AuthService) {
+  constructor() {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string, password: string): Promise<any> {
-    const tokens = await this.authService.signIn(email, password);
+  async validate(email: string): Promise<AccessToken> {
+    const { id } = await findByEmail(email);
+    const payload = { email, sub: id };
 
-    if (!tokens) {
-      throw new UnauthorizedException(
-        '이메일 또는 비밀번호가 일치하지 않습니다.',
-      );
-    }
+    const { access_token, refresh_token } = await getTokens(payload);
 
-    return tokens;
+    await redisSetExpire(
+      id,
+      refresh_token,
+      getConfig<number>('REFRESH_TOKEN_EXPIRES_NUMBER_IN'),
+    );
+
+    return { access_token, refresh_token };
   }
 }
