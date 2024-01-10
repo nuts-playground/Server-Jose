@@ -23,11 +23,14 @@ export const getTokens = async (
   return { access_token, refresh_token };
 };
 
-export const verifyToken = async (
+export const verifyRefreshToken = async (
   token: string,
 ): Promise<JwtUtilPayloadInterface> => {
   try {
-    const payload = await jwtService.verifyAsync(token);
+    const payload = await jwtService.verifyAsync(token, {
+      secret: getConfig('JWT_REFRESH_SECRET'),
+    });
+
     return payload;
   } catch (error) {
     throw new UnauthorizedException('The token is not valid');
