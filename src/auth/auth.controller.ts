@@ -4,10 +4,6 @@ import { Request, Response } from 'express';
 import { JwtGuard } from './guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guard/local.guard';
-import {
-  setCookies,
-  setCookiesForGuard,
-} from 'src/common/utils/set-response.util';
 
 @Controller('auth')
 export class AuthController {
@@ -19,10 +15,7 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    setCookiesForGuard(request, response);
-
-    response.redirect('/');
-    response.end();
+    await this.authService.signIn(request, response);
   }
 
   @UseGuards(JwtGuard)
@@ -34,17 +27,9 @@ export class AuthController {
   }
 
   @Get('/refreshToken')
-  async refreshToken(
-    @Req() request: Request,
-    @Res() response: Response,
-  ): Promise<ResponseDto> {
+  async refreshToken(@Req() request: Request, @Res() response: Response) {
     const refreshToken = request.cookies['refresh_token'];
-    const { access_token, refresh_token } = await this.authService.refreshToken(
-      refreshToken,
-    );
 
-    setCookies(response, access_token, refresh_token);
-
-    return ResponseDto.success();
+    await this.authService.refreshToken(response, refreshToken);
   }
 }
