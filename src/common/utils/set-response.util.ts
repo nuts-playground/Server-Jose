@@ -1,29 +1,39 @@
-import { Request, Response } from 'express';
-import { getConfig } from '../config/global-config.util';
+import { configUtil } from './config.util';
+import {
+  SetCookies,
+  SetCookiesForGuard,
+} from './interfaces/response.util.interface';
 
-export const setCookiesForGuard = (request: Request, response: Response) => {
-  response.cookie('access_token', request.user['access_token'], {
-    httpOnly: true,
-    maxAge: getConfig<number>('ACCESS_TOKEN_EXPIRES_NUMBER_IN'),
-  });
-  response.cookie('refresh_token', request.user['refresh_token'], {
-    httpOnly: true,
-    maxAge: getConfig<number>('REFRESH_TOKEN_EXPIRES_NUMBER_IN'),
-  });
-};
+export const responseUtil = () => {
+  return {
+    setCookiesForGuard: (setInfo: SetCookiesForGuard) => {
+      setInfo.response.cookie(
+        'access_token',
+        setInfo.request.user['access_token'],
+        {
+          httpOnly: true,
+          maxAge: configUtil().get<number>('ACCESS_TOKEN_EXPIRES_NUMBER_IN'),
+        },
+      );
+      setInfo.response.cookie(
+        'refresh_token',
+        setInfo.request.user['refresh_token'],
+        {
+          httpOnly: true,
+          maxAge: configUtil().get<number>('REFRESH_TOKEN_EXPIRES_NUMBER_IN'),
+        },
+      );
+    },
+    setCookies: (setInfo: SetCookies) => {
+      setInfo.response.cookie('access_token', setInfo.access_token, {
+        httpOnly: true,
+        maxAge: configUtil().get<number>('ACCESS_TOKEN_EXPIRES_NUMBER_IN'),
+      });
 
-export const setCookies = (
-  response: Response,
-  access_token: string,
-  refresh_token: string,
-) => {
-  response.cookie('access_token', access_token, {
-    httpOnly: true,
-    maxAge: getConfig<number>('ACCESS_TOKEN_EXPIRES_NUMBER_IN'),
-  });
-
-  response.cookie('refresh_token', refresh_token, {
-    httpOnly: true,
-    maxAge: getConfig<number>('REFRESH_TOKEN_EXPIRES_NUMBER_IN'),
-  });
+      setInfo.response.cookie('refresh_token', setInfo.refresh_token, {
+        httpOnly: true,
+        maxAge: configUtil().get<number>('REFRESH_TOKEN_EXPIRES_NUMBER_IN'),
+      });
+    },
+  };
 };
