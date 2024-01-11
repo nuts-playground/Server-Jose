@@ -52,7 +52,6 @@ export const prismaUtil = () => {
       try {
         const user = await prisma.users.create({
           data: {
-            id: userInfo.id,
             email: userInfo.email,
             nick_name: userInfo.nick_name,
             password: userInfo.password,

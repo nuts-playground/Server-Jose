@@ -4,8 +4,8 @@ import { RedisSetExpire } from './interfaces/redis.util.interface';
 import { InternalServerErrorException } from '@nestjs/common';
 
 const redisInstance = new Redis({
-  host: configUtil().get<string>('REDIS_HOST'),
-  port: configUtil().get<number>('REDIS_PORT'),
+  host: configUtil().getRedis<string>('host'),
+  port: configUtil().getRedis<number>('port'),
 });
 
 export const redisUtil = () => {

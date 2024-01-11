@@ -7,16 +7,16 @@ export const emailUtil = () => {
   return {
     send: async (sendInfo: SendEmail) => {
       const transporter = nodemailer.createTransport({
-        service: configUtil().get<string>('EMAIL_SERVICE'),
+        service: configUtil().getEmail<string>('service'),
         auth: {
-          user: configUtil().get<string>('EMAIL_AUTH_USER'),
-          pass: configUtil().get<string>('EMAIL_AUTH_PASSWORD'),
+          user: configUtil().getEmail<string>('user'),
+          pass: configUtil().getEmail<string>('pass'),
         },
       });
 
       try {
         await transporter.sendMail({
-          from: configUtil().get<string>('EMAIL_AUTH_USER'),
+          from: configUtil().getEmail<string>('user'),
           to: sendInfo.email,
           subject: sendInfo.subject,
           html: sendInfo.contents,

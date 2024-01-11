@@ -8,37 +8,25 @@ const jwtService = new JwtService();
 export const jwtUtil = () => {
   return {
     getAccessToken: async (payload: JwtPayload): Promise<string> => {
-      const access_token = await jwtService.signAsync(payload, {
-        expiresIn: configUtil().get<string>('ACCESS_TOKEN_EXPIRES_IN'),
-        secret: configUtil().get<string>('JWT_ACCESS_SECRET'),
-      });
+      const access_token = await getAccessToken(payload);
 
       return access_token;
     },
     getRefreshToken: async (payload: JwtPayload): Promise<string> => {
-      const refresh_token = await jwtService.signAsync(payload, {
-        expiresIn: configUtil().get<string>('REFRESH_TOKEN_EXPIRES_IN'),
-        secret: configUtil().get<string>('JWT_REFRESH_SECRET'),
-      });
+      const refresh_token = await getRefreshToken(payload);
 
       return refresh_token;
     },
     getTokens: async (payload: JwtPayload): Promise<JwtTokens> => {
-      const access_token = await jwtService.signAsync(payload, {
-        expiresIn: configUtil().get<string>('ACCESS_TOKEN_EXPIRES_IN'),
-        secret: configUtil().get<string>('JWT_ACCESS_SECRET'),
-      });
-      const refresh_token = await jwtService.signAsync(payload, {
-        expiresIn: configUtil().get<string>('REFRESH_TOKEN_EXPIRES_IN'),
-        secret: configUtil().get<string>('JWT_REFRESH_SECRET'),
-      });
+      const access_token = await getAccessToken(payload);
+      const refresh_token = await getRefreshToken(payload);
 
       return { access_token, refresh_token };
     },
     verifyAccessToken: async (token: string): Promise<JwtPayload> => {
       try {
         const payload = await jwtService.verifyAsync(token, {
-          secret: configUtil().get<string>('JWT_ACCESS_SECRET'),
+          secret: configUtil().getJwtSecretKey('access'),
         });
 
         return payload;
@@ -49,7 +37,7 @@ export const jwtUtil = () => {
     verifyRefreshToken: async (token: string): Promise<JwtPayload> => {
       try {
         const payload = await jwtService.verifyAsync(token, {
-          secret: configUtil().get<string>('JWT_REFRESH_SECRET'),
+          secret: configUtil().getJwtSecretKey('refresh'),
         });
 
         return payload;
@@ -58,4 +46,22 @@ export const jwtUtil = () => {
       }
     },
   };
+};
+
+const getAccessToken = async (payload: JwtPayload): Promise<string> => {
+  const access_token = await jwtService.signAsync(payload, {
+    expiresIn: configUtil().getJwtExpiresIn<string>('access-day'),
+    secret: configUtil().getJwtSecretKey('access'),
+  });
+
+  return access_token;
+};
+
+const getRefreshToken = async (payload: JwtPayload): Promise<string> => {
+  const refresh_token = await jwtService.signAsync(payload, {
+    expiresIn: configUtil().getJwtExpiresIn<string>('refresh-day'),
+    secret: configUtil().getJwtSecretKey('refresh'),
+  });
+
+  return refresh_token;
 };

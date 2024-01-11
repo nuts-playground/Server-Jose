@@ -1,22 +1,20 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { ResponseDto } from '../dtos/response.dto';
 import { emailUtil } from './email.util';
 import { SendVerificationCodeToEmail } from './interfaces/send-verification-code.util.interface';
-import { redisUtil } from './redis.util';
 
-export const verificationCode = () => {
+export const verificationCodeUtil = () => {
   return {
     sendToEmail: async (
       sendInfo: SendVerificationCodeToEmail,
     ): Promise<ResponseDto> => {
-      const { email, subject, contents, verificationCode, expireTime } =
-        sendInfo;
+      const { email, subject, contents } = sendInfo;
 
-      await redisUtil().setExpire({
-        key: email,
-        value: verificationCode,
-        time: expireTime,
-      });
-      await emailUtil().send({ email, subject, contents });
+      try {
+        await emailUtil().send({ email, subject, contents });
+      } catch (err) {
+        throw new InternalServerErrorException('이메일 전송에 실패하였습니다.');
+      }
 
       return ResponseDto.success();
     },
