@@ -1,11 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { getConfig } from 'src/common/config/global-config.util';
 import {
   JwtStrategyDto,
   JwtStrategyValueInterface,
 } from '../interface/jwt.strategy.interface';
+import { configUtil } from 'src/common/utils/config.util';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: getConfig<string>('JWT_ACCESS_SECRET'),
+      secretOrKey: configUtil().getJwtSecretKey('access'),
     });
   }
 

@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { JwtGuard } from './guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guard/local.guard';
+import { GoogleGuard } from './guard/social.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -27,9 +28,25 @@ export class AuthController {
   }
 
   @Get('/refreshToken')
-  async refreshToken(@Req() request: Request, @Res() response: Response) {
+  async refreshToken(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const refreshToken = request.cookies['refresh_token'];
 
     await this.authService.refreshToken(response, refreshToken);
+  }
+
+  @UseGuards(GoogleGuard)
+  @Get('/google')
+  googleLogin() {}
+
+  @UseGuards(GoogleGuard)
+  @Get('/google/callback')
+  async googleLoginCallback(
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    // await this.authService.googleLogin(request.user, response);
   }
 }

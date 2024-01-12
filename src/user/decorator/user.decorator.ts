@@ -4,7 +4,7 @@ import {
   registerDecorator,
   ValidationArguments,
 } from 'class-validator';
-import { findByEmail, findByName } from 'src/common/utils/prisma.util';
+import { prismaUtil } from 'src/common/utils/prisma.util';
 
 export const IsEmailAlreadyExist =
   (validationOptions?: ValidationOptions) =>
@@ -25,7 +25,7 @@ export const IsEmailAlreadyExist =
           if (!isEmail)
             throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
 
-          const isAlreadyEmail = await findByEmail(value);
+          const isAlreadyEmail = await prismaUtil().findByEmail(value);
 
           if (isAlreadyEmail) {
             throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
@@ -56,7 +56,7 @@ export const IsNameAlreadyExist =
           if (!isName)
             throw new UnauthorizedException('사용할 수 없는 이름입니다.');
 
-          const isAlreadyName = await findByName(value);
+          const isAlreadyName = await prismaUtil().findByName(value);
 
           if (isAlreadyName) {
             throw new UnauthorizedException('사용할 수 없는 이름입니다.');

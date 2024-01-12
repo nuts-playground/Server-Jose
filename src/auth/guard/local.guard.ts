@@ -4,8 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { bcrypt_compare } from 'src/common/utils/bcrypt.util';
-import { findByEmail } from 'src/common/utils/prisma.util';
+import { bcryptUtil } from 'src/common/utils/bcrypt.util';
+import { prismaUtil } from 'src/common/utils/prisma.util';
 
 @Injectable()
 export class LocalGuard extends AuthGuard('local') {
@@ -13,10 +13,14 @@ export class LocalGuard extends AuthGuard('local') {
     const request = context.switchToHttp().getRequest();
     const email = request.body.email;
     const password = request.body.password;
-    const user = await findByEmail(email);
+    const user = await prismaUtil().findByEmail(email);
 
     if (user) {
-      const isPassword = await bcrypt_compare(password, user.password);
+      const isPassword = await bcryptUtil().compare({
+        password,
+        hash: user.password,
+      });
+
       if (isPassword) {
         return super.canActivate(context) as boolean;
       }

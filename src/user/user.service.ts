@@ -5,21 +5,18 @@ import { CheckEmailDto } from './dtos/check-email.dto';
 import { CheckPasswordDto } from './dtos/check-password.dto';
 import { CheckNameDto } from './dtos/check-name.dto';
 import { SignUpDto } from './dtos/sign-up.dto';
-import { uuid_v4_generate } from 'src/common/utils/uuid.util';
-import { bcrypt_hash } from 'src/common/utils/bcrypt.util';
-import { redisDelExpire, redisGetExpire } from 'src/common/utils/redis.util';
-import { verificationCodeToEmail } from 'src/common/utils/verification-code.util';
 import { PasswordStrength } from 'src/common/unions/password-strength.union';
-import {
-  findByEmail,
-  findByName,
-  saveUser,
-} from 'src/common/utils/prisma.util';
+import { prismaUtil } from 'src/common/utils/prisma.util';
+import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
+import { redisUtil } from 'src/common/utils/redis.util';
+import { bcryptUtil } from 'src/common/utils/bcrypt.util';
+import { uuidUtil } from 'src/common/utils/uuid.util';
 
 @Injectable()
 export class UserService {
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
-    const isAlreadyUser = await findByEmail(dto.getEmail());
+    const email = dto.getEmail();
+    const isAlreadyUser = await prismaUtil().findByEmail(email);
 
     if (isAlreadyUser) {
       throw new UnauthorizedException('가입할 수 없는 이메일입니다.');
@@ -29,7 +26,8 @@ export class UserService {
   }
 
   async checkName(dto: CheckNameDto): Promise<ResponseDto> {
-    const isAlreadyUser = await findByName(dto.getName());
+    const userName = dto.getName();
+    const isAlreadyUser = await prismaUtil().findByName(userName);
 
     if (isAlreadyUser) {
       throw new UnauthorizedException('가입할 수 없는 이름입니다.');
@@ -64,35 +62,44 @@ export class UserService {
   async sendVerificationCode(
     dto: SendVerificationCodeDto,
   ): Promise<ResponseDto> {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = uuidUtil().randomNumericString();
     const email = dto.getEmail();
-    const subject = '[APP] 인증번호 안내';
-    const contents = `인증번호는 ${code} 입니다.`;
+    const emailInfo = {
+      email,
+      subject: '[APP] 인증번호 안내',
+      contents: `인증번호는 ${code} 입니다.`,
+    };
+    const redisInfo = {
+      key: email,
+      value: code,
+      time: 60 * 5,
+    };
 
-    await verificationCodeToEmail(email, subject, contents, code, 60 * 5);
+    await verificationCodeUtil().sendToEmail(emailInfo);
+    await redisUtil().setExpire(redisInfo);
 
     return ResponseDto.success();
   }
 
   async signUp(dto: SignUpDto): Promise<ResponseDto> {
     const email = dto.getEmail();
-    const verificationCode = await redisGetExpire(email);
+    const verificationCode = await redisUtil().getExpire(email);
 
     if (dto.getVerificationCode() !== verificationCode) {
       throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     }
 
-    const password = await bcrypt_hash(dto.getPassword());
-    const id = uuid_v4_generate();
-    const name = dto.getName();
-
-    await redisDelExpire(email);
-    await saveUser({
-      id,
+    const nick_name = dto.getName();
+    const userPassword = dto.getPassword();
+    const password = await bcryptUtil().hash(userPassword);
+    const userInfo = {
       email,
-      name,
+      nick_name,
       password,
-    });
+    };
+
+    await redisUtil().delExpire(email);
+    await prismaUtil().saveUser(userInfo);
 
     return ResponseDto.success();
   }
