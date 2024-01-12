@@ -1,4 +1,5 @@
 export interface PrismaUser {
+  id?: number;
   email: string;
   nick_name: string;
   password?: string;

@@ -37,5 +37,12 @@ export const configUtil = () => {
         pass: configService.get<T>('EMAIL_AUTH_PASSWORD'),
       }[type];
     },
+    getGoogle: <T>(type: string): T => {
+      return {
+        id: configService.get<T>('GOOGLE_CLIENT_ID'),
+        secret: configService.get<T>('GOOGLE_CLIENT_SECRET'),
+        callback_url: configService.get<T>('GOOGLE_CALLBACK_URL'),
+      }[type];
+    },
   };
 };

@@ -11,7 +11,7 @@ export const prismaUtil = () => {
     },
     findById: async (id: number): Promise<PrismaUser> => {
       try {
-        const user = await prisma.users.findUniqueOrThrow({
+        const user = await prisma.users.findUnique({
           where: {
             id,
           },
@@ -24,7 +24,7 @@ export const prismaUtil = () => {
     },
     findByEmail: async (email: string): Promise<PrismaUser> => {
       try {
-        const user = await prisma.users.findUniqueOrThrow({
+        const user = await prisma.users.findUnique({
           where: {
             email,
           },
@@ -37,7 +37,7 @@ export const prismaUtil = () => {
     },
     findByName: async (nick_name: string): Promise<PrismaUser> => {
       try {
-        const user = await prisma.users.findFirstOrThrow({
+        const user = await prisma.users.findUnique({
           where: {
             nick_name,
           },
