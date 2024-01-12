@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
-describe('AppController (e2e)', () => {
+describe('httptest', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -16,6 +16,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
+    // expect(testUtil.getPort()).toEqual('3000');
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
