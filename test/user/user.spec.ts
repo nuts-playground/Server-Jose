@@ -1,22 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AllExceptionsFilter } from 'src/common/filters/exception.filter';
+import { Test } from '@nestjs/testing';
 import * as cookieParser from 'cookie-parser';
+import { AllExceptionsFilter } from 'src/common/filters/exception.filter';
 import { configUtil } from 'src/common/utils/config.util';
 import { prismaUtil } from 'src/common/utils/prisma.util';
+import { UserModule } from 'src/user/user.module';
+import * as request from 'supertest';
 
-describe('AppController (e2e)', () => {
+describe('User', () => {
   let app;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    const module = await Test.createTestingModule({
+      imports: [UserModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = module.createNestApplication();
     app.useGlobalInterceptors(
       new ClassSerializerInterceptor(app.get(Reflector)),
     );
@@ -38,9 +38,5 @@ describe('AppController (e2e)', () => {
         .send({ email: 'hello@test.com' })
         .expect(201);
     });
-  });
-
-  afterEach(async () => {
-    await app.close();
   });
 });
