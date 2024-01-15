@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { Request, Response } from 'express';
 import { JwtGuard } from './guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guard/local.guard';
-import { GoogleGuard } from './guard/social.guard';
+import { GithubGuard, GoogleGuard } from './guard/social.guard';
+import { JwtStrategyDto } from './interface/jwt.strategy.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -47,6 +56,24 @@ export class AuthController {
     @Req() request: Request,
     @Res() response: Response,
   ) {
-    // await this.authService.googleLogin(request.user, response);
+    return await this.authService.googleLogin(request, response);
   }
+
+  @UseGuards(GithubGuard)
+  @Get('/github')
+  async githubLogin() {}
+
+  @UseGuards(GithubGuard)
+  @Get('/github/callback')
+  async githubLoginCallback(
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    await this.authService.githubLogin(request, response);
+  }
+
+  // @Post('/oauth/setTokens')
+  // async setToken(@Body() payload: JwtStrategyDto, @Res() response: Response) {
+  //   await this.authService.setToken(payload, response);
+  // }
 }

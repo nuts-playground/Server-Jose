@@ -9,6 +9,9 @@ export const prismaUtil = () => {
     onModuleInit: async () => {
       await prisma.$connect();
     },
+    onModuleDestroy: async () => {
+      await prisma.$disconnect();
+    },
     findById: async (id: number): Promise<PrismaUser> => {
       try {
         const user = await prisma.users.findUnique({
@@ -50,6 +53,8 @@ export const prismaUtil = () => {
     },
     saveUser: async (userInfo: PrismaUser): Promise<PrismaUser> => {
       try {
+        console.log(userInfo);
+
         const user = await prisma.users.create({
           data: {
             email: userInfo.email,
@@ -63,10 +68,11 @@ export const prismaUtil = () => {
             delete_yn: userInfo.delete_yn,
           },
         });
+        console.log(user);
 
         return user;
       } catch (err) {
-        throw new InternalServerErrorException();
+        console.log(err);
       }
     },
   };

@@ -31,7 +31,7 @@ const setCookies = (setInfo: SetCookies) => {
     httpOnly: true,
     maxAge: configUtil().getJwtExpiresIn<number>('access-time'),
   });
-  setInfo.response.cookie('access_token', setInfo.refresh_token, {
+  setInfo.response.cookie('refresh_token', setInfo.refresh_token, {
     httpOnly: true,
     maxAge: configUtil().getJwtExpiresIn<number>('refresh-time'),
   });

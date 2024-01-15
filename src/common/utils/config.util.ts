@@ -7,6 +7,9 @@ export const configUtil = () => {
     get: <T>(configName: string): T => {
       return configService.get<T>(configName);
     },
+    getClient: (): string => {
+      return configService.get<string>('CLIENT_URL');
+    },
     getPort: (): string => {
       return configService.get<string>('PORT');
     },
@@ -42,6 +45,13 @@ export const configUtil = () => {
         id: configService.get<T>('GOOGLE_CLIENT_ID'),
         secret: configService.get<T>('GOOGLE_CLIENT_SECRET'),
         callback_url: configService.get<T>('GOOGLE_CALLBACK_URL'),
+      }[type];
+    },
+    getGithub: <T>(type: string): T => {
+      return {
+        id: configService.get<T>('GITHUB_CLIENT_ID'),
+        secret: configService.get<T>('GITHUB_CLIENT_SECRET'),
+        callback_url: configService.get<T>('GITHUB_CALLBACK_URL'),
       }[type];
     },
   };
