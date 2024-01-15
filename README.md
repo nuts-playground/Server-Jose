@@ -19,8 +19,11 @@
 > ~~ResponseDto~~
 
 ### Service
-> Social Login  
-> Join - Redis for Email Authentication  
+
+> Specify the social login type
+> Naver Login  
+> Apple Login  
+> Join - Redis for email authentication  
 > Login  
 > Board Create  
 > Board Delete  
