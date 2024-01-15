@@ -17,19 +17,22 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     accessToken: string,
     refreshToken: string,
     profile: any,
+    done: (error: any, user?: any, info?: any) => void,
   ): Promise<any> {
-    const { id, emails, username, displayName, photos, provider } = profile;
-    const user = {
-      id,
-      email: emails[0].value,
-      username,
-      name: displayName,
-      picture: photos[0].value,
-      provider,
-      accessToken,
-      refreshToken,
-    };
-
-    return user;
+    try {
+      const { id, emails, displayName, photos, provider } = profile;
+      const user = {
+        id,
+        email: emails[0].value,
+        name: displayName ? displayName : '',
+        picture: photos[0].value,
+        provider,
+        accessToken,
+        refreshToken,
+      };
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
   }
 }

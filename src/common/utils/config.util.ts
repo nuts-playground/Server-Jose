@@ -54,5 +54,12 @@ export const configUtil = () => {
         callback_url: configService.get<T>('GITHUB_CALLBACK_URL'),
       }[type];
     },
+    getKakao: <T>(type: string): T => {
+      return {
+        id: configService.get<T>('KAKAO_CLIENT_ID'),
+        secret: configService.get<T>('KAKAO_CLIENT_SECRET'),
+        callback_url: configService.get<T>('KAKAO_CALLBACK_URL'),
+      }[type];
+    },
   };
 };

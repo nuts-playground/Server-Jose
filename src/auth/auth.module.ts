@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { configUtil } from 'src/common/utils/config.util';
 import { GithubStrategy } from './strategies/github.strategy';
+import { KakaoStrategy } from './strategies/kakao.strategy';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GithubStrategy } from './strategies/github.strategy';
     JwtStrategy,
     GoogleStrategy,
     GithubStrategy,
+    KakaoStrategy,
   ],
   controllers: [AuthController],
 })

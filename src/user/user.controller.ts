@@ -24,8 +24,6 @@ export class UserController {
   @Post('/checkPassword')
   checkPassword(@Body() dto: CheckPasswordDto): ResponseDto {
     const passwordStrength = this.userService.checkPassword(dto);
-    console.log(passwordStrength);
-
     return ResponseDto.successWithJSON({ passwordStrength });
   }
 

@@ -12,8 +12,7 @@ import { Request, Response } from 'express';
 import { JwtGuard } from './guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guard/local.guard';
-import { GithubGuard, GoogleGuard } from './guard/social.guard';
-import { JwtStrategyDto } from './interface/jwt.strategy.interface';
+import { GithubGuard, GoogleGuard, KakaoGuard } from './guard/social.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -61,7 +60,7 @@ export class AuthController {
 
   @UseGuards(GithubGuard)
   @Get('/github')
-  async githubLogin() {}
+  githubLogin() {}
 
   @UseGuards(GithubGuard)
   @Get('/github/callback')
@@ -72,8 +71,13 @@ export class AuthController {
     await this.authService.githubLogin(request, response);
   }
 
-  // @Post('/oauth/setTokens')
-  // async setToken(@Body() payload: JwtStrategyDto, @Res() response: Response) {
-  //   await this.authService.setToken(payload, response);
-  // }
+  @UseGuards(KakaoGuard)
+  @Get('/kakao')
+  kakaoLogin() {}
+
+  @UseGuards(KakaoGuard)
+  @Get('/kakao/callback')
+  async kakaoLoginCallback(@Req() request: Request, @Res() response: Response) {
+    await this.authService.kakaoLogin(request, response);
+  }
 }

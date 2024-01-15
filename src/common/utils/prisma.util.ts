@@ -53,8 +53,6 @@ export const prismaUtil = () => {
     },
     saveUser: async (userInfo: PrismaUser): Promise<PrismaUser> => {
       try {
-        console.log(userInfo);
-
         const user = await prisma.users.create({
           data: {
             email: userInfo.email,
@@ -68,11 +66,12 @@ export const prismaUtil = () => {
             delete_yn: userInfo.delete_yn,
           },
         });
-        console.log(user);
 
         return user;
       } catch (err) {
         console.log(err);
+
+        throw new InternalServerErrorException();
       }
     },
   };
