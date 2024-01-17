@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { Request, Response } from 'express';
 import { JwtGuard } from './guard/jwt.guard';

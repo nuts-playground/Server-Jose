@@ -1,7 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { configUtil } from 'src/common/utils/config.util';
-import { PrismaUser } from 'src/common/utils/interfaces/prisma.util.interface';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { prismaUtil } from 'src/common/utils/prisma.util';
 import { responseUtil } from 'src/common/utils/response.util';
