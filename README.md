@@ -8,7 +8,7 @@
 > ~~CI/CD: Docker Compose~~  
 > ~~CI/CD: Dockerfile~~  
 > ~~Prisma for MySQL~~  
-> ~~Connect Redis~~
+> ~~Connect Redis~~  
 
 <br/>
 
@@ -20,7 +20,10 @@
 
 ### Service
 
-> Specify the social login type
+> Specify the social login type  
+> ~~Github Login~~  
+> ~~Google Login~~  
+> ~~Kakao Login~~  
 > Naver Login  
 > Apple Login  
 > Join - Redis for email authentication  
@@ -29,13 +32,18 @@
 > Board Delete  
 > Board Update  
 > Board Read  
-> Nhsi Scraping  
-> HTX Scraping  
-> Korail Scraping
+
+### Scraping
+
+> Nhsi  
+> HTX  
+> Korail  
+> Streaming platforms  
+
 
 <br/>
 
 ### ETC
 
 > File System
-> Check Scraping Module
+> Check Scraping Module  
