@@ -5,23 +5,14 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ${SERVER_NAME}
+    env_file:
+      - ${SERVER_ENV}
     restart: always
     ports:
       - ${SERVER_PORT}
     depends_on:
       - mysql
       - redis
-    environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      DATABASE_URL: ${DATABASE_URL}
-      TZ: Asia/Seoul
     volumes:
       - ${SERVER_VOLUME_ROOT}
     extra_hosts:
@@ -34,17 +25,8 @@ services:
     image: mysql:latest
     container_name: ${MYSQL_NAME}
     restart: always
-    # healthcheck:
-    #   test: mysqladmin ping -h localhost -uroot -ppass
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 20
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      TZ: Asia/Seoul
+    env_file:
+      - ${MYSQL_ENV}
     ports:
       - ${MYSQL_PORT}
     volumes:
@@ -62,13 +44,8 @@ services:
     image: redis:latest
     container_name: ${REDIS_NAME}
     restart: always
-    # healthcheck:
-    #   test: redis-cli ping
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 20
-    environment:
-      TZ: Asia/Seoul
+    env_file:
+      - ${REDIS_ENV}
     ports:
       - ${REDIS_PORT}
     volumes:
