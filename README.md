@@ -8,7 +8,7 @@
 > ~~CI/CD: Docker Compose~~  
 > ~~CI/CD: Dockerfile~~  
 > ~~Prisma for MySQL~~  
-> ~~Connect Redis~~  
+> ~~Connect Redis~~
 
 <br/>
 
@@ -31,19 +31,18 @@
 > Board Create  
 > Board Delete  
 > Board Update  
-> Board Read  
+> Board Read
 
 ### Scraping
 
 > Nhsi  
 > HTX  
 > Korail  
-> Streaming platforms  
-
+> Streaming platforms
 
 <br/>
 
 ### ETC
 
 > File System
-> Check Scraping Module  
+> Check Scraping Module
