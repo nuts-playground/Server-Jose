@@ -4,7 +4,12 @@ import { Request, Response } from 'express';
 import { JwtGuard } from './guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guard/local.guard';
-import { GithubGuard, GoogleGuard, KakaoGuard } from './guard/social.guard';
+import {
+  GithubGuard,
+  GoogleGuard,
+  KakaoGuard,
+  NaverGuard,
+} from './guard/social.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -71,5 +76,15 @@ export class AuthController {
   @Get('/kakao/callback')
   async kakaoLoginCallback(@Req() request: Request, @Res() response: Response) {
     await this.authService.kakaoLogin(request, response);
+  }
+
+  @UseGuards(NaverGuard)
+  @Get('/naver')
+  naverLogin() {}
+
+  @UseGuards(NaverGuard)
+  @Get('/naver/callback')
+  async naverLoginCallback(@Req() request: Request, @Res() response: Response) {
+    await this.authService.naverLogin(request, response);
   }
 }

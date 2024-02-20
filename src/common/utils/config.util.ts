@@ -61,5 +61,12 @@ export const configUtil = () => {
         callback_url: configService.get<T>('KAKAO_CALLBACK_URL'),
       }[type];
     },
+    getNaver: <T>(type: string): T => {
+      return {
+        id: configService.get<T>('NAVER_CLIENT_ID'),
+        secret: configService.get<T>('NAVER_CLIENT_SECRET'),
+        callback_url: configService.get<T>('NAVER_CALLBACK_URL'),
+      }[type];
+    },
   };
 };

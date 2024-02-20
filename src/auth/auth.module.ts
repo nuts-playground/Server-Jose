@@ -10,6 +10,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { configUtil } from 'src/common/utils/config.util';
 import { GithubStrategy } from './strategies/github.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
+import { NaverStrategy } from './strategies/naver.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { KakaoStrategy } from './strategies/kakao.strategy';
     GoogleStrategy,
     GithubStrategy,
     KakaoStrategy,
+    NaverStrategy,
   ],
   controllers: [AuthController],
 })

@@ -69,4 +69,8 @@ export class AuthService {
   async kakaoLogin(request: Request, response: Response) {
     await socialLoginUtil(request, response);
   }
+
+  async naverLogin(request: Request, response: Response) {
+    await socialLoginUtil(request, response);
+  }
 }

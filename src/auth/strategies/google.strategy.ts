@@ -21,12 +21,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: (error: any, user?: any, info?: any) => void,
   ): Promise<any> {
     try {
-      const { id, name, emails, photos, provider } = profile;
+      const { name, emails, photos, provider } = profile;
       const userName = `${name.familyName ? name.familyName : ''}${
         name.givenName ? name.givenName : ''
       }`;
       const user = {
-        id,
         email: emails[0].value,
         name: userName.trim(),
         picture: photos[0].value,

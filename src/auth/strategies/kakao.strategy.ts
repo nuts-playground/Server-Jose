@@ -18,10 +18,10 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     done: (error: any, user?: any, info?: any) => void,
   ) {
     try {
-      const { id, displayName, provider } = profile;
+      console.log(profile);
+      const { displayName, provider } = profile;
       const json = profile._json;
       const user = {
-        id,
         email: json.kakao_account.email,
         name: displayName,
         picture: json.properties.profile_image,
@@ -29,7 +29,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
         accessToken,
         refreshToken,
       };
-      console.log(done);
 
       done(null, user);
     } catch (err) {

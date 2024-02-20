@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-naver-v2';
 import { configUtil } from 'src/common/utils/config.util';
-import { Strategy } from 'passport-github2';
+
 @Injectable()
-export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
+export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor() {
     super({
-      clientID: configUtil().getGithub<string>('id'),
-      clientSecret: configUtil().getGithub<string>('secret'),
-      callbackURL: configUtil().getGithub<string>('callback_url'),
-      scope: ['user:email'],
+      clientID: configUtil().getNaver<string>('id'),
+      clientSecret: configUtil().getNaver<string>('secret'),
+      callbackURL: configUtil().getNaver<string>('callback_url'),
     });
   }
 
@@ -18,17 +18,19 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     refreshToken: string,
     profile: any,
     done: (error: any, user?: any, info?: any) => void,
-  ): Promise<any> {
+  ) {
     try {
-      const { emails, displayName, photos, provider } = profile;
+      const userInfo = profile._json.response;
+      const provider = profile.provider;
       const user = {
-        email: emails[0].value,
-        name: displayName ? displayName : '',
-        picture: photos[0].value,
+        email: userInfo.email,
+        name: userInfo.nickname,
+        picture: userInfo.profile_image,
         provider,
         accessToken,
         refreshToken,
       };
+
       done(null, user);
     } catch (err) {
       done(err);

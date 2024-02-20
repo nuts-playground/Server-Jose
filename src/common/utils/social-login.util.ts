@@ -7,25 +7,14 @@ import { configUtil } from './config.util';
 import { jwtUtil } from './jwt.util';
 
 export const socialLoginUtil = async (request: Request, response: Response) => {
-  let name = request.user['name'].slice(0, 20);
-  let isAlreadyEmail = await prismaUtil().findByEmail(request.user['email']);
+  const provider = request.user['provider'];
+  const sliceName = request.user['name'].slice(0, 14);
+  const userEmail = request.user['email'];
+  const profileImageUrl = request.user['picture'];
+  let isAlreadyEmail = await prismaUtil().findByEmail(userEmail);
 
-  const isAreadyName = await prismaUtil().findByName(name);
-
-  if (isAreadyName) {
-    // add loop
-    name = `${name}${Math.floor(Math.random() * 100000) + 1}`;
-  }
-
-  const userInfo: PrismaUser = {
-    email: request.user['email'],
-    nick_name: name.slice(0, 20),
-    provider: request.user['provider'],
-    profile_image_url: request.user['picture'],
-  };
-
-  if (isAlreadyEmail && isAlreadyEmail.provider !== userInfo.provider) {
-    // add redirect url
+  if (isAlreadyEmail && isAlreadyEmail.provider !== provider) {
+    // 다른 소셜 로그인으로 가입한 이메일이 이미 존재할 경우 리다이렉트 url 추가해야함
     response.redirect(`${configUtil().getClient()}`);
 
     response.end();
@@ -34,6 +23,15 @@ export const socialLoginUtil = async (request: Request, response: Response) => {
   }
 
   if (!isAlreadyEmail) {
+    const isAreadyName = await createRandomName(sliceName);
+
+    const userInfo: PrismaUser = {
+      email: userEmail,
+      nick_name: isAreadyName,
+      provider: provider,
+      profile_image_url: profileImageUrl,
+    };
+
     isAlreadyEmail = await prismaUtil().saveUser(userInfo);
   }
 
@@ -49,4 +47,16 @@ export const socialLoginUtil = async (request: Request, response: Response) => {
   response.redirect(`${configUtil().getClient()}`);
 
   response.end();
+};
+
+const createRandomName = async (name: string): Promise<string> => {
+  const isAlreadyName = await prismaUtil().findByName(name);
+
+  if (!isAlreadyName) {
+    return name;
+  }
+
+  const randomName = `${name}${Math.floor(Math.random() * 100000) + 1}`;
+
+  return createRandomName(randomName);
 };
