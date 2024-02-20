@@ -1,10 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaUser } from './interfaces/prisma.util.interface';
-// import { InternalServerErrorException } from '@nestjs/common';
+import { PrismaUser, PrismaUtil } from './interfaces/prisma.util.interface';
 
 export const prisma = new PrismaClient();
 
-export const prismaUtil = () => {
+export const prismaUtil = (): PrismaUtil => {
   return {
     onModuleInit: async () => {
       await prisma.$connect();

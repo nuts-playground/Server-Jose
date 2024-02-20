@@ -1,3 +1,12 @@
+export interface PrismaUtil {
+  onModuleInit: () => Promise<void>;
+  onModuleDestroy: () => Promise<void>;
+  findById: (id: number) => Promise<PrismaUser>;
+  findByEmail: (email: string) => Promise<PrismaUser>;
+  findByName: (nick_name: string) => Promise<PrismaUser>;
+  saveUser: (userInfo: PrismaUser) => Promise<PrismaUser>;
+}
+
 export interface PrismaUser {
   id?: number;
   email: string;
