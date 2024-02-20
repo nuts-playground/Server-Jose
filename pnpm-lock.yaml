@@ -68,6 +68,9 @@ dependencies:
   passport-local:
     specifier: ^1.0.0
     version: 1.0.0
+  passport-naver-v2:
+    specifier: ^2.0.8
+    version: 2.0.8
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.14
@@ -4609,6 +4612,12 @@ packages:
     engines: {node: '>= 0.4.0'}
     dependencies:
       passport-strategy: 1.0.0
+    dev: false
+
+  /passport-naver-v2@2.0.8:
+    resolution: {integrity: sha512-CA0u+aA4K4Zf5e3dSd47agOS69ULOdBGei7CZY2BN1cEbLnhnc6OalFPvnXLuEKT8I4IuGwvh3EBZCST2FoI+A==}
+    dependencies:
+      passport-oauth2: 1.7.0
     dev: false
 
   /passport-oauth2@1.1.2:
