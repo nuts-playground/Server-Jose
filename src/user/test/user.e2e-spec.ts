@@ -35,7 +35,7 @@ describe('User', () => {
     it('should return 200', () => {
       return request(app.getHttpServer())
         .post('/user/isAlreadyEmail')
-        .send({ email: 'hello@test.com' })
+        .send({ email: 'hellotest.com' })
         .expect(201);
     });
   });
