@@ -87,9 +87,9 @@
       "ts"
     ],
     "roots": [
-      "test"
+      "src"
     ],
-    "testRegex": ".spec.ts",
+    "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
