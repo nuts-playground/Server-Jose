@@ -25,12 +25,6 @@ export const IsEmailAlreadyExist =
           if (!isEmail)
             throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
 
-          const isAlreadyEmail = await prismaUtil().findByEmail(value);
-
-          if (isAlreadyEmail) {
-            throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
-          }
-
           return true;
         },
       },
@@ -55,12 +49,6 @@ export const IsNameAlreadyExist =
 
           if (!isName)
             throw new UnauthorizedException('사용할 수 없는 이름입니다.');
-
-          const isAlreadyName = await prismaUtil().findByName(value);
-
-          if (isAlreadyName) {
-            throw new UnauthorizedException('사용할 수 없는 이름입니다.');
-          }
 
           return true;
         },
