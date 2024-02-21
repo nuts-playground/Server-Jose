@@ -1,48 +1,8 @@
-# Blog & Gov Api
+# NestJS로 만드는 블로그
 
 ## TODO
 
-### DevOps
-
-> ~~CI/CD: Jenkins~~  
-> ~~CI/CD: Docker Compose~~  
-> ~~CI/CD: Dockerfile~~  
-> ~~Prisma for MySQL~~  
-> ~~Connect Redis~~
-
-<br/>
-
-### Common
-
-> TransformInterceptor  
-> ~~ExceptionFilter~~  
-> ~~ResponseDto~~
-
-### Service
-
-> Specify the social login type  
-> ~~Github Login~~  
-> ~~Google Login~~  
-> ~~Kakao Login~~  
-> Naver Login  
-> Apple Login  
-> Join - Redis for email authentication  
-> Login  
-> Board Create  
-> Board Delete  
-> Board Update  
-> Board Read
-
-### Scraping
-
-> Nhsi  
-> HTX  
-> Korail  
-> Streaming platforms
-
-<br/>
-
-### ETC
-
-> File System
-> Check Scraping Module
+- UnitTest
+- e2eTest
+- 게시판 기능
+- 파일 서버
