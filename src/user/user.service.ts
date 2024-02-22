@@ -75,8 +75,8 @@ export class UserService {
       time: 60 * 5,
     };
 
-    await verificationCodeUtil().sendToEmail(emailInfo);
     await redisUtil().setExpire(redisInfo);
+    await verificationCodeUtil().sendToEmail(emailInfo);
 
     return ResponseDto.success();
   }
