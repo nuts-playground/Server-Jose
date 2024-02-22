@@ -1,4 +1,8 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import * as cookieParser from 'cookie-parser';
@@ -9,7 +13,7 @@ import { UserModule } from 'src/user/user.module';
 import * as request from 'supertest';
 
 describe('User', () => {
-  let app;
+  let app: INestApplication;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
