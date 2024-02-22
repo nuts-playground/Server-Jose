@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaUser, PrismaUtil } from './interfaces/prisma.util.interface';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export const prisma = new PrismaClient();
 
@@ -23,7 +24,7 @@ export const prismaUtil = (): PrismaUtil => {
       } catch (err) {
         console.log(err);
 
-        throw new Error(err);
+        throw new InternalServerErrorException();
       }
     },
     findByEmail: async (email: string): Promise<PrismaUser> => {
@@ -38,7 +39,7 @@ export const prismaUtil = (): PrismaUtil => {
       } catch (err) {
         console.log(err);
 
-        throw new Error(err);
+        throw new InternalServerErrorException();
       }
     },
     findByName: async (nick_name: string): Promise<PrismaUser> => {
@@ -53,7 +54,7 @@ export const prismaUtil = (): PrismaUtil => {
       } catch (err) {
         console.log(err);
 
-        throw new Error(err);
+        throw new InternalServerErrorException();
       }
     },
     saveUser: async (userInfo: PrismaUser): Promise<PrismaUser> => {
@@ -76,7 +77,7 @@ export const prismaUtil = (): PrismaUtil => {
       } catch (err) {
         console.log(err);
 
-        throw new Error(err);
+        throw new InternalServerErrorException();
       }
     },
   };

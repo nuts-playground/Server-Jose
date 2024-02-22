@@ -22,7 +22,7 @@ export const emailUtil = () => {
           html: sendInfo.contents,
         });
       } catch (err) {
-        throw new InternalServerErrorException('이메일 전송에 실패했습니다.');
+        throw new InternalServerErrorException('이메일 전송에 실패하였습니다.');
       }
     },
   };

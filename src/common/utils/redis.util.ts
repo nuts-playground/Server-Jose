@@ -3,7 +3,7 @@ import { configUtil } from './config.util';
 import { RedisSetExpire } from './interfaces/redis.util.interface';
 import { InternalServerErrorException } from '@nestjs/common';
 
-const redisInstance = new Redis({
+export const redis = new Redis({
   host: configUtil().getRedis<string>('host'),
   port: configUtil().getRedis<number>('port'),
 });
@@ -13,21 +13,21 @@ export const redisUtil = () => {
     setExpire: async (redisInfo: RedisSetExpire) => {
       try {
         const { key, value, time } = redisInfo;
-        await redisInstance.set(key, value, 'EX', time);
+        await redis.set(key, value, 'EX', time);
       } catch (err) {
         throw new InternalServerErrorException();
       }
     },
     getExpire: async (key: string): Promise<string> => {
       try {
-        return await redisInstance.get(key);
+        return await redis.get(key);
       } catch (err) {
         throw new InternalServerErrorException();
       }
     },
     delExpire: async (key: string) => {
       try {
-        await redisInstance.del(key);
+        await redis.del(key);
       } catch (err) {
         throw new InternalServerErrorException();
       }
