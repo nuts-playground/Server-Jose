@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AccessToken } from '../interface/local.strategy.interface';
-import { prismaUtil } from 'src/common/utils/prisma.util';
+import { userPrismaUtil } from 'src/user/utils/prisma.util';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string): Promise<AccessToken> {
-    const { id } = await prismaUtil().findByEmail(email);
+    const { id } = await userPrismaUtil().findByEmail(email);
     const payload = { email, sub: id.toString() };
     const { access_token, refresh_token } = await jwtUtil().getTokens(payload);
 

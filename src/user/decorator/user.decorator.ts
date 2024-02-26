@@ -4,7 +4,6 @@ import {
   registerDecorator,
   ValidationArguments,
 } from 'class-validator';
-import { prismaUtil } from 'src/common/utils/prisma.util';
 
 export const IsEmailAlreadyExist =
   (validationOptions?: ValidationOptions) =>

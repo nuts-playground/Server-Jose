@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { jwtUtil } from 'src/common/utils/jwt.util';
-import { prismaUtil } from 'src/common/utils/prisma.util';
 import { responseUtil } from 'src/common/utils/response.util';
 import { JwtStrategyDto } from './interface/jwt.strategy.interface';
-import { socialLoginUtil } from 'src/common/utils/social-login.util';
+import { socialLoginUtil } from './util/social-login.util';
+import { userPrismaUtil } from 'src/user/utils/prisma.util';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,7 @@ export class AuthService {
       profile_image_url,
       created_at,
       updated_at,
-    } = await prismaUtil().findById(id);
+    } = await userPrismaUtil().findById(id);
 
     return {
       email,

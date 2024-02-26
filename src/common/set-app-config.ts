@@ -7,7 +7,7 @@ import { Reflector } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { configUtil } from './utils/config.util';
-import { prismaUtil } from './utils/prisma.util';
+import { commonPrismaUtil } from './utils/prisma.util';
 
 export const setAppConfig = async <T extends INestApplication>(
   app: T,
@@ -20,6 +20,6 @@ export const setAppConfig = async <T extends INestApplication>(
     origin: [configUtil().getClient()],
     credentials: true,
   });
-  await prismaUtil().onModuleInit();
+  await commonPrismaUtil().onModuleInit();
   await app.listen(configUtil().getPort());
 };

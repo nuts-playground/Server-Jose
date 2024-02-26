@@ -6,7 +6,7 @@ import { CheckPasswordDto } from './dtos/check-password.dto';
 import { CheckNameDto } from './dtos/check-name.dto';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { PasswordStrength } from 'src/common/unions/password-strength.union';
-import { prismaUtil } from 'src/common/utils/prisma.util';
+import { userPrismaUtil } from 'src/user/utils/prisma.util';
 import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
 import { redisUtil } from 'src/common/utils/redis.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
@@ -16,7 +16,7 @@ import { uuidUtil } from 'src/common/utils/uuid.util';
 export class UserService {
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
     const email = dto.getEmail();
-    const isAlreadyUser = await prismaUtil().findByEmail(email);
+    const isAlreadyUser = await userPrismaUtil().findByEmail(email);
 
     if (isAlreadyUser) {
       throw new UnauthorizedException('가입할 수 없는 이메일입니다.');
@@ -27,7 +27,7 @@ export class UserService {
 
   async checkName(dto: CheckNameDto): Promise<ResponseDto> {
     const userName = dto.getName();
-    const isAlreadyUser = await prismaUtil().findByName(userName);
+    const isAlreadyUser = await userPrismaUtil().findByName(userName);
 
     if (isAlreadyUser) {
       throw new UnauthorizedException('가입할 수 없는 이름입니다.');
@@ -99,7 +99,7 @@ export class UserService {
     };
 
     await redisUtil().delExpire(email);
-    await prismaUtil().saveUser(userInfo);
+    await userPrismaUtil().saveUser(userInfo);
 
     return ResponseDto.success();
   }
