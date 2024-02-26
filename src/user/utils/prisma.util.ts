@@ -73,5 +73,23 @@ export const userPrismaUtil = (): UserPrismaUtil => {
         throw new InternalServerErrorException();
       }
     },
+    deleteUser: async (id: number): Promise<UserPrisma> => {
+      try {
+        const user = await prisma.users.update({
+          where: {
+            id,
+          },
+          data: {
+            delete_yn: 'Y',
+          },
+        });
+
+        return user;
+      } catch (err) {
+        console.log(err);
+
+        throw new InternalServerErrorException();
+      }
+    },
   };
 };

@@ -3,6 +3,7 @@ export interface UserPrismaUtil {
   findByEmail: (email: string) => Promise<UserPrisma>;
   findByName: (nick_name: string) => Promise<UserPrisma>;
   saveUser: (userInfo: UserPrisma) => Promise<UserPrisma>;
+  deleteUser: (id: number) => Promise<UserPrisma>;
 }
 
 export interface UserPrisma {
