@@ -5,15 +5,19 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
-import { userPrismaUtil } from 'src/user/utils/prisma.util';
+import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
 export class LocalGuard extends AuthGuard('local') {
+  constructor(private readonly userRepository: UserRepository) {
+    super();
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const email = request.body.email;
     const password = request.body.password;
-    const user = await userPrismaUtil().findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
 
     if (user) {
       const isPassword = await bcryptUtil().compare({

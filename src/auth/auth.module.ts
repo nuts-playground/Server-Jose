@@ -11,6 +11,9 @@ import { configUtil } from 'src/common/utils/config.util';
 import { GithubStrategy } from './strategies/github.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { NaverStrategy } from './strategies/naver.strategy';
+import { UserRepository } from 'src/user/user.repository';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { SocialLoginService } from './social-login.service';
 
 @Module({
   imports: [
@@ -23,6 +26,9 @@ import { NaverStrategy } from './strategies/naver.strategy';
   ],
   providers: [
     AuthService,
+    UserRepository,
+    PrismaService,
+    SocialLoginService,
     LocalStrategy,
     JwtStrategy,
     GoogleStrategy,

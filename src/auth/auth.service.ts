@@ -3,11 +3,16 @@ import { Request, Response } from 'express';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { responseUtil } from 'src/common/utils/response.util';
 import { JwtStrategyDto } from './interface/jwt.strategy.interface';
-import { socialLoginUtil } from './util/social-login.util';
-import { userPrismaUtil } from 'src/user/utils/prisma.util';
+import { UserRepository } from 'src/user/user.repository';
+import { SocialLoginService } from './social-login.service';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly socialLoginService: SocialLoginService,
+  ) {}
+
   async signIn(request: Request, response: Response) {
     responseUtil().setCookiesForGuard({ request, response });
 
@@ -23,7 +28,7 @@ export class AuthService {
       profile_image_url,
       created_at,
       updated_at,
-    } = await userPrismaUtil().findById(id);
+    } = await this.userRepository.findById(id);
 
     return {
       email,
@@ -59,18 +64,18 @@ export class AuthService {
   }
 
   async googleLogin(request: Request, response: Response) {
-    await socialLoginUtil(request, response);
+    await this.socialLoginService.commonSocialLogin(request, response);
   }
 
   async githubLogin(request: Request, response: Response) {
-    await socialLoginUtil(request, response);
+    await this.socialLoginService.commonSocialLogin(request, response);
   }
 
   async kakaoLogin(request: Request, response: Response) {
-    await socialLoginUtil(request, response);
+    await this.socialLoginService.commonSocialLogin(request, response);
   }
 
   async naverLogin(request: Request, response: Response) {
-    await socialLoginUtil(request, response);
+    await this.socialLoginService.commonSocialLogin(request, response);
   }
 }

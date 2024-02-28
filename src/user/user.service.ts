@@ -6,19 +6,21 @@ import { CheckPasswordDto } from './dtos/check-password.dto';
 import { CheckNameDto } from './dtos/check-name.dto';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { PasswordStrength } from 'src/common/unions/password-strength.union';
-import { userPrismaUtil } from 'src/user/utils/prisma.util';
 import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
 import { redisUtil } from 'src/common/utils/redis.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { uuidUtil } from 'src/common/utils/uuid.util';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
+  constructor(private readonly userRepository: UserRepository) {}
+
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
     const email = dto.getEmail();
-    const isAlreadyUser = await userPrismaUtil().findByEmail(email);
+    const isAlreadyEmail = await this.userRepository.findByEmail(email);
 
-    if (isAlreadyUser) {
+    if (isAlreadyEmail) {
       throw new UnauthorizedException('가입할 수 없는 이메일입니다.');
     }
 
@@ -27,9 +29,9 @@ export class UserService {
 
   async checkName(dto: CheckNameDto): Promise<ResponseDto> {
     const userName = dto.getName();
-    const isAlreadyUser = await userPrismaUtil().findByName(userName);
+    const isAlreadyName = await this.userRepository.findByName(userName);
 
-    if (isAlreadyUser) {
+    if (isAlreadyName) {
       throw new UnauthorizedException('가입할 수 없는 이름입니다.');
     }
 
@@ -99,7 +101,7 @@ export class UserService {
     };
 
     await redisUtil().delExpire(email);
-    await userPrismaUtil().saveUser(userInfo);
+    await this.userRepository.saveUser(userInfo);
 
     return ResponseDto.success();
   }
