@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RepositoryUserInfo } from '../interface/repository.interface';
 
 @Injectable()
-export class UserRepository {
+export class UserRepositoryService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: number): Promise<RepositoryUserInfo> {

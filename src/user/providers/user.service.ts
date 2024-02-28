@@ -10,11 +10,11 @@ import { verificationCodeUtil } from 'src/common/utils/send-verification-code.ut
 import { redisUtil } from 'src/common/utils/redis.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { uuidUtil } from 'src/common/utils/uuid.util';
-import { UserRepository } from './user-repository.service';
+import { UserRepositoryService } from './user-repository.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepositoryService) {}
 
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
     const email = dto.getEmail();

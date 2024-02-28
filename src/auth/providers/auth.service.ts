@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { responseUtil } from 'src/common/utils/response.util';
 import { JwtStrategyDto } from '../interface/jwt.strategy.interface';
-import { UserRepository } from 'src/user/providers/user-repository.service';
+import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './social-login.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepositoryService,
     private readonly socialLoginService: SocialLoginService,
   ) {}
 

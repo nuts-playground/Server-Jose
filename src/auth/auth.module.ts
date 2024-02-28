@@ -11,7 +11,7 @@ import { configUtil } from 'src/common/utils/config.util';
 import { GithubStrategy } from './strategies/github.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { NaverStrategy } from './strategies/naver.strategy';
-import { UserRepository } from 'src/user/providers/user-repository.service';
+import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './providers/social-login.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
@@ -27,7 +27,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   ],
   providers: [
     AuthService,
-    UserRepository,
+    UserRepositoryService,
     SocialLoginService,
     LocalStrategy,
     JwtStrategy,

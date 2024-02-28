@@ -4,12 +4,12 @@ import { responseUtil } from 'src/common/utils/response.util';
 import { configUtil } from 'src/common/utils/config.util';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/user/providers/user-repository.service';
+import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { RepositoryUserInfo } from 'src/user/interface/repository.interface';
 
 @Injectable()
 export class SocialLoginService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepositoryService) {}
 
   async commonSocialLogin(request: Request, response: Response) {
     const provider = request.user['provider'];

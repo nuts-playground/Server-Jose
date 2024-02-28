@@ -3,11 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AccessToken } from '../interface/local.strategy.interface';
 import { jwtUtil } from 'src/common/utils/jwt.util';
-import { UserRepository } from 'src/user/providers/user-repository.service';
+import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly userRepository: UserRepository) {
+  constructor(private readonly userRepository: UserRepositoryService) {
     super({ usernameField: 'email' });
   }
 
