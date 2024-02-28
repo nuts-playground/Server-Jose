@@ -68,5 +68,10 @@ export const configUtil = () => {
         callback_url: configService.get<T>('NAVER_CALLBACK_URL'),
       }[type];
     },
+    getImgFileUrl: <T>(type: string): T => {
+      return {
+        url: configService.get<T>('IMG_FILE_URL'),
+      }[type];
+    },
   };
 };

@@ -34,69 +34,69 @@ export class SignUpDto {
     this.delete_yn = delete_yn;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'email', default: '' })
   getEmail(): string {
     return this.email;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'name', default: '' })
   getName(): string {
     return this.name;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'password', default: '' })
   getPassword(): string {
     return this.password;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'about_me', default: '' })
   getAboutMe(): string {
     return this.about_me;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'profile_image_url', default: '' })
   getProfileImageUrl(): string {
     return this.profile_image_url;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'created_at', default: '' })
   getCreatedAt(): string {
     return this.created_at;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'updated_at', default: '' })
   getUpdatedAt(): string {
     return this.updated_at;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'delete_yn', default: '' })
   getDeleteYn(): string {
     return this.delete_yn;
   }
 
-  @ApiProperty()
+  @ApiProperty({ name: 'verificationCode', default: '' })
   getVerificationCode(): string {
     return this.verificationCode;
   }
 
-  @ApiProperty()
-  getSignUpInfo() {
-    return {
-      email: this.email,
-      name: this.name,
-      about_me: this.about_me,
-      profile_image_url: this.profile_image_url,
-      created_dtm: this.created_at,
-      updated_dtm: this.updated_at,
-      delete_yn: this.delete_yn,
-    };
-  }
+  // @ApiProperty()
+  // getSignUpInfo() {
+  //   return {
+  //     email: this.email,
+  //     name: this.name,
+  //     about_me: this.about_me,
+  //     profile_image_url: this.profile_image_url,
+  //     created_dtm: this.created_at,
+  //     updated_dtm: this.updated_at,
+  //     delete_yn: this.delete_yn,
+  //   };
+  // }
 
-  @ApiProperty()
-  responseUserInfo(): SignUpResponseInterface {
-    return {
-      email: this.email,
-      name: this.name,
-    };
-  }
+  // @ApiProperty()
+  // responseUserInfo(): SignUpResponseInterface {
+  //   return {
+  //     email: this.email,
+  //     name: this.name,
+  //   };
+  // }
 }

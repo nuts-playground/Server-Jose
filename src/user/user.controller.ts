@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Patch, Post } from '@nestjs/common';
 import { UserService } from './providers/user.service';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { SendVerificationCodeDto } from './dtos/send-verification-code.dto';
@@ -6,6 +6,8 @@ import { CheckEmailDto } from './dtos/check-email.dto';
 import { CheckPasswordDto } from './dtos/check-password.dto';
 import { CheckNameDto } from './dtos/check-name.dto';
 import { SignUpDto } from './dtos/sign-up.dto';
+import { DeleteUserDto } from './dtos/delete-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -37,5 +39,15 @@ export class UserController {
   @Post('/signUp')
   async signUp(@Body() dto: SignUpDto): Promise<ResponseDto> {
     return await this.userService.signUp(dto);
+  }
+
+  @Patch('/updateUser')
+  async updateUser(@Body() dto: UpdateUserDto): Promise<ResponseDto> {
+    return await this.userService.updateUser(dto);
+  }
+
+  @Delete('/deleteUser')
+  async deleteUser(@Body() dto: DeleteUserDto): Promise<ResponseDto> {
+    return await this.userService.deleteUser(dto);
   }
 }

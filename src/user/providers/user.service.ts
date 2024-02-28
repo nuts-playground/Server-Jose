@@ -11,6 +11,9 @@ import { redisUtil } from 'src/common/utils/redis.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { uuidUtil } from 'src/common/utils/uuid.util';
 import { UserRepositoryService } from './user-repository.service';
+import { DeleteUserDto } from '../dtos/delete-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
+import { UpdateUser } from '../interface/update-user.interface';
 
 @Injectable()
 export class UserService {
@@ -87,9 +90,9 @@ export class UserService {
     const email = dto.getEmail();
     const verificationCode = await redisUtil().getExpire(email);
 
-    if (dto.getVerificationCode() !== verificationCode) {
-      throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
-    }
+    // if (dto.getVerificationCode() !== verificationCode) {
+    //   throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
+    // }
 
     const nick_name = dto.getName();
     const userPassword = dto.getPassword();
@@ -102,6 +105,34 @@ export class UserService {
 
     await redisUtil().delExpire(email);
     await this.userRepository.saveUser(userInfo);
+
+    return ResponseDto.success();
+  }
+
+  async updateUser(dto: UpdateUserDto): Promise<ResponseDto> {
+    const email = dto.getEmail();
+    const nick_name = dto.getNickName();
+    const password = dto.getPassword();
+    const about_me = dto.getAboutMe();
+    const profile_image_url = dto.getProfileImageUrl();
+    const userInfo: UpdateUser = {
+      email,
+    };
+
+    if (nick_name) userInfo.nick_name = nick_name;
+    if (password) userInfo.password = await bcryptUtil().hash(password);
+    if (about_me) userInfo.about_me = about_me;
+    if (profile_image_url) userInfo.profile_image_url = profile_image_url;
+
+    await this.userRepository.updateUser(userInfo);
+
+    return ResponseDto.success();
+  }
+
+  async deleteUser(dto: DeleteUserDto): Promise<ResponseDto> {
+    const userEmail = dto.getEmail();
+
+    await this.userRepository.deleteUser(userEmail);
 
     return ResponseDto.success();
   }
