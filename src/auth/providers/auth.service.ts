@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { responseUtil } from 'src/common/utils/response.util';
-import { JwtStrategyDto } from './interface/jwt.strategy.interface';
-import { UserRepository } from 'src/user/user.repository';
+import { JwtStrategyDto } from '../interface/jwt.strategy.interface';
+import { UserRepository } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './social-login.service';
 
 @Injectable()

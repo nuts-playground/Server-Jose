@@ -1,16 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
-import { SendVerificationCodeDto } from './dtos/send-verification-code.dto';
-import { CheckEmailDto } from './dtos/check-email.dto';
-import { CheckPasswordDto } from './dtos/check-password.dto';
-import { CheckNameDto } from './dtos/check-name.dto';
-import { SignUpDto } from './dtos/sign-up.dto';
+import { SendVerificationCodeDto } from '../dtos/send-verification-code.dto';
+import { CheckEmailDto } from '../dtos/check-email.dto';
+import { CheckPasswordDto } from '../dtos/check-password.dto';
+import { CheckNameDto } from '../dtos/check-name.dto';
+import { SignUpDto } from '../dtos/sign-up.dto';
 import { PasswordStrength } from 'src/common/unions/password-strength.union';
 import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
 import { redisUtil } from 'src/common/utils/redis.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { uuidUtil } from 'src/common/utils/uuid.util';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './user-repository.service';
 
 @Injectable()
 export class UserService {

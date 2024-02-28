@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from './providers/user.service';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { SendVerificationCodeDto } from './dtos/send-verification-code.dto';
 import { CheckEmailDto } from './dtos/check-email.dto';

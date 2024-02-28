@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from './providers/auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from 'src/user/user.module';
@@ -11,13 +11,14 @@ import { configUtil } from 'src/common/utils/config.util';
 import { GithubStrategy } from './strategies/github.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { NaverStrategy } from './strategies/naver.strategy';
-import { UserRepository } from 'src/user/user.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { SocialLoginService } from './social-login.service';
+import { UserRepository } from 'src/user/providers/user-repository.service';
+import { SocialLoginService } from './providers/social-login.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
     UserModule,
+    PrismaModule,
     PassportModule,
     JwtModule.register({
       secret: configUtil().getJwtSecretKey('access'),
@@ -27,7 +28,6 @@ import { SocialLoginService } from './social-login.service';
   providers: [
     AuthService,
     UserRepository,
-    PrismaService,
     SocialLoginService,
     LocalStrategy,
     JwtStrategy,

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
-import { UserRepository } from 'src/user/user.repository';
+import { UserRepository } from 'src/user/providers/user-repository.service';
 
 @Injectable()
 export class LocalGuard extends AuthGuard('local') {
