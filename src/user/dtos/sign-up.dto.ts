@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SignUpResponseInterface } from '../interface/sign-up.interface';
 
 export class SignUpDto {
   private readonly email: string;
@@ -78,25 +77,4 @@ export class SignUpDto {
   getVerificationCode(): string {
     return this.verificationCode;
   }
-
-  // @ApiProperty()
-  // getSignUpInfo() {
-  //   return {
-  //     email: this.email,
-  //     name: this.name,
-  //     about_me: this.about_me,
-  //     profile_image_url: this.profile_image_url,
-  //     created_dtm: this.created_at,
-  //     updated_dtm: this.updated_at,
-  //     delete_yn: this.delete_yn,
-  //   };
-  // }
-
-  // @ApiProperty()
-  // responseUserInfo(): SignUpResponseInterface {
-  //   return {
-  //     email: this.email,
-  //     name: this.name,
-  //   };
-  // }
 }

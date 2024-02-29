@@ -13,7 +13,8 @@ import { uuidUtil } from 'src/common/utils/uuid.util';
 import { UserRepositoryService } from './user-repository.service';
 import { DeleteUserDto } from '../dtos/delete-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { UpdateUser } from '../interface/update-user.interface';
+import { SignUpUser, UpdateUser } from '../interface/repository.interface';
+import { configUtil } from 'src/common/utils/config.util';
 
 @Injectable()
 export class UserService {
@@ -96,12 +97,22 @@ export class UserService {
 
     const nick_name = dto.getName();
     const userPassword = dto.getPassword();
+    const proFileImageUrl = dto.getProfileImageUrl();
+    const aboutMe = dto.getAboutMe();
     const password = await bcryptUtil().hash(userPassword);
-    const userInfo = {
+    const userInfo: SignUpUser = {
       email,
       nick_name,
       password,
     };
+
+    if (aboutMe) userInfo.about_me = aboutMe;
+    if (proFileImageUrl) {
+      const imageUrl = `${configUtil().getImgFileUrl(
+        'url',
+      )}/${uuidUtil().v4()}`;
+      userInfo.profile_image_url = imageUrl;
+    }
 
     await redisUtil().delExpire(email);
     await this.userRepository.saveUser(userInfo);
@@ -122,7 +133,12 @@ export class UserService {
     if (nick_name) userInfo.nick_name = nick_name;
     if (password) userInfo.password = await bcryptUtil().hash(password);
     if (about_me) userInfo.about_me = about_me;
-    if (profile_image_url) userInfo.profile_image_url = profile_image_url;
+    if (profile_image_url) {
+      const imageUrl = `${configUtil().getImgFileUrl(
+        'url',
+      )}/${uuidUtil().v4()}`;
+      userInfo.profile_image_url = imageUrl;
+    }
 
     await this.userRepository.updateUser(userInfo);
 

@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { RepositoryUserInfo } from '../interface/repository.interface';
-import { configUtil } from 'src/common/utils/config.util';
-import { uuidUtil } from 'src/common/utils/uuid.util';
-import { ResponseDto } from 'src/common/dtos/response.dto';
-import { UpdateUser } from '../interface/update-user.interface';
+import {
+  RepositoryUserResponse,
+  SignUpUser,
+  UpdateUser,
+} from '../interface/repository.interface';
 
 @Injectable()
 export class UserRepositoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<RepositoryUserInfo> {
+  async findById(id: number): Promise<RepositoryUserResponse> {
     return this.prisma.users.findUnique({
       where: {
         id,
@@ -18,7 +18,7 @@ export class UserRepositoryService {
     });
   }
 
-  async findByEmail(email: string): Promise<RepositoryUserInfo> {
+  async findByEmail(email: string): Promise<RepositoryUserResponse> {
     return this.prisma.users.findUnique({
       where: {
         email,
@@ -26,7 +26,7 @@ export class UserRepositoryService {
     });
   }
 
-  async findByName(nick_name: string): Promise<RepositoryUserInfo> {
+  async findByName(nick_name: string): Promise<RepositoryUserResponse> {
     return this.prisma.users.findUnique({
       where: {
         nick_name,
@@ -34,21 +34,17 @@ export class UserRepositoryService {
     });
   }
 
-  async saveUser(userInfo: RepositoryUserInfo): Promise<RepositoryUserInfo> {
+  async saveUser(userInfo: SignUpUser): Promise<RepositoryUserResponse> {
     return this.prisma.$transaction(async (tx) => {
       const user = await tx.users.create({
         data: userInfo,
       });
 
       if (userInfo.profile_image_url) {
-        const imgFileUrl = `${configUtil().getImgFileUrl(
-          'url',
-        )}/${uuidUtil().v4()}`;
-
         await tx.users_files.create({
           data: {
             user_id: user.id,
-            img_file_url: imgFileUrl,
+            img_file_url: userInfo.profile_image_url,
           },
         });
       }
@@ -65,19 +61,6 @@ export class UserRepositoryService {
         },
         data: userInfo,
       });
-
-      // if (userInfo.profile_image_url) {
-      //   const imgFileUrl = `${configUtil().getImgFileUrl(
-      //     'url',
-      //   )}/${uuidUtil().v4()}`;
-
-      //   await tx.users_files.create({
-      //     data: {
-      //       user_id: userInfo.id,
-      //       img_file_url: imgFileUrl,
-      //     },
-      //   });
-      // }
     });
   }
 
