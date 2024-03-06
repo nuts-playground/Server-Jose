@@ -14,7 +14,8 @@ export interface RepositoryUserResponse {
 export interface SignUpUser {
   email: string;
   nick_name: string;
-  password: string;
+  password?: string;
+  provider?: string;
   about_me?: string;
   profile_image_url?: string;
 }

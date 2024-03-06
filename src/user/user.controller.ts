@@ -1,4 +1,11 @@
-import { Body, Controller, Delete, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './providers/user.service';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { SendVerificationCodeDto } from './dtos/send-verification-code.dto';
@@ -8,6 +15,7 @@ import { CheckNameDto } from './dtos/check-name.dto';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { DeleteUserDto } from './dtos/delete-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { LocalGuard } from 'src/auth/guard/local.guard';
 
 @Controller('user')
 export class UserController {
@@ -41,11 +49,13 @@ export class UserController {
     return await this.userService.signUp(dto);
   }
 
+  @UseGuards(LocalGuard)
   @Patch('/updateUser')
   async updateUser(@Body() dto: UpdateUserDto): Promise<ResponseDto> {
     return await this.userService.updateUser(dto);
   }
 
+  @UseGuards(LocalGuard)
   @Delete('/deleteUser')
   async deleteUser(@Body() dto: DeleteUserDto): Promise<ResponseDto> {
     return await this.userService.deleteUser(dto);

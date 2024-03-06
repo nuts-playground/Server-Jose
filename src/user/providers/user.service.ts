@@ -7,7 +7,6 @@ import { CheckNameDto } from '../dtos/check-name.dto';
 import { SignUpDto } from '../dtos/sign-up.dto';
 import { PasswordStrength } from 'src/common/unions/password-strength.union';
 import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
-import { redisUtil } from 'src/common/utils/redis.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { uuidUtil } from 'src/common/utils/uuid.util';
 import { UserRepositoryService } from './user-repository.service';
@@ -15,10 +14,14 @@ import { DeleteUserDto } from '../dtos/delete-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { SignUpUser, UpdateUser } from '../interface/repository.interface';
 import { configUtil } from 'src/common/utils/config.util';
+import { UserRedisService } from './user-redis.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepositoryService) {}
+  constructor(
+    private readonly userRepository: UserRepositoryService,
+    private readonly userRedis: UserRedisService,
+  ) {}
 
   async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
     const email = dto.getEmail();
@@ -81,7 +84,7 @@ export class UserService {
       time: 60 * 5,
     };
 
-    await redisUtil().setExpire(redisInfo);
+    await this.userRedis.setVerificationCode(redisInfo);
     await verificationCodeUtil().sendToEmail(emailInfo);
 
     return ResponseDto.success();
@@ -89,11 +92,11 @@ export class UserService {
 
   async signUp(dto: SignUpDto): Promise<ResponseDto> {
     const email = dto.getEmail();
-    const verificationCode = await redisUtil().getExpire(email);
+    const verificationCode = await this.userRedis.getVerificationCode(email);
 
-    // if (dto.getVerificationCode() !== verificationCode) {
-    //   throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
-    // }
+    if (dto.getVerificationCode() !== verificationCode) {
+      throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
+    }
 
     const nick_name = dto.getName();
     const userPassword = dto.getPassword();
@@ -114,7 +117,7 @@ export class UserService {
       userInfo.profile_image_url = imageUrl;
     }
 
-    await redisUtil().delExpire(email);
+    await this.userRedis.deleteVerificationCode(email);
     await this.userRepository.saveUser(userInfo);
 
     return ResponseDto.success();

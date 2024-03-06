@@ -5,7 +5,7 @@ import { configUtil } from 'src/common/utils/config.util';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { Injectable } from '@nestjs/common';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
-import { RepositoryUserInfo } from 'src/user/interface/repository.interface';
+import { SignUpUser } from 'src/user/interface/repository.interface';
 
 @Injectable()
 export class SocialLoginService {
@@ -30,7 +30,7 @@ export class SocialLoginService {
     if (!isAlreadyEmail) {
       const isAreadyName = await this.createRandomName(sliceName);
 
-      const userInfo: RepositoryUserInfo = {
+      const userInfo: SignUpUser = {
         email: userEmail,
         nick_name: isAreadyName,
         provider: provider,
