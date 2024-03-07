@@ -1,18 +1,18 @@
 import { ResponseDto } from 'src/common/dtos/response.dto';
-import { CheckEmailDto } from '../dtos/check-email.dto';
-import { UserService } from '../providers/user.service';
-import { UserController } from '../user.controller';
+import { CheckEmailDto } from '../../dtos/check-email.dto';
+import { UserService } from '../../providers/user.service';
+import { UserController } from '../../user.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CheckNameDto } from '../dtos/check-name.dto';
-import { CheckPasswordDto } from '../dtos/check-password.dto';
-import { SendVerificationCodeDto } from '../dtos/send-verification-code.dto';
-import { SignUpDto } from '../dtos/sign-up.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
-import { DeleteUserDto } from '../dtos/delete-user.dto';
+import { CheckNameDto } from '../../dtos/check-name.dto';
+import { CheckPasswordDto } from '../../dtos/check-password.dto';
+import { SendVerificationCodeDto } from '../../dtos/send-verification-code.dto';
+import { SignUpDto } from '../../dtos/sign-up.dto';
+import { UpdateUserDto } from '../../dtos/update-user.dto';
+import { DeleteUserDto } from '../../dtos/delete-user.dto';
 
 describe('UserController', () => {
   let userController: UserController;
