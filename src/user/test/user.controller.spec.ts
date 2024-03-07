@@ -3,10 +3,16 @@ import { CheckEmailDto } from '../dtos/check-email.dto';
 import { UserService } from '../providers/user.service';
 import { UserController } from '../user.controller';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CheckNameDto } from '../dtos/check-name.dto';
 import { CheckPasswordDto } from '../dtos/check-password.dto';
 import { SendVerificationCodeDto } from '../dtos/send-verification-code.dto';
+import { SignUpDto } from '../dtos/sign-up.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
+import { DeleteUserDto } from '../dtos/delete-user.dto';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -171,6 +177,95 @@ describe('UserController', () => {
       }).rejects.toThrow(
         new UnauthorizedException('인증번호가 일치하지 않습니다.'),
       );
+    });
+  });
+
+  describe('signUp [회원가입]', () => {
+    it('회원가입 성공', async () => {
+      const signUpDto = new SignUpDto(
+        'hello@example.com',
+        'testUser',
+        'testPassword',
+        '1234',
+      );
+      const response = ResponseDto.success();
+
+      jest.spyOn(userService, 'signUp').mockResolvedValue(response);
+
+      expect(await userController.signUp(signUpDto)).toBe(response);
+    });
+
+    it('회원가입 실패', async () => {
+      const signUpDto = new SignUpDto(
+        'hello@example.com',
+        'testUser',
+        'testPassword',
+        '1234',
+      );
+
+      jest.spyOn(userService, 'signUp').mockImplementation(() => {
+        throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
+      });
+
+      expect(async () => {
+        await userController.signUp(signUpDto);
+      }).rejects.toThrow(
+        new UnauthorizedException('인증번호가 일치하지 않습니다.'),
+      );
+
+      jest.spyOn(userService, 'signUp').mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+
+      expect(async () => {
+        await userController.signUp(signUpDto);
+      }).rejects.toThrow(new InternalServerErrorException());
+    });
+  });
+
+  describe('updateUser [회원정보 수정]', () => {
+    it('회원정보 수정 성공', async () => {
+      const dto = new UpdateUserDto('hello@example.com');
+      const response = ResponseDto.success();
+
+      jest.spyOn(userService, 'updateUser').mockResolvedValue(response);
+
+      expect(await userController.updateUser(dto)).toBe(response);
+    });
+
+    it('회원정보 수정 실패', async () => {
+      const dto = new UpdateUserDto('hello@example.com');
+
+      jest.spyOn(userService, 'updateUser').mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+
+      expect(async () => {
+        await userController.updateUser(dto);
+      }).rejects.toThrow(new InternalServerErrorException());
+    });
+  });
+
+  describe('deleteUser [회원 탈퇴]', () => {
+    it('회원 탈퇴 성공', async () => {
+      const dto = new DeleteUserDto('hello@example.com');
+      const response = ResponseDto.success();
+
+      jest.spyOn(userService, 'deleteUser').mockResolvedValue(response);
+
+      expect(await userController.deleteUser(dto)).toBe(response);
+    });
+
+    it('회원 탈퇴 실패', async () => {
+      const dto = new DeleteUserDto('hello@example.com');
+
+      jest.spyOn(userService, 'deleteUser').mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+
+      expect(async () => {
+        await userController.deleteUser(dto);
+      }).rejects.toThrow(new InternalServerErrorException());
     });
   });
 });
