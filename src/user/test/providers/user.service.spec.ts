@@ -193,7 +193,7 @@ describe('UserService', () => {
         .mockResolvedValue(verificationCode);
       jest
         .spyOn(userRepository, 'saveUser')
-        .mockResolvedValue({ email, nick_name: dto.getName() });
+        .mockResolvedValue({ email, nick_name: dto.getNickName() });
 
       expect(await userService.signUp(dto)).toStrictEqual(response);
     });

@@ -13,7 +13,9 @@ export const verificationCodeUtil = () => {
       try {
         await emailUtil().send({ email, subject, contents });
       } catch (err) {
-        throw new InternalServerErrorException('이메일 전송에 실패하였습니다.');
+        throw new InternalServerErrorException(
+          '인증번호 전송에 실패하였습니다.',
+        );
       }
 
       return ResponseDto.success();

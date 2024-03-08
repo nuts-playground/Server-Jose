@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class SignUpDto {
   private readonly email: string;
-  private readonly name: string;
+  private readonly nick_name: string;
   private readonly password: string;
   private readonly verificationCode: string;
   private readonly about_me?: string;
@@ -13,7 +13,7 @@ export class SignUpDto {
 
   constructor(
     email: string,
-    name: string,
+    nick_name: string,
     password: string,
     verificationCode: string,
     about_me?: string,
@@ -23,7 +23,7 @@ export class SignUpDto {
     delete_yn?: string,
   ) {
     this.email = email;
-    this.name = name;
+    this.nick_name = nick_name;
     this.password = password;
     this.verificationCode = verificationCode;
     this.about_me = about_me;
@@ -39,8 +39,8 @@ export class SignUpDto {
   }
 
   @ApiProperty({ name: 'name', default: '' })
-  getName(): string {
-    return this.name;
+  getNickName(): string {
+    return this.nick_name;
   }
 
   @ApiProperty({ name: 'password', default: '' })

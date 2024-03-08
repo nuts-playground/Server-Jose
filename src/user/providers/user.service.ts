@@ -5,7 +5,6 @@ import { CheckEmailDto } from '../dtos/check-email.dto';
 import { CheckPasswordDto } from '../dtos/check-password.dto';
 import { CheckNameDto } from '../dtos/check-name.dto';
 import { SignUpDto } from '../dtos/sign-up.dto';
-import { PasswordStrength } from 'src/common/unions/password-strength.union';
 import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { uuidUtil } from 'src/common/utils/uuid.util';
@@ -28,7 +27,7 @@ export class UserService {
     const isAlreadyEmail = await this.userRepository.findByEmail(email);
 
     if (isAlreadyEmail) {
-      throw new UnauthorizedException('가입할 수 없는 이메일입니다.');
+      throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
     }
 
     return ResponseDto.success();
@@ -39,13 +38,13 @@ export class UserService {
     const isAlreadyName = await this.userRepository.findByName(userName);
 
     if (isAlreadyName) {
-      throw new UnauthorizedException('가입할 수 없는 이름입니다.');
+      throw new UnauthorizedException('사용할 수 없는 이름입니다.');
     }
 
     return ResponseDto.success();
   }
 
-  checkPassword(dto: CheckPasswordDto): PasswordStrength {
+  checkPassword(dto: CheckPasswordDto): ResponseDto {
     const password = dto.getPassword();
     let strength = 0;
     if (password.length >= 8) strength++;
@@ -56,15 +55,15 @@ export class UserService {
 
     switch (strength) {
       case 4:
-        return '매우 강함';
+        return ResponseDto.successWithJSON({ passwordStrength: '매우 강함' });
       case 3:
-        return '강함';
+        return ResponseDto.successWithJSON({ passwordStrength: '강함' });
       case 2:
-        return '보통';
+        return ResponseDto.successWithJSON({ passwordStrength: '보통' });
       case 1:
-        return '약함';
+        return ResponseDto.successWithJSON({ passwordStrength: '약함' });
       default:
-        return '매우 약함';
+        return ResponseDto.successWithJSON({ passwordStrength: '매우 약함' });
     }
   }
 
@@ -100,7 +99,7 @@ export class UserService {
       throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     }
 
-    const nick_name = dto.getName();
+    const nick_name = dto.getNickName();
     const userPassword = dto.getPassword();
     const proFileImageUrl = dto.getProfileImageUrl();
     const aboutMe = dto.getAboutMe();
@@ -120,6 +119,8 @@ export class UserService {
     }
 
     await this.userRedis.deleteVerificationCode(userEmail);
+    console.log(userInfo);
+
     const { email } = await this.userRepository.saveUser(userInfo);
 
     return ResponseDto.successWithJSON({ email });

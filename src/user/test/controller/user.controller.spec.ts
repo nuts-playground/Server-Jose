@@ -1,7 +1,7 @@
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { CheckEmailDto } from '../../dtos/check-email.dto';
 import { UserService } from '../../providers/user.service';
-import { UserController } from '../../user.controller';
+import { UserController } from '../../controllers/user.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   InternalServerErrorException,
