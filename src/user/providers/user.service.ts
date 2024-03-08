@@ -146,9 +146,13 @@ export class UserService {
       userInfo.profile_image_url = imageUrl;
     }
 
-    const { email, nick_name, about_me, profile_image_url, updated_at } =
-      await this.userRepository.updateUser(userInfo);
+    const user = await this.userRepository.updateUser(userInfo);
 
+    if (!user) {
+      throw new UnauthorizedException('계정 수정에 실패하였습니다.');
+    }
+
+    const { email, nick_name, about_me, profile_image_url, updated_at } = user;
     return ResponseDto.successWithJSON({
       email,
       nick_name,
@@ -160,10 +164,13 @@ export class UserService {
 
   async deleteUser(dto: DeleteUserDto): Promise<ResponseDto> {
     const userEmail = dto.getEmail();
+    const user = await this.userRepository.deleteUser(userEmail);
 
-    const { email, nick_name } = await this.userRepository.deleteUser(
-      userEmail,
-    );
+    if (!user) {
+      throw new UnauthorizedException('계정 삭제에 실패하였습니다.');
+    }
+
+    const { email, nick_name } = user;
 
     return ResponseDto.successWithJSON({ email, nick_name });
   }

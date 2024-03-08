@@ -53,20 +53,30 @@ export class UserRepositoryService {
     });
   }
 
-  async updateUser(userInfo: UpdateUser): Promise<RepositoryUserResponse> {
+  async updateUser(
+    userInfo: UpdateUser,
+  ): Promise<RepositoryUserResponse | null> {
     return this.prisma.$transaction(async (tx) => {
-      const user = await tx.users.update({
+      const user = await tx.users.findUnique({
+        where: {
+          email: userInfo.email,
+        },
+      });
+
+      if (!user) return null;
+
+      const responseUser = await tx.users.update({
         where: {
           email: userInfo.email,
         },
         data: userInfo,
       });
 
-      return user;
+      return responseUser;
     });
   }
 
-  async deleteUser(email: string): Promise<RepositoryUserResponse> {
+  async deleteUser(email: string): Promise<RepositoryUserResponse | null> {
     return this.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
@@ -74,14 +84,18 @@ export class UserRepositoryService {
         },
       });
 
-      await tx.users_files.update({
-        where: {
-          user_id: user.id,
-        },
-        data: {
-          delete_yn: 'Y',
-        },
-      });
+      if (!user) return null;
+
+      if (user.profile_image_url) {
+        await tx.users_files.update({
+          where: {
+            user_id: user.id,
+          },
+          data: {
+            delete_yn: 'Y',
+          },
+        });
+      }
 
       const responseUser = await tx.users.update({
         where: {
