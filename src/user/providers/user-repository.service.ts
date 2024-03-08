@@ -53,18 +53,20 @@ export class UserRepositoryService {
     });
   }
 
-  async updateUser(userInfo: UpdateUser): Promise<void> {
-    this.prisma.$transaction(async (tx) => {
-      await tx.users.update({
+  async updateUser(userInfo: UpdateUser): Promise<RepositoryUserResponse> {
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.users.update({
         where: {
           email: userInfo.email,
         },
         data: userInfo,
       });
+
+      return user;
     });
   }
 
-  async deleteUser(email: string): Promise<void> {
+  async deleteUser(email: string): Promise<RepositoryUserResponse> {
     return this.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
@@ -81,7 +83,7 @@ export class UserRepositoryService {
         },
       });
 
-      await tx.users.update({
+      const responseUser = await tx.users.update({
         where: {
           id: user.id,
         },
@@ -89,6 +91,8 @@ export class UserRepositoryService {
           delete_yn: 'Y',
         },
       });
+
+      return responseUser;
     });
   }
 }

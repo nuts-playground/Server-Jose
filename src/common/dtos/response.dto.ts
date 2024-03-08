@@ -8,11 +8,16 @@ export class ResponseDto {
   @Exclude() private readonly _data?: object;
   @Exclude() private readonly _date: number;
 
-  constructor(status: ResponseStatus, message?: string, data?: object) {
+  constructor(
+    status: ResponseStatus,
+    message?: string,
+    data?: object,
+    date?: number,
+  ) {
     this._status = status;
     this._message = message;
     this._data = data;
-    this._date = new Date().getTime();
+    this._date = date;
   }
 
   static success(message?: string): ResponseDto {

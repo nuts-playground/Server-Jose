@@ -91,8 +91,10 @@ export class UserService {
   }
 
   async signUp(dto: SignUpDto): Promise<ResponseDto> {
-    const email = dto.getEmail();
-    const verificationCode = await this.userRedis.getVerificationCode(email);
+    const userEmail = dto.getEmail();
+    const verificationCode = await this.userRedis.getVerificationCode(
+      userEmail,
+    );
 
     if (dto.getVerificationCode() !== verificationCode) {
       throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
@@ -104,7 +106,7 @@ export class UserService {
     const aboutMe = dto.getAboutMe();
     const password = await bcryptUtil().hash(userPassword);
     const userInfo: SignUpUser = {
-      email,
+      email: userEmail,
       nick_name,
       password,
     };
@@ -117,42 +119,52 @@ export class UserService {
       userInfo.profile_image_url = imageUrl;
     }
 
-    await this.userRedis.deleteVerificationCode(email);
-    await this.userRepository.saveUser(userInfo);
+    await this.userRedis.deleteVerificationCode(userEmail);
+    const { email } = await this.userRepository.saveUser(userInfo);
 
-    return ResponseDto.success();
+    return ResponseDto.successWithJSON({ email });
   }
 
   async updateUser(dto: UpdateUserDto): Promise<ResponseDto> {
-    const email = dto.getEmail();
-    const nick_name = dto.getNickName();
-    const password = dto.getPassword();
-    const about_me = dto.getAboutMe();
-    const profile_image_url = dto.getProfileImageUrl();
+    const requestEmail = dto.getEmail();
+    const requestNickName = dto.getNickName();
+    const requestPassword = dto.getPassword();
+    const requestAboutMe = dto.getAboutMe();
+    const requestProfileImage = dto.getProfileImageUrl();
     const userInfo: UpdateUser = {
-      email,
+      email: requestEmail,
     };
 
-    if (nick_name) userInfo.nick_name = nick_name;
-    if (password) userInfo.password = await bcryptUtil().hash(password);
-    if (about_me) userInfo.about_me = about_me;
-    if (profile_image_url) {
+    if (requestNickName) userInfo.nick_name = requestNickName;
+    if (requestPassword)
+      userInfo.password = await bcryptUtil().hash(requestPassword);
+    if (requestAboutMe) userInfo.about_me = requestAboutMe;
+    if (requestProfileImage) {
       const imageUrl = `${configUtil().getImgFileUrl(
         'url',
       )}/${uuidUtil().v4()}`;
       userInfo.profile_image_url = imageUrl;
     }
 
-    await this.userRepository.updateUser(userInfo);
+    const { email, nick_name, about_me, profile_image_url, updated_at } =
+      await this.userRepository.updateUser(userInfo);
 
-    return ResponseDto.success();
+    return ResponseDto.successWithJSON({
+      email,
+      nick_name,
+      about_me,
+      profile_image_url,
+      updated_at,
+    });
   }
 
   async deleteUser(dto: DeleteUserDto): Promise<ResponseDto> {
     const userEmail = dto.getEmail();
 
-    await this.userRepository.deleteUser(userEmail);
+    const { email, nick_name } = await this.userRepository.deleteUser(
+      userEmail,
+    );
 
-    return ResponseDto.success();
+    return ResponseDto.successWithJSON({ email, nick_name });
   }
 }
