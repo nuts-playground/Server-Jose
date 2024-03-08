@@ -10,6 +10,7 @@ describe('UserRepositoryService', () => {
   let userRepository: UserRepositoryService;
   let prisma: PrismaService;
   let testUser: RepositoryUserResponse;
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UserRepositoryService, PrismaService],
@@ -91,6 +92,19 @@ describe('UserRepositoryService', () => {
 
       expect(user.nick_name).toStrictEqual(updateData.nick_name);
     });
+
+    it('수정할 계정이 없을 때', async () => {
+      const updateData: UpdateUser = {
+        email: 'failEmail',
+        nick_name: 'updateNickName',
+      };
+
+      const user: RepositoryUserResponse = await userRepository.updateUser(
+        updateData,
+      );
+
+      expect(user).toBeNull();
+    });
   });
 
   describe('deleteUser [계정 삭제]', () => {
@@ -111,7 +125,7 @@ describe('UserRepositoryService', () => {
     });
   });
 
-  // afterAll(async () => {
-  //   await prisma.users.delete({ where: { id: testUser.id } });
-  // });
+  afterAll(async () => {
+    await prisma.users.delete({ where: { id: testUser.id } });
+  });
 });
