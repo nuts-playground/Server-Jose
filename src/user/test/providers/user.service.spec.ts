@@ -181,7 +181,9 @@ describe('UserService', () => {
       'testPassword',
       '123',
     );
-    const response = ResponseDto.success();
+    const email = dto.getEmail();
+
+    const response = ResponseDto.successWithJSON({ email });
 
     it('회원가입 성공', async () => {
       const verificationCode = '123';
@@ -189,7 +191,9 @@ describe('UserService', () => {
       jest
         .spyOn(userRedis, 'getVerificationCode')
         .mockResolvedValue(verificationCode);
-      jest.spyOn(userRepository, 'saveUser').mockResolvedValue(null);
+      jest
+        .spyOn(userRepository, 'saveUser')
+        .mockResolvedValue({ email, nick_name: dto.getName() });
 
       expect(await userService.signUp(dto)).toStrictEqual(response);
     });
@@ -211,11 +215,24 @@ describe('UserService', () => {
 
   describe('updateUser [회원정보 수정]', () => {
     const dto = new UpdateUserDto('hello@example.com');
+    const updatedAt = new Date();
 
     it('회원정보 수정 성공', async () => {
-      const response = ResponseDto.success();
+      const response = ResponseDto.successWithJSON({
+        email: dto.getEmail(),
+        nick_name: dto.getNickName(),
+        about_me: dto.getAboutMe(),
+        profile_image_url: dto.getProfileImageUrl(),
+        updated_at: updatedAt,
+      });
 
-      jest.spyOn(userRepository, 'updateUser').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'updateUser').mockResolvedValue({
+        email: dto.getEmail(),
+        nick_name: dto.getNickName(),
+        about_me: dto.getAboutMe(),
+        profile_image_url: dto.getProfileImageUrl(),
+        updated_at: updatedAt,
+      });
 
       expect(await userService.updateUser(dto)).toStrictEqual(response);
     });
@@ -237,9 +254,15 @@ describe('UserService', () => {
     const dto = new DeleteUserDto('hello@example.com');
 
     it('회원 탈퇴 성공', async () => {
-      const response = ResponseDto.success();
+      const response = ResponseDto.successWithJSON({
+        email: dto.getEmail(),
+        nick_name: 'helloTest',
+      });
 
-      jest.spyOn(userRepository, 'deleteUser').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'deleteUser').mockResolvedValue({
+        email: dto.getEmail(),
+        nick_name: 'helloTest',
+      });
 
       expect(await userService.deleteUser(dto)).toStrictEqual(response);
     });
