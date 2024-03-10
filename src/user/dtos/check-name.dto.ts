@@ -4,15 +4,15 @@ import { IsNameAlreadyExist } from '../decorator/user.decorator';
 
 export class CheckNameDto {
   @IsNameAlreadyExist()
-  private readonly name: string;
+  private readonly nick_name: string;
 
-  constructor(name: string) {
-    this.name = name;
+  constructor(nick_name: string) {
+    this.nick_name = nick_name;
   }
 
   @ApiProperty()
   @Expose()
-  getName(): string {
-    return this.name;
+  getNickName(): string {
+    return this.nick_name;
   }
 }

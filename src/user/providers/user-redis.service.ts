@@ -12,7 +12,7 @@ export class UserRedisService {
 
       await this.redisService.set(key, value, 'EX', time);
     } catch (error) {
-      throw new InternalServerErrorException('인증번호 전송에 실패하였습니다.');
+      throw new InternalServerErrorException('잠시 후 다시 시도해 주세요.');
     }
   }
 
@@ -20,7 +20,7 @@ export class UserRedisService {
     try {
       return await this.redisService.get(key);
     } catch (error) {
-      throw new InternalServerErrorException('get');
+      throw new InternalServerErrorException('잠시 후 다시 시도해 주세요.');
     }
   }
 
@@ -28,7 +28,7 @@ export class UserRedisService {
     try {
       await this.redisService.del(key);
     } catch (error) {
-      throw new InternalServerErrorException('set');
+      throw new InternalServerErrorException('잠시 후 다시 시도해 주세요.');
     }
   }
 }

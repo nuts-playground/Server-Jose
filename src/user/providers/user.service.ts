@@ -34,7 +34,7 @@ export class UserService {
   }
 
   async checkName(dto: CheckNameDto): Promise<ResponseDto> {
-    const userName = dto.getName();
+    const userName = dto.getNickName();
     const isAlreadyName = await this.userRepository.findByName(userName);
 
     if (isAlreadyName) {
@@ -95,6 +95,8 @@ export class UserService {
       userEmail,
     );
 
+    if (!verificationCode)
+      throw new UnauthorizedException('인증번호 유효기간이 만료되었습니다.');
     if (dto.getVerificationCode() !== verificationCode) {
       throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     }
@@ -119,7 +121,6 @@ export class UserService {
     }
 
     await this.userRedis.deleteVerificationCode(userEmail);
-    console.log(userInfo);
 
     const { email } = await this.userRepository.saveUser(userInfo);
 
