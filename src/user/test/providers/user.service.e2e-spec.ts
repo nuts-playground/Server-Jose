@@ -14,9 +14,10 @@ import * as nodemailer from 'nodemailer';
 import { RedisService } from 'src/redis/redis.service';
 
 interface NewUser {
-  id: number;
   email: string;
   nick_name: string;
+  password: string;
+  verificationCode: string;
 }
 
 describe('UserService (e2e)', () => {
@@ -60,6 +61,12 @@ describe('UserService (e2e)', () => {
     redis = moduleRef.get<UserRedisService>(UserRedisService);
     httpServer = await app.getHttpServer();
 
+    newUser = {
+      email: 'new_user@example.com',
+      password: 'testPasword1!@#',
+      nick_name: 'newUser',
+      verificationCode: '123456',
+    };
     testUser = await prisma.users.create({
       data: {
         email: 'test_user@example.com',
@@ -73,7 +80,7 @@ describe('UserService (e2e)', () => {
     it('/isAlreadyEmail (POST) [성공]', async () => {
       const response = await request(httpServer)
         .post('/user/isAlreadyEmail')
-        .send({ email: 'hello@example.com' });
+        .send({ email: newUser.email });
 
       expect(response.status).toStrictEqual(201);
       expect(response.body).toStrictEqual({ status: 'success' });
@@ -110,7 +117,7 @@ describe('UserService (e2e)', () => {
     it('/checkName (POST) [성공]', async () => {
       const response = await request(httpServer)
         .post('/user/checkName')
-        .send({ name: 'newUser' });
+        .send({ nick_name: newUser.nick_name });
 
       expect(response.status).toStrictEqual(201);
       expect(response.body).toStrictEqual({ status: 'success' });
@@ -119,7 +126,7 @@ describe('UserService (e2e)', () => {
     it('/checkName (POST) [실패: 닉네임 형식에 맞지 않음]', async () => {
       const response = await request(httpServer)
         .post('/user/checkName')
-        .send({ name: 'n' });
+        .send({ nick_name: 'n' });
 
       expect(response.status).toStrictEqual(401);
       expect(response.body).toStrictEqual({
@@ -132,7 +139,7 @@ describe('UserService (e2e)', () => {
     it('/checkName (POST) [실패: 이미 가입된 닉네임]', async () => {
       const response = await request(httpServer)
         .post('/user/checkName')
-        .send({ name: testUser.nick_name });
+        .send({ nick_name: testUser.nick_name });
 
       expect(response.status).toStrictEqual(401);
       expect(response.body).toStrictEqual({
@@ -147,7 +154,7 @@ describe('UserService (e2e)', () => {
     it('/checkPassword (POST) [성공]', async () => {
       const response = await request(httpServer)
         .post('/user/checkPassword')
-        .send({ password: 'testPasword1!@#' });
+        .send({ password: newUser.password });
 
       expect(response.status).toStrictEqual(201);
       expect(response.body).toStrictEqual({
@@ -197,7 +204,7 @@ describe('UserService (e2e)', () => {
 
       const response = await request(httpServer)
         .post('/user/sendVerificationCode')
-        .send({ email: testUser.email });
+        .send({ email: newUser.email });
 
       expect(response.status).toStrictEqual(500);
       expect(response.body).toStrictEqual({
@@ -214,7 +221,7 @@ describe('UserService (e2e)', () => {
       });
       const response = await request(httpServer)
         .post('/user/sendVerificationCode')
-        .send({ email: testUser.email });
+        .send({ email: newUser.email });
 
       expect(response.status).toStrictEqual(500);
       expect(response.body).toStrictEqual({
@@ -230,11 +237,16 @@ describe('UserService (e2e)', () => {
       jest.spyOn(redisService, 'get').mockResolvedValue('123456');
       jest.spyOn(redisService, 'del').mockResolvedValue(1);
 
-      const response = await request(httpServer).post('/user/signUp').send({
-        email: 'hello@example.com',
-        nick_name: 'newUser',
-        password: 'testPasword1!@#',
-        verificationCode: '123456',
+      const response = await request(httpServer)
+        .post('/user/signUp')
+        .send(newUser);
+
+      expect(response.status).toStrictEqual(201);
+      expect(response.body).toStrictEqual({
+        status: 'success',
+        data: {
+          email: response.body.data.email,
+        },
       });
 
       const { id } = await prisma.users.findUnique({
@@ -243,37 +255,78 @@ describe('UserService (e2e)', () => {
         },
       });
 
-      newUser = {
-        id,
-        email: response.body.data.email,
-        nick_name: response.body.data.nick_name,
-      };
-
-      expect(response.status).toStrictEqual(201);
-      expect(response.body).toMatchObject({
-        status: 'success',
-        data: {
-          email: response.body.data.email,
+      await prisma.users.delete({
+        where: {
+          id,
         },
+      });
+    });
+
+    it('/signUp (POST) [실패: 인증번호 불일치]', async () => {
+      jest.spyOn(redisService, 'get').mockResolvedValue('123453');
+      const response = await request(httpServer)
+        .post('/user/signUp')
+        .send(newUser);
+
+      expect(response.status).toStrictEqual(401);
+      expect(response.body).toStrictEqual({
+        statusCode: 401,
+        message: '인증번호가 일치하지 않습니다.',
+        status: 'exception',
+      });
+    });
+
+    it('/signUp (POST) [실패: 인증번호 만료]', async () => {
+      jest.spyOn(redisService, 'get').mockResolvedValue(null);
+      const response = await request(httpServer)
+        .post('/user/signUp')
+        .send(newUser);
+
+      expect(response.status).toStrictEqual(401);
+      expect(response.body).toStrictEqual({
+        statusCode: 401,
+        message: '인증번호 유효기간이 만료되었습니다.',
+        status: 'exception',
+      });
+    });
+
+    it('/signUp (POST) [실패: Redis Error]', async () => {
+      jest.spyOn(redisService, 'get').mockRejectedValue(null);
+      const response = await request(httpServer)
+        .post('/user/signUp')
+        .send(newUser);
+
+      expect(response.status).toStrictEqual(500);
+      expect(response.body).toEqual({
+        statusCode: 500,
+        message: '잠시 후 다시 시도해 주세요.',
+        status: 'exception',
+      });
+    });
+
+    it('/signUp (POST) [실패: DB Error]', async () => {
+      jest.spyOn(prisma.users, 'create').mockRejectedValue(null);
+      const response = await request(httpServer)
+        .post('/user/signUp')
+        .send(newUser);
+      console.log(response);
+      expect(response.status).toStrictEqual(500);
+      expect(response.body).toStrictEqual({
+        statusCode: 500,
+        message: '잠시 후 다시 시도해 주세요.',
+        status: 'exception',
       });
     });
   });
 
   afterAll(async () => {
-    await prisma.$transaction(async (tx) => {
-      await tx.users.delete({
-        where: {
-          id: testUser.id,
-        },
-      });
-
-      await tx.users.delete({
-        where: {
-          id: newUser.id,
-        },
-      });
+    await prisma.users.delete({
+      where: {
+        id: testUser.id,
+      },
     });
 
+    redisService.disconnect();
     await app.close();
   });
 });
