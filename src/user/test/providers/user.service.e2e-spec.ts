@@ -309,7 +309,7 @@ describe('UserService (e2e)', () => {
       const response = await request(httpServer)
         .post('/user/signUp')
         .send(newUser);
-      console.log(response);
+
       expect(response.status).toStrictEqual(500);
       expect(response.body).toStrictEqual({
         statusCode: 500,
@@ -318,6 +318,8 @@ describe('UserService (e2e)', () => {
       });
     });
   });
+
+  // TODO: Auth Service 테스트 코드 작성 후 patch, delete 테스트 코드 작성
 
   afterAll(async () => {
     await prisma.users.delete({
