@@ -17,13 +17,13 @@ export class JwtGuard extends AuthGuard('jwt') {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException('The token is not valid');
+      throw new UnauthorizedException('로그인이 필요한 서비스입니다.');
     }
 
     try {
       await jwtUtil().verifyAccessToken(token);
     } catch (error) {
-      throw new UnauthorizedException('The token is not valid');
+      throw new UnauthorizedException('로그인이 필요한 서비스입니다.');
     }
 
     return super.canActivate(context) as boolean;

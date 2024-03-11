@@ -7,11 +7,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setAppConfig } from 'src/common/set-app-config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RepositoryUserResponse } from 'src/user/interface/repository.interface';
-import { UserRedisService } from 'src/user/providers/user-redis.service';
 import { UserModule } from 'src/user/user.module';
 import * as request from 'supertest';
 import * as nodemailer from 'nodemailer';
-import { RedisService } from 'src/redis/redis.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { bcryptUtil } from 'src/common/utils/bcrypt.util';
+import { UserRedisService } from 'src/user/providers/user-redis.service';
+import { SetVerificationCodeExpire } from 'src/user/interface/user-redis.interface';
 
 interface NewUser {
   email: string;
@@ -24,14 +26,13 @@ describe('UserService (e2e)', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
   let prisma: PrismaService;
-  let redis: UserRedisService;
-  let redisService: RedisService;
+  let userRedisService: UserRedisService;
   let testUser: RepositoryUserResponse;
   let newUser: NewUser;
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [UserModule, AuthModule],
       providers: [
         {
           provide: UserRedisService,
@@ -41,14 +42,6 @@ describe('UserService (e2e)', () => {
             deleteVerificationCode: jest.fn(),
           },
         },
-        {
-          provide: RedisService,
-          useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
-            del: jest.fn(),
-          },
-        },
       ],
     }).compile();
 
@@ -56,9 +49,8 @@ describe('UserService (e2e)', () => {
     await setAppConfig(app);
     await app.init();
 
-    redisService = moduleRef.get<RedisService>(RedisService);
+    userRedisService = moduleRef.get<UserRedisService>(UserRedisService);
     prisma = moduleRef.get<PrismaService>(PrismaService);
-    redis = moduleRef.get<UserRedisService>(UserRedisService);
     httpServer = await app.getHttpServer();
 
     newUser = {
@@ -67,11 +59,20 @@ describe('UserService (e2e)', () => {
       nick_name: 'newUser',
       verificationCode: '123456',
     };
-    testUser = await prisma.users.create({
+
+    testUser = {
+      email: 'test_user@example.com',
+      nick_name: 'testUser',
+      password: 'testPassword!@#',
+    };
+
+    const password = await bcryptUtil().hash(testUser.password);
+
+    await prisma.users.create({
       data: {
         email: 'test_user@example.com',
         nick_name: 'testUser',
-        password: 'testPassword!@#',
+        password,
       },
     });
   });
@@ -179,27 +180,34 @@ describe('UserService (e2e)', () => {
 
   describe('/user, [이메일 인증코드 전송]', () => {
     it('/sendVerificationCode (POST) [성공]', async () => {
-      jest.spyOn(redis, 'setVerificationCode').mockResolvedValue(null);
+      const redisInfo: SetVerificationCodeExpire = {
+        key: newUser.email,
+        value: '123456',
+        time: 60 * 5,
+      };
+      await userRedisService.setVerificationCode(redisInfo);
       nodemailer.createTransport = jest.fn().mockReturnValue({
-        sendMail: jest.fn().mockResolvedValue(null),
+        sendMail: jest.fn().mockResolvedValueOnce(null),
       });
 
       const response = await request(httpServer)
         .post('/user/sendVerificationCode')
-        .send({ email: testUser.email });
+        .send({ email: newUser.email });
 
       expect(response.status).toStrictEqual(201);
       expect(response.body).toStrictEqual({ status: 'success' });
+
+      await userRedisService.deleteVerificationCode(newUser.email);
     });
 
     it('/sendVerificationCode (POST) [실패: RedisError]', async () => {
-      jest.spyOn(redis, 'setVerificationCode').mockImplementation(() => {
-        throw new InternalServerErrorException(
-          '인증번호 전송에 실패하였습니다.',
+      jest
+        .spyOn(userRedisService, 'setVerificationCode')
+        .mockRejectedValueOnce(
+          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
         );
-      });
       nodemailer.createTransport = jest.fn().mockReturnValue({
-        sendMail: jest.fn().mockResolvedValue(null),
+        sendMail: jest.fn().mockResolvedValueOnce(null),
       });
 
       const response = await request(httpServer)
@@ -209,16 +217,23 @@ describe('UserService (e2e)', () => {
       expect(response.status).toStrictEqual(500);
       expect(response.body).toStrictEqual({
         statusCode: 500,
-        message: '인증번호 전송에 실패하였습니다.',
+        message: '잠시 후 다시 시도해 주세요.',
         status: 'exception',
       });
     });
 
     it('/sendVerificationCode (POST) [실패: 메일 전송 실패]', async () => {
-      jest.spyOn(redis, 'setVerificationCode').mockResolvedValue(null);
+      const redisInfo: SetVerificationCodeExpire = {
+        key: newUser.email,
+        value: '123456',
+        time: 60 * 5,
+      };
+      await userRedisService.setVerificationCode(redisInfo);
+
       nodemailer.createTransport = jest.fn().mockReturnValue({
-        sendMail: jest.fn().mockRejectedValue(null),
+        sendMail: jest.fn().mockRejectedValueOnce(null),
       });
+
       const response = await request(httpServer)
         .post('/user/sendVerificationCode')
         .send({ email: newUser.email });
@@ -229,13 +244,20 @@ describe('UserService (e2e)', () => {
         message: '인증번호 전송에 실패하였습니다.',
         status: 'exception',
       });
+
+      await userRedisService.deleteVerificationCode(newUser.email);
     });
   });
 
   describe('/user, [회원가입]', () => {
     it('/signUp (POST) [성공]', async () => {
-      jest.spyOn(redisService, 'get').mockResolvedValue('123456');
-      jest.spyOn(redisService, 'del').mockResolvedValue(1);
+      const redisInfo: SetVerificationCodeExpire = {
+        key: newUser.email,
+        value: '123456',
+        time: 60 * 5,
+      };
+
+      await userRedisService.setVerificationCode(redisInfo);
 
       const response = await request(httpServer)
         .post('/user/signUp')
@@ -249,11 +271,13 @@ describe('UserService (e2e)', () => {
         },
       });
 
-      const { id } = await prisma.users.findUnique({
+      const { id, email } = await prisma.users.findUnique({
         where: {
           email: response.body.data.email,
         },
       });
+
+      await userRedisService.deleteVerificationCode(email);
 
       await prisma.users.delete({
         where: {
@@ -263,7 +287,14 @@ describe('UserService (e2e)', () => {
     });
 
     it('/signUp (POST) [실패: 인증번호 불일치]', async () => {
-      jest.spyOn(redisService, 'get').mockResolvedValue('123453');
+      const redisInfo: SetVerificationCodeExpire = {
+        key: newUser.email,
+        value: '123436',
+        time: 60 * 5,
+      };
+
+      await userRedisService.setVerificationCode(redisInfo);
+
       const response = await request(httpServer)
         .post('/user/signUp')
         .send(newUser);
@@ -274,10 +305,11 @@ describe('UserService (e2e)', () => {
         message: '인증번호가 일치하지 않습니다.',
         status: 'exception',
       });
+
+      await userRedisService.deleteVerificationCode(newUser.email);
     });
 
     it('/signUp (POST) [실패: 인증번호 만료]', async () => {
-      jest.spyOn(redisService, 'get').mockResolvedValue(null);
       const response = await request(httpServer)
         .post('/user/signUp')
         .send(newUser);
@@ -291,21 +323,11 @@ describe('UserService (e2e)', () => {
     });
 
     it('/signUp (POST) [실패: Redis Error]', async () => {
-      jest.spyOn(redisService, 'get').mockRejectedValue(null);
-      const response = await request(httpServer)
-        .post('/user/signUp')
-        .send(newUser);
-
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toEqual({
-        statusCode: 500,
-        message: '잠시 후 다시 시도해 주세요.',
-        status: 'exception',
-      });
-    });
-
-    it('/signUp (POST) [실패: DB Error]', async () => {
-      jest.spyOn(prisma.users, 'create').mockRejectedValue(null);
+      jest
+        .spyOn(userRedisService, 'getVerificationCode')
+        .mockRejectedValueOnce(
+          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+        );
       const response = await request(httpServer)
         .post('/user/signUp')
         .send(newUser);
@@ -317,18 +339,173 @@ describe('UserService (e2e)', () => {
         status: 'exception',
       });
     });
+
+    it('/signUp (POST) [실패: DB Error]', async () => {
+      const redisInfo: SetVerificationCodeExpire = {
+        key: newUser.email,
+        value: '123456',
+        time: 60 * 5,
+      };
+      await userRedisService.setVerificationCode(redisInfo);
+
+      jest
+        .spyOn(prisma, '$transaction')
+        .mockRejectedValueOnce(
+          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+        );
+
+      const response = await request(httpServer)
+        .post('/user/signUp')
+        .send(newUser);
+
+      expect(response.status).toStrictEqual(500);
+      expect(response.body).toStrictEqual({
+        statusCode: 500,
+        message: '잠시 후 다시 시도해 주세요.',
+        status: 'exception',
+      });
+
+      await userRedisService.deleteVerificationCode(newUser.email);
+    });
   });
 
-  // TODO: Auth Service 테스트 코드 작성 후 patch, delete 테스트 코드 작성
+  describe('/user, [회원 정보 수정] (PATCH)', () => {
+    it('/updateUser (PATCH) [성공]', async () => {
+      const loginResponse = await request(httpServer)
+        .post('/auth/signIn')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+
+      const response = await request(httpServer)
+        .patch('/user/updateUser')
+        .set('Cookie', `access_token=${cookies['access_token']}`)
+        .send({ email: testUser.email, nick_name: 'newNickName' });
+
+      expect(response.status).toStrictEqual(200);
+      expect(response.body.data).toMatchObject({ nick_name: 'newNickName' });
+    });
+
+    it('/updateUser (PATCH) [실패: 인증 필요]', async () => {
+      const response = await request(httpServer)
+        .patch('/user/updateUser')
+        .send({ email: testUser.email, nick_name: 'newNickName' });
+
+      expect(response.status).toStrictEqual(401);
+      expect(response.body).toStrictEqual({
+        statusCode: 401,
+        message: '로그인이 필요한 서비스입니다.',
+        status: 'exception',
+      });
+    });
+
+    it('/updateUser (PATCH) [실패: DB Error]', async () => {
+      const loginResponse = await request(httpServer)
+        .post('/auth/signIn')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+
+      jest
+        .spyOn(prisma, '$transaction')
+        .mockRejectedValueOnce(
+          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+        );
+
+      const response = await request(httpServer)
+        .patch('/user/updateUser')
+        .set('Cookie', `access_token=${cookies['access_token']}`)
+        .send({ email: testUser.email, nick_name: 'newNickName' });
+
+      expect(response.status).toStrictEqual(500);
+      expect(response.body).toStrictEqual({
+        statusCode: 500,
+        message: '잠시 후 다시 시도해 주세요.',
+        status: 'exception',
+      });
+    });
+  });
+
+  describe('/user, [회원 탈퇴] (DELETE)', () => {
+    it('/deleteUser (DELETE) [성공]', async () => {
+      testUser.nick_name = 'newNickName';
+      const loginResponse = await request(httpServer)
+        .post('/auth/signIn')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+
+      const response = await request(httpServer)
+        .delete('/user/deleteUser')
+        .set('Cookie', `access_token=${cookies['access_token']}`)
+        .send({ email: testUser.email });
+
+      expect(response.status).toStrictEqual(200);
+      expect(response.body).toStrictEqual({
+        status: 'success',
+        data: { email: testUser.email, nick_name: testUser.nick_name },
+      });
+    });
+
+    it('/deleteUser (DELETE) [실패: 인증 필요]', async () => {
+      const response = await request(httpServer)
+        .delete('/user/deleteUser')
+        .send({ email: testUser.email });
+
+      expect(response.status).toStrictEqual(401);
+      expect(response.body).toStrictEqual({
+        statusCode: 401,
+        message: '로그인이 필요한 서비스입니다.',
+        status: 'exception',
+      });
+    });
+
+    it('/deleteUser (DELETE) [실패: DB Error]', async () => {
+      const loginResponse = await request(httpServer)
+        .post('/auth/signIn')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+
+      jest
+        .spyOn(prisma, '$transaction')
+        .mockRejectedValueOnce(
+          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+        );
+
+      const response = await request(httpServer)
+        .delete('/user/deleteUser')
+        .set('Cookie', `access_token=${cookies['access_token']}`)
+        .send({ email: testUser.email });
+
+      expect(response.status).toStrictEqual(500);
+      expect(response.body).toStrictEqual({
+        statusCode: 500,
+        message: '잠시 후 다시 시도해 주세요.',
+        status: 'exception',
+      });
+    });
+  });
+
+  function getCookies(cookieString) {
+    const cookies = {};
+    const pairs = cookieString.split(';');
+
+    for (let i = 0; i < pairs.length; i++) {
+      const parts = pairs[i].split('=');
+      cookies[parts[0].trim()] = parts[1] ? parts[1].trim() : '';
+    }
+
+    return cookies;
+  }
 
   afterAll(async () => {
     await prisma.users.delete({
       where: {
-        id: testUser.id,
+        email: testUser.email,
       },
     });
-
-    redisService.disconnect();
+    await userRedisService.deleteVerificationCode(newUser.email);
     await app.close();
   });
 });
