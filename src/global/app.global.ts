@@ -12,11 +12,11 @@ import * as cookieParser from 'cookie-parser';
 import { Redis } from 'ioredis';
 
 export class AppGlobal {
-  public static prisma = new PrismaClient({ log: ['query', 'info'] });
+  public static readonly prisma = new PrismaClient({ log: ['query', 'info'] });
 
-  public static configService = new ConfigService();
+  public static readonly configService = new ConfigService();
 
-  public static redis = new Redis({
+  public static readonly redis = new Redis({
     host: this.configService.get<string>('REDIS_HOST'),
     port: this.configService.get<number>('REDIS_PORT'),
   });
@@ -43,8 +43,8 @@ export class AppGlobal {
       origin: [this.configService.get<string>('CLIENT_URL')],
       credentials: true,
     });
-    await this.prisma.$connect();
 
     await app.listen(this.configService.get<string>('PORT'));
+    await this.prisma.$connect();
   }
 }
