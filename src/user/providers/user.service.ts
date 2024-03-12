@@ -12,8 +12,8 @@ import { UserRepositoryService } from './user-repository.service';
 import { DeleteUserDto } from '../dtos/delete-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { SignUpUser, UpdateUser } from '../interface/repository.interface';
-import { configUtil } from 'src/common/utils/config.util';
 import { UserRedisService } from './user-redis.service';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Injectable()
 export class UserService {
@@ -114,9 +114,7 @@ export class UserService {
 
     if (aboutMe) userInfo.about_me = aboutMe;
     if (proFileImageUrl) {
-      const imageUrl = `${configUtil().getImgFileUrl(
-        'url',
-      )}/${uuidUtil().v4()}`;
+      const imageUrl = `${ConfigGlobal.env.imageServerUrl}/${uuidUtil().v4()}`;
       userInfo.profile_image_url = imageUrl;
     }
 
@@ -142,9 +140,7 @@ export class UserService {
       userInfo.password = await bcryptUtil().hash(requestPassword);
     if (requestAboutMe) userInfo.about_me = requestAboutMe;
     if (requestProfileImage) {
-      const imageUrl = `${configUtil().getImgFileUrl(
-        'url',
-      )}/${uuidUtil().v4()}`;
+      const imageUrl = `${ConfigGlobal.env.imageServerUrl}/${uuidUtil().v4()}`;
       userInfo.profile_image_url = imageUrl;
     }
 
@@ -172,7 +168,9 @@ export class UserService {
       throw new UnauthorizedException('계정 삭제에 실패하였습니다.');
     }
 
-    const { email, nick_name } = user;
+    const { id, email, nick_name } = user;
+
+    await this.userRedis.deleteVerificationCode(id.toString());
 
     return ResponseDto.successWithJSON({ email, nick_name });
   }

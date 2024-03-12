@@ -1,13 +1,13 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
-import { configUtil } from 'src/common/utils/config.util';
+import { ConfigGlobal } from 'src/global/config.global';
 
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor() {
     super({
-      clientID: configUtil().getKakao<string>('id'),
-      clientSecret: configUtil().getKakao<string>('secret'),
-      callbackURL: configUtil().getKakao<string>('callback_url'),
+      clientID: ConfigGlobal.env.kakaoId,
+      clientSecret: ConfigGlobal.env.kakaoSecret,
+      callbackURL: ConfigGlobal.env.kakaoCallbackUrl,
     });
   }
 

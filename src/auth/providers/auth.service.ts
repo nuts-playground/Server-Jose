@@ -20,6 +20,13 @@ export class AuthService {
     response.end();
   }
 
+  async signOut(response: Response) {
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
+    response.redirect('/');
+    response.end();
+  }
+
   async getProfile(id: number): Promise<any> {
     const {
       email,

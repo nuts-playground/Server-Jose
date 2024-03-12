@@ -1,4 +1,4 @@
-import { configUtil } from './config.util';
+import { ConfigGlobal } from 'src/global/config.global';
 import {
   SetCookies,
   SetCookiesForGuard,
@@ -29,10 +29,10 @@ export const responseUtil = () => {
 const setCookies = (setInfo: SetCookies) => {
   setInfo.response.cookie('access_token', setInfo.access_token, {
     httpOnly: true,
-    maxAge: configUtil().getJwtExpiresIn<number>('access-time'),
+    maxAge: ConfigGlobal.env.jwtExpiresAccessTokenTime,
   });
   setInfo.response.cookie('refresh_token', setInfo.refresh_token, {
     httpOnly: true,
-    maxAge: configUtil().getJwtExpiresIn<number>('refresh-time'),
+    maxAge: ConfigGlobal.env.jwtExpiresRefreshTokenTime,
   });
 };

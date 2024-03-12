@@ -1,22 +1,22 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { configUtil } from './config.util';
 import { SendEmail } from './interfaces/email.util.interface';
+import { ConfigGlobal } from 'src/global/config.global';
 
 export const emailUtil = () => {
   return {
     send: async (sendInfo: SendEmail) => {
       const transporter = nodemailer.createTransport({
-        service: configUtil().getEmail<string>('service'),
+        service: ConfigGlobal.env.emailService,
         auth: {
-          user: configUtil().getEmail<string>('user'),
-          pass: configUtil().getEmail<string>('pass'),
+          user: ConfigGlobal.env.emailUser,
+          pass: ConfigGlobal.env.emailPassword,
         },
       });
 
       try {
         await transporter.sendMail({
-          from: configUtil().getEmail<string>('user'),
+          from: ConfigGlobal.env.emailUser,
           to: sendInfo.email,
           subject: sendInfo.subject,
           html: sendInfo.contents,

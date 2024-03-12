@@ -7,21 +7,20 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { configUtil } from 'src/common/utils/config.util';
 import { GithubStrategy } from './strategies/github.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { NaverStrategy } from './strategies/naver.strategy';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './providers/social-login.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { AuthRedisService } from './providers/auth-redis.service';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Module({
   imports: [
     UserModule,
-    PrismaModule,
     PassportModule,
     JwtModule.register({
-      secret: configUtil().getJwtSecretKey('access'),
+      secret: ConfigGlobal.env.jwtSecretKeyAccessToken,
       global: false,
     }),
   ],
@@ -35,6 +34,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
     GithubStrategy,
     KakaoStrategy,
     NaverStrategy,
+    AuthRedisService,
   ],
   controllers: [AuthController],
 })

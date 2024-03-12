@@ -25,6 +25,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
+  @Post('/signOut')
+  async signOut(@Res({ passthrough: true }) response: Response) {
+    await this.authService.signOut(response);
+  }
+
+  @UseGuards(JwtGuard)
   @Get('/profile')
   async getProfile(@Req() request: Request): Promise<ResponseDto> {
     const userProfile = await this.authService.getProfile(request.user['id']);

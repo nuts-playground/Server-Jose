@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { setAppConfig } from './common/set-app-config';
+import { AppGlobal } from './global/app.global';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await setAppConfig(app);
+  await AppGlobal.beforeAll(app);
 }
 bootstrap();

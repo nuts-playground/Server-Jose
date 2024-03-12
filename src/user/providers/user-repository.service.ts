@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import {
   RepositoryUserResponse,
   SignUpUser,
   UpdateUser,
 } from '../interface/repository.interface';
+import { AppGlobal } from 'src/global/app.global';
 
 @Injectable()
 export class UserRepositoryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor() {}
 
   async findById(id: number): Promise<RepositoryUserResponse> {
-    return this.prisma.users.findUnique({
+    return AppGlobal.prisma.users.findUnique({
       where: {
         id,
       },
@@ -19,7 +19,7 @@ export class UserRepositoryService {
   }
 
   async findByEmail(email: string): Promise<RepositoryUserResponse> {
-    return this.prisma.users.findUnique({
+    return AppGlobal.prisma.users.findUnique({
       where: {
         email,
       },
@@ -27,7 +27,7 @@ export class UserRepositoryService {
   }
 
   async findByName(nick_name: string): Promise<RepositoryUserResponse> {
-    return this.prisma.users.findUnique({
+    return AppGlobal.prisma.users.findUnique({
       where: {
         nick_name,
       },
@@ -35,7 +35,7 @@ export class UserRepositoryService {
   }
 
   async saveUser(userInfo: SignUpUser): Promise<RepositoryUserResponse> {
-    return this.prisma.$transaction(async (tx) => {
+    return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.create({
         data: userInfo,
       });
@@ -56,7 +56,7 @@ export class UserRepositoryService {
   async updateUser(
     userInfo: UpdateUser,
   ): Promise<RepositoryUserResponse | null> {
-    return this.prisma.$transaction(async (tx) => {
+    return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
           email: userInfo.email,
@@ -77,7 +77,7 @@ export class UserRepositoryService {
   }
 
   async deleteUser(email: string): Promise<RepositoryUserResponse | null> {
-    return this.prisma.$transaction(async (tx) => {
+    return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
           email,

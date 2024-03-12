@@ -1,15 +1,20 @@
 import { Request, Response } from 'express';
 import { JwtStrategyDto } from 'src/auth/interface/jwt.strategy.interface';
 import { responseUtil } from 'src/common/utils/response.util';
-import { configUtil } from 'src/common/utils/config.util';
 import { jwtUtil } from 'src/common/utils/jwt.util';
 import { Injectable } from '@nestjs/common';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SignUpUser } from 'src/user/interface/repository.interface';
+import { SetRefreshToken } from '../interface/auth-redis.interface';
+import { AuthRedisService } from './auth-redis.service';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Injectable()
 export class SocialLoginService {
-  constructor(private readonly userRepository: UserRepositoryService) {}
+  constructor(
+    private readonly userRepository: UserRepositoryService,
+    private readonly authRedisService: AuthRedisService,
+  ) {}
 
   async commonSocialLogin(request: Request, response: Response) {
     const provider = request.user['provider'];
@@ -20,7 +25,7 @@ export class SocialLoginService {
 
     if (isAlreadyEmail && isAlreadyEmail.provider !== provider) {
       // 다른 소셜 로그인으로 가입한 이메일이 이미 존재할 경우 리다이렉트 url 추가해야함
-      response.redirect(`${configUtil().getClient()}`);
+      response.redirect(`${ConfigGlobal.env.clientUrl}`);
 
       response.end();
 
@@ -46,10 +51,18 @@ export class SocialLoginService {
     };
 
     const { access_token, refresh_token } = await jwtUtil().getTokens(payload);
+    const redisExpireTime = ConfigGlobal.env.jwtExpiresRefreshTokenTime;
+    const redisInfo: SetRefreshToken = {
+      key: isAlreadyEmail.id.toString(),
+      value: refresh_token,
+      time: redisExpireTime,
+    };
+
+    await this.authRedisService.setRefreshToken(redisInfo);
 
     responseUtil().setCookies({ response, access_token, refresh_token });
 
-    response.redirect(`${configUtil().getClient()}`);
+    response.redirect(ConfigGlobal.env.clientUrl);
 
     response.end();
   }

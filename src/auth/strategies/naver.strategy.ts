@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-naver-v2';
-import { configUtil } from 'src/common/utils/config.util';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor() {
     super({
-      clientID: configUtil().getNaver<string>('id'),
-      clientSecret: configUtil().getNaver<string>('secret'),
-      callbackURL: configUtil().getNaver<string>('callback_url'),
+      clientID: ConfigGlobal.env.naverId,
+      clientSecret: ConfigGlobal.env.naverSecret,
+      callbackURL: ConfigGlobal.env.naverCallbackUrl,
     });
   }
 

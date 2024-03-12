@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
-import { configUtil } from './config.util';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtPayload, JwtTokens } from './interfaces/jwt.util.interface';
+import { ConfigGlobal } from 'src/global/config.global';
 
 const jwtService = new JwtService();
 
@@ -26,7 +26,7 @@ export const jwtUtil = () => {
     verifyAccessToken: async (token: string): Promise<JwtPayload> => {
       try {
         const payload = await jwtService.verifyAsync(token, {
-          secret: configUtil().getJwtSecretKey('access'),
+          secret: ConfigGlobal.env.jwtSecretKeyAccessToken,
         });
 
         return payload;
@@ -37,7 +37,7 @@ export const jwtUtil = () => {
     verifyRefreshToken: async (token: string): Promise<JwtPayload> => {
       try {
         const payload = await jwtService.verifyAsync(token, {
-          secret: configUtil().getJwtSecretKey('refresh'),
+          secret: ConfigGlobal.env.jwtSecretKeyRefreshToken,
         });
 
         return payload;
@@ -50,8 +50,8 @@ export const jwtUtil = () => {
 
 const getAccessToken = async (payload: JwtPayload): Promise<string> => {
   const access_token = await jwtService.signAsync(payload, {
-    expiresIn: configUtil().getJwtExpiresIn<string>('access-day'),
-    secret: configUtil().getJwtSecretKey('access'),
+    expiresIn: ConfigGlobal.env.jwtExpiresAccessTokenDay,
+    secret: ConfigGlobal.env.jwtSecretKeyAccessToken,
   });
 
   return access_token;
@@ -59,8 +59,8 @@ const getAccessToken = async (payload: JwtPayload): Promise<string> => {
 
 const getRefreshToken = async (payload: JwtPayload): Promise<string> => {
   const refresh_token = await jwtService.signAsync(payload, {
-    expiresIn: configUtil().getJwtExpiresIn<string>('refresh-day'),
-    secret: configUtil().getJwtSecretKey('refresh'),
+    expiresIn: ConfigGlobal.env.jwtExpiresRefreshTokenDay,
+    secret: ConfigGlobal.env.jwtSecretKeyRefreshToken,
   });
 
   return refresh_token;
