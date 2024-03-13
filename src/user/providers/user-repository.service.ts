@@ -4,7 +4,7 @@ import {
   SignUpUser,
   UpdateUser,
 } from '../interface/repository.interface';
-import { AppGlobal } from 'src/app.global';
+import { AppGlobal } from 'src/global/app.global';
 
 @Injectable()
 export class UserRepositoryService {

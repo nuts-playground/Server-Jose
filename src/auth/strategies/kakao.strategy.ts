@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
-import { ConfigGlobal } from 'src/config.global';
+import { ConfigGlobal } from 'src/global/config.global';
 
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor() {

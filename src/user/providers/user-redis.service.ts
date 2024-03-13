@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SetVerificationCodeExpire } from '../interface/user-redis.interface';
-import { AppGlobal } from 'src/app.global';
+import { AppGlobal } from 'src/global/app.global';
 
 @Injectable()
 export class UserRedisService {

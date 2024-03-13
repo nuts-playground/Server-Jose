@@ -7,7 +7,7 @@ import { UserRepositoryService } from 'src/user/providers/user-repository.servic
 import { SignUpUser } from 'src/user/interface/repository.interface';
 import { SetRefreshToken } from '../interface/auth-redis.interface';
 import { AuthRedisService } from './auth-redis.service';
-import { ConfigGlobal } from 'src/config.global';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Injectable()
 export class SocialLoginService {

@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtPayload, JwtTokens } from './interfaces/jwt.util.interface';
-import { ConfigGlobal } from 'src/config.global';
+import { ConfigGlobal } from 'src/global/config.global';
 
 const jwtService = new JwtService();
 

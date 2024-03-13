@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SendEmail } from './interfaces/email.util.interface';
-import { ConfigGlobal } from 'src/config.global';
+import { ConfigGlobal } from 'src/global/config.global';
 
 export const emailUtil = () => {
   return {

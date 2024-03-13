@@ -13,7 +13,7 @@ import { DeleteUserDto } from '../dtos/delete-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { SignUpUser, UpdateUser } from '../interface/repository.interface';
 import { UserRedisService } from './user-redis.service';
-import { ConfigGlobal } from 'src/config.global';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Injectable()
 export class UserService {

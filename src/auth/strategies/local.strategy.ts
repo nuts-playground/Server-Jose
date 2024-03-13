@@ -6,7 +6,7 @@ import { jwtUtil } from 'src/common/utils/jwt.util';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { AuthRedisService } from '../providers/auth-redis.service';
 import { SetRefreshToken } from '../interface/auth-redis.interface';
-import { ConfigGlobal } from 'src/config.global';
+import { ConfigGlobal } from 'src/global/config.global';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {

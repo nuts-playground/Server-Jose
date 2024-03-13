@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClient } from '@prisma/client';
-import { AllExceptionsFilter } from './common/filters/exception.filter';
+import { AllExceptionsFilter } from '../common/filters/exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { Redis } from 'ioredis';
 
