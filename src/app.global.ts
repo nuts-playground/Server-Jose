@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClient } from '@prisma/client';
-import { AllExceptionsFilter } from '../common/filters/exception.filter';
+import { AllExceptionsFilter } from './common/filters/exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { Redis } from 'ioredis';
 
@@ -43,8 +43,7 @@ export class AppGlobal {
       origin: [this.configService.get<string>('CLIENT_URL')],
       credentials: true,
     });
-
-    await app.listen(this.configService.get<string>('PORT'));
     await this.prisma.$connect();
+    await app.listen(this.configService.get<string>('PORT'));
   }
 }

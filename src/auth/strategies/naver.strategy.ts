@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-naver-v2';
-import { ConfigGlobal } from 'src/global/config.global';
+import { ConfigGlobal } from 'src/config.global';
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {

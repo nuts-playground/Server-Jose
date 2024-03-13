@@ -13,7 +13,7 @@ import { NaverStrategy } from './strategies/naver.strategy';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './providers/social-login.service';
 import { AuthRedisService } from './providers/auth-redis.service';
-import { ConfigGlobal } from 'src/global/config.global';
+import { ConfigGlobal } from 'src/config.global';
 
 @Module({
   imports: [

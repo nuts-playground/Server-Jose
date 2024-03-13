@@ -5,7 +5,7 @@ import {
   JwtStrategyDto,
   JwtStrategyValueInterface,
 } from '../interface/jwt.strategy.interface';
-import { ConfigGlobal } from 'src/global/config.global';
+import { ConfigGlobal } from 'src/config.global';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

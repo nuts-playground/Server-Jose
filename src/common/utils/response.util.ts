@@ -1,4 +1,4 @@
-import { ConfigGlobal } from 'src/global/config.global';
+import { ConfigGlobal } from 'src/config.global';
 import {
   SetCookies,
   SetCookiesForGuard,

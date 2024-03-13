@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SetRefreshToken } from '../interface/auth-redis.interface';
-import { AppGlobal } from 'src/global/app.global';
+import { AppGlobal } from 'src/app.global';
 
 @Injectable()
 export class AuthRedisService {
