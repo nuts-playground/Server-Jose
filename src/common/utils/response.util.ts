@@ -1,38 +1,25 @@
-import { ConfigGlobal } from 'src/global/config.global';
-import {
-  SetCookies,
-  SetCookiesForGuard,
-} from './interfaces/response.util.interface';
+import { GlobalConfig } from 'src/global/config.global';
+import { ResponseHeadersUtil } from './interfaces/response-headers.util.interface';
 
-export const responseUtil = () => {
-  return {
-    setCookiesForGuard: (setInfo: SetCookiesForGuard) => {
-      const setCookiesInfo = {
-        response: setInfo.response,
-        access_token: setInfo.request.user['access_token'],
-        refresh_token: setInfo.request.user['refresh_token'],
-      };
-      setCookies(setCookiesInfo);
-    },
-    setCookies: (setInfo: SetCookies) => {
-      const setCookiesInfo = {
-        response: setInfo.response,
-        access_token: setInfo.access_token,
-        refresh_token: setInfo.refresh_token,
-      };
+export const globalResponseHeadersUtil: ResponseHeadersUtil = {
+  setCookiesForGuard: ({ request, response }) => {
+    const access_token = request.user['access_token'];
+    const refresh_token = request.user['refresh_token'];
 
-      setCookies(setCookiesInfo);
-    },
-  };
+    setCookies({ response, access_token, refresh_token });
+  },
+  setCookies: ({ access_token, refresh_token, response }) => {
+    setCookies({ response, access_token, refresh_token });
+  },
 };
 
-const setCookies = (setInfo: SetCookies) => {
-  setInfo.response.cookie('access_token', setInfo.access_token, {
+const setCookies = ({ response, access_token, refresh_token }) => {
+  response.cookie('access_token', access_token, {
     httpOnly: true,
-    maxAge: ConfigGlobal.env.jwtExpiresAccessTokenTime,
+    maxAge: GlobalConfig.env.jwtExpiresAccessTokenTime,
   });
-  setInfo.response.cookie('refresh_token', setInfo.refresh_token, {
+  response.cookie('refresh_token', refresh_token, {
     httpOnly: true,
-    maxAge: ConfigGlobal.env.jwtExpiresRefreshTokenTime,
+    maxAge: GlobalConfig.env.jwtExpiresRefreshTokenTime,
   });
 };

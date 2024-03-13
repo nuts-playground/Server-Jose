@@ -4,8 +4,6 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setAppConfig } from 'src/common/set-app-config';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { RepositoryUserResponse } from 'src/user/interface/repository.interface';
 import { UserModule } from 'src/user/user.module';
 import * as request from 'supertest';
@@ -14,6 +12,8 @@ import { AuthModule } from 'src/auth/auth.module';
 import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { UserRedisService } from 'src/user/providers/user-redis.service';
 import { SetVerificationCodeExpire } from 'src/user/interface/user-redis.interface';
+import { AppGlobal } from 'src/global/app.global';
+import { PrismaClient } from '@prisma/client';
 
 interface NewUser {
   email: string;
@@ -25,10 +25,10 @@ interface NewUser {
 describe('UserService (e2e)', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
-  let prisma: PrismaService;
   let userRedisService: UserRedisService;
   let testUser: RepositoryUserResponse;
   let newUser: NewUser;
+  let prisma: PrismaClient;
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -46,11 +46,11 @@ describe('UserService (e2e)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    await setAppConfig(app);
+    AppGlobal.beforeAll(app);
     await app.init();
 
     userRedisService = moduleRef.get<UserRedisService>(UserRedisService);
-    prisma = moduleRef.get<PrismaService>(PrismaService);
+    prisma = AppGlobal.prisma;
     httpServer = await app.getHttpServer();
 
     newUser = {
@@ -506,6 +506,7 @@ describe('UserService (e2e)', () => {
       },
     });
     await userRedisService.deleteVerificationCode(newUser.email);
+    AppGlobal.redis.disconnect();
     await app.close();
   });
 });

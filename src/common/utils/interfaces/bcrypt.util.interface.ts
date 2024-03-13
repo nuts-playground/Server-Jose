@@ -1,4 +1,10 @@
-export interface BcryptCompare {
-  password: string;
-  hash: string;
+export interface GlobalBcryptUtils {
+  readonly hash: (password: string) => Promise<string>;
+  readonly compare: ({
+    password,
+    hash,
+  }: {
+    password: string;
+    hash: string;
+  }) => Promise<boolean>;
 }

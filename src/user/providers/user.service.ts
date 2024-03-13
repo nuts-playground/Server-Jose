@@ -5,15 +5,15 @@ import { CheckEmailDto } from '../dtos/check-email.dto';
 import { CheckPasswordDto } from '../dtos/check-password.dto';
 import { CheckNameDto } from '../dtos/check-name.dto';
 import { SignUpDto } from '../dtos/sign-up.dto';
-import { verificationCodeUtil } from 'src/common/utils/send-verification-code.util';
-import { bcryptUtil } from 'src/common/utils/bcrypt.util';
-import { uuidUtil } from 'src/common/utils/uuid.util';
 import { UserRepositoryService } from './user-repository.service';
 import { DeleteUserDto } from '../dtos/delete-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { SignUpUser, UpdateUser } from '../interface/repository.interface';
 import { UserRedisService } from './user-redis.service';
-import { ConfigGlobal } from 'src/global/config.global';
+import { GlobalConfig } from 'src/global/config.global';
+import { globalUuidUtil } from 'src/common/utils/uuid.util';
+import { globalEmailUtil } from 'src/common/utils/email.util';
+import { globalBcryptUtil } from 'src/common/utils/bcrypt.util';
 
 @Injectable()
 export class UserService {
@@ -70,21 +70,21 @@ export class UserService {
   async sendVerificationCode(
     dto: SendVerificationCodeDto,
   ): Promise<ResponseDto> {
-    const code = uuidUtil().randomNumericString();
+    const code = globalUuidUtil.randomNumericString();
     const email = dto.getEmail();
-    const emailInfo = {
-      email,
-      subject: '[APP] 인증번호 안내',
-      contents: `인증번호는 ${code} 입니다.`,
-    };
     const redisInfo = {
       key: email,
       value: code,
       time: 60 * 5,
     };
+    const emailInfo = {
+      email,
+      subject: '[APP] 인증번호 안내',
+      contents: `인증번호는 ${code} 입니다.`,
+    };
 
     await this.userRedis.setVerificationCode(redisInfo);
-    await verificationCodeUtil().sendToEmail(emailInfo);
+    await globalEmailUtil.send(emailInfo);
 
     return ResponseDto.success();
   }
@@ -105,7 +105,7 @@ export class UserService {
     const userPassword = dto.getPassword();
     const proFileImageUrl = dto.getProfileImageUrl();
     const aboutMe = dto.getAboutMe();
-    const password = await bcryptUtil().hash(userPassword);
+    const password = await globalBcryptUtil.hash(userPassword);
     const userInfo: SignUpUser = {
       email: userEmail,
       nick_name,
@@ -114,7 +114,8 @@ export class UserService {
 
     if (aboutMe) userInfo.about_me = aboutMe;
     if (proFileImageUrl) {
-      const imageUrl = `${ConfigGlobal.env.imageServerUrl}/${uuidUtil().v4()}`;
+      const uuid = globalUuidUtil.v4();
+      const imageUrl = `${GlobalConfig.env.imageServerUrl}/${uuid}`;
       userInfo.profile_image_url = imageUrl;
     }
 
@@ -137,10 +138,11 @@ export class UserService {
 
     if (requestNickName) userInfo.nick_name = requestNickName;
     if (requestPassword)
-      userInfo.password = await bcryptUtil().hash(requestPassword);
+      userInfo.password = await globalBcryptUtil.hash(requestPassword);
     if (requestAboutMe) userInfo.about_me = requestAboutMe;
     if (requestProfileImage) {
-      const imageUrl = `${ConfigGlobal.env.imageServerUrl}/${uuidUtil().v4()}`;
+      const uuid = globalUuidUtil.v4();
+      const imageUrl = `${GlobalConfig.env.imageServerUrl}/${uuid}`;
       userInfo.profile_image_url = imageUrl;
     }
 

@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { jwtUtil } from 'src/common/utils/jwt.util';
-import { responseUtil } from 'src/common/utils/response.util';
 import { JwtStrategyDto } from '../interface/jwt.strategy.interface';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './social-login.service';
+import { globalResponseHeadersUtil } from 'src/common/utils/response.util';
+import { globalJwtUtil } from 'src/common/utils/jwt.util';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async signIn(request: Request, response: Response) {
-    responseUtil().setCookiesForGuard({ request, response });
+    globalResponseHeadersUtil.setCookiesForGuard({ request, response });
 
     response.redirect('/');
     response.end();
@@ -49,13 +49,19 @@ export class AuthService {
 
   async refreshToken(response: Response, refreshToken: string) {
     try {
-      const { sub, email } = await jwtUtil().verifyRefreshToken(refreshToken);
-      const { access_token, refresh_token } = await jwtUtil().getTokens({
+      const { sub, email } = await globalJwtUtil.verifyRefreshToken(
+        refreshToken,
+      );
+      const { access_token, refresh_token } = await globalJwtUtil.getTokens({
         sub,
         email,
       });
 
-      responseUtil().setCookies({ response, access_token, refresh_token });
+      globalResponseHeadersUtil.setCookies({
+        response,
+        access_token,
+        refresh_token,
+      });
       response.end();
     } catch (err) {
       throw new UnauthorizedException('The token is not valid');
@@ -63,9 +69,15 @@ export class AuthService {
   }
 
   async setToken(payload: JwtStrategyDto, response: Response) {
-    const { access_token, refresh_token } = await jwtUtil().getTokens(payload);
+    const { access_token, refresh_token } = await globalJwtUtil.getTokens(
+      payload,
+    );
 
-    responseUtil().setCookies({ response, access_token, refresh_token });
+    globalResponseHeadersUtil.setCookies({
+      response,
+      access_token,
+      refresh_token,
+    });
 
     response.end();
   }

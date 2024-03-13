@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { bcryptUtil } from 'src/common/utils/bcrypt.util';
+import { globalBcryptUtil } from 'src/common/utils/bcrypt.util';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class LocalGuard extends AuthGuard('local') {
     const user = await this.userRepository.findByEmail(email);
 
     if (user) {
-      const isPassword = await bcryptUtil().compare({
+      const isPassword = await globalBcryptUtil.compare({
         password,
         hash: user.password,
       });

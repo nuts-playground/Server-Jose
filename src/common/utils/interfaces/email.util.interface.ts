@@ -1,5 +1,7 @@
-export interface SendEmail {
-  email: string;
-  subject: string;
-  contents: string;
+export interface EmailUtil {
+  send: (params: {
+    email: string;
+    subject: string;
+    contents: string;
+  }) => Promise<void>;
 }

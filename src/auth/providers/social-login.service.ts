@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
-import { JwtStrategyDto } from 'src/auth/interface/jwt.strategy.interface';
-import { responseUtil } from 'src/common/utils/response.util';
-import { jwtUtil } from 'src/common/utils/jwt.util';
 import { Injectable } from '@nestjs/common';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
-import { SignUpUser } from 'src/user/interface/repository.interface';
-import { SetRefreshToken } from '../interface/auth-redis.interface';
 import { AuthRedisService } from './auth-redis.service';
-import { ConfigGlobal } from 'src/global/config.global';
+import { GlobalConfig } from 'src/global/config.global';
+import { globalJwtUtil } from 'src/common/utils/jwt.util';
+import { globalResponseHeadersUtil } from 'src/common/utils/response.util';
 
 @Injectable()
 export class SocialLoginService {
@@ -25,8 +22,7 @@ export class SocialLoginService {
 
     if (isAlreadyEmail && isAlreadyEmail.provider !== provider) {
       // 다른 소셜 로그인으로 가입한 이메일이 이미 존재할 경우 리다이렉트 url 추가해야함
-      response.redirect(`${ConfigGlobal.env.clientUrl}`);
-
+      response.redirect(`${GlobalConfig.env.clientUrl}`);
       response.end();
 
       return;
@@ -34,8 +30,7 @@ export class SocialLoginService {
 
     if (!isAlreadyEmail) {
       const isAreadyName = await this.createRandomName(sliceName);
-
-      const userInfo: SignUpUser = {
+      const userInfo = {
         email: userEmail,
         nick_name: isAreadyName,
         provider: provider,
@@ -44,15 +39,12 @@ export class SocialLoginService {
 
       isAlreadyEmail = await this.userRepository.saveUser(userInfo);
     }
-
-    const payload: JwtStrategyDto = {
+    const { access_token, refresh_token } = await globalJwtUtil.getTokens({
       sub: isAlreadyEmail.id.toString(),
       email: isAlreadyEmail.email,
-    };
-
-    const { access_token, refresh_token } = await jwtUtil().getTokens(payload);
-    const redisExpireTime = ConfigGlobal.env.jwtExpiresRefreshTokenTime;
-    const redisInfo: SetRefreshToken = {
+    });
+    const redisExpireTime = GlobalConfig.env.jwtExpiresRefreshTokenTime;
+    const redisInfo = {
       key: isAlreadyEmail.id.toString(),
       value: refresh_token,
       time: redisExpireTime,
@@ -60,10 +52,12 @@ export class SocialLoginService {
 
     await this.authRedisService.setRefreshToken(redisInfo);
 
-    responseUtil().setCookies({ response, access_token, refresh_token });
-
-    response.redirect(ConfigGlobal.env.clientUrl);
-
+    globalResponseHeadersUtil.setCookies({
+      response,
+      access_token,
+      refresh_token,
+    });
+    response.redirect(GlobalConfig.env.clientUrl);
     response.end();
   }
 

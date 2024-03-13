@@ -1,7 +1,7 @@
 import { AppGlobal } from './app.global';
 import { GetEnvConfig } from './interface/config.interface';
 
-export class ConfigGlobal {
+export class GlobalConfig {
   private static readonly configService = AppGlobal.configService;
 
   public static env: GetEnvConfig = {

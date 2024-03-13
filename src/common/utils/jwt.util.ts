@@ -1,67 +1,51 @@
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtPayload, JwtTokens } from './interfaces/jwt.util.interface';
-import { ConfigGlobal } from 'src/global/config.global';
+import { GlobalConfig } from 'src/global/config.global';
+import { GlobalJwtUtil } from './interfaces/jwt.util.interface';
 
 const jwtService = new JwtService();
 
-export const jwtUtil = () => {
-  return {
-    getAccessToken: async (payload: JwtPayload): Promise<string> => {
-      const access_token = await getAccessToken(payload);
+export const globalJwtUtil: GlobalJwtUtil = {
+  getAccessToken: async ({ sub, email }) => {
+    return await jwtService.signAsync(
+      { sub, email },
+      {
+        expiresIn: GlobalConfig.env.jwtExpiresAccessTokenDay,
+        secret: GlobalConfig.env.jwtSecretKeyAccessToken,
+      },
+    );
+  },
+  getRefreshToken: async ({ sub, email }) => {
+    return await jwtService.signAsync(
+      { sub, email },
+      {
+        expiresIn: GlobalConfig.env.jwtExpiresRefreshTokenDay,
+        secret: GlobalConfig.env.jwtSecretKeyRefreshToken,
+      },
+    );
+  },
+  getTokens: async ({ sub, email }) => {
+    const access_token = await globalJwtUtil.getAccessToken({ sub, email });
+    const refresh_token = await globalJwtUtil.getRefreshToken({ sub, email });
 
-      return access_token;
-    },
-    getRefreshToken: async (payload: JwtPayload): Promise<string> => {
-      const refresh_token = await getRefreshToken(payload);
-
-      return refresh_token;
-    },
-    getTokens: async (payload: JwtPayload): Promise<JwtTokens> => {
-      const access_token = await getAccessToken(payload);
-      const refresh_token = await getRefreshToken(payload);
-
-      return { access_token, refresh_token };
-    },
-    verifyAccessToken: async (token: string): Promise<JwtPayload> => {
-      try {
-        const payload = await jwtService.verifyAsync(token, {
-          secret: ConfigGlobal.env.jwtSecretKeyAccessToken,
-        });
-
-        return payload;
-      } catch (error) {
-        throw new UnauthorizedException('The token is not valid');
-      }
-    },
-    verifyRefreshToken: async (token: string): Promise<JwtPayload> => {
-      try {
-        const payload = await jwtService.verifyAsync(token, {
-          secret: ConfigGlobal.env.jwtSecretKeyRefreshToken,
-        });
-
-        return payload;
-      } catch (error) {
-        throw new UnauthorizedException('The token is not valid');
-      }
-    },
-  };
-};
-
-const getAccessToken = async (payload: JwtPayload): Promise<string> => {
-  const access_token = await jwtService.signAsync(payload, {
-    expiresIn: ConfigGlobal.env.jwtExpiresAccessTokenDay,
-    secret: ConfigGlobal.env.jwtSecretKeyAccessToken,
-  });
-
-  return access_token;
-};
-
-const getRefreshToken = async (payload: JwtPayload): Promise<string> => {
-  const refresh_token = await jwtService.signAsync(payload, {
-    expiresIn: ConfigGlobal.env.jwtExpiresRefreshTokenDay,
-    secret: ConfigGlobal.env.jwtSecretKeyRefreshToken,
-  });
-
-  return refresh_token;
+    return { access_token, refresh_token };
+  },
+  verifyAccessToken: async (token: string) => {
+    try {
+      return await jwtService.verifyAsync(token, {
+        secret: GlobalConfig.env.jwtSecretKeyAccessToken,
+      });
+    } catch (error) {
+      throw new UnauthorizedException('The token is not valid');
+    }
+  },
+  verifyRefreshToken: async (token: string) => {
+    try {
+      return await jwtService.verifyAsync(token, {
+        secret: GlobalConfig.env.jwtSecretKeyRefreshToken,
+      });
+    } catch (error) {
+      throw new UnauthorizedException('The token is not valid');
+    }
+  },
 };

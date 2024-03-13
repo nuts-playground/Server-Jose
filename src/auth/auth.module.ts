@@ -13,14 +13,14 @@ import { NaverStrategy } from './strategies/naver.strategy';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './providers/social-login.service';
 import { AuthRedisService } from './providers/auth-redis.service';
-import { ConfigGlobal } from 'src/global/config.global';
+import { GlobalConfig } from 'src/global/config.global';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: ConfigGlobal.env.jwtSecretKeyAccessToken,
+      secret: GlobalConfig.env.jwtSecretKeyAccessToken,
       global: false,
     }),
   ],

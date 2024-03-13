@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { jwtUtil } from 'src/common/utils/jwt.util';
+import { globalJwtUtil } from 'src/common/utils/jwt.util';
 
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
@@ -20,11 +20,7 @@ export class JwtGuard extends AuthGuard('jwt') {
       throw new UnauthorizedException('로그인이 필요한 서비스입니다.');
     }
 
-    try {
-      await jwtUtil().verifyAccessToken(token);
-    } catch (error) {
-      throw new UnauthorizedException('로그인이 필요한 서비스입니다.');
-    }
+    await globalJwtUtil.verifyAccessToken(token);
 
     return super.canActivate(context) as boolean;
   }

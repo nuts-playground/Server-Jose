@@ -5,7 +5,7 @@ import {
   JwtStrategyDto,
   JwtStrategyValueInterface,
 } from '../interface/jwt.strategy.interface';
-import { ConfigGlobal } from 'src/global/config.global';
+import { GlobalConfig } from 'src/global/config.global';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: ConfigGlobal.env.jwtSecretKeyAccessToken,
+      secretOrKey: GlobalConfig.env.jwtSecretKeyAccessToken,
     });
   }
 
