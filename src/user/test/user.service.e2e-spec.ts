@@ -9,11 +9,11 @@ import { UserModule } from 'src/user/user.module';
 import * as request from 'supertest';
 import * as nodemailer from 'nodemailer';
 import { AuthModule } from 'src/auth/auth.module';
-import { bcryptUtil } from 'src/common/utils/bcrypt.util';
 import { UserRedisService } from 'src/user/providers/user-redis.service';
 import { SetVerificationCodeExpire } from 'src/user/interface/user-redis.interface';
 import { AppGlobal } from 'src/global/app.global';
 import { PrismaClient } from '@prisma/client';
+import { globalBcryptUtil } from 'src/common/utils/bcrypt.util';
 
 interface NewUser {
   email: string;
@@ -55,7 +55,7 @@ describe('UserService (e2e)', () => {
 
     newUser = {
       email: 'new_user@example.com',
-      password: 'testPasword1!@#',
+      password: 'newPasword1!@#',
       nick_name: 'newUser',
       verificationCode: '123456',
     };
@@ -63,10 +63,10 @@ describe('UserService (e2e)', () => {
     testUser = {
       email: 'test_user@example.com',
       nick_name: 'testUser',
-      password: 'testPassword!@#',
+      password: 'testPassword1!@#',
     };
 
-    const password = await bcryptUtil().hash(testUser.password);
+    const password = await globalBcryptUtil.hash(testUser.password);
 
     await prisma.users.create({
       data: {
@@ -241,7 +241,7 @@ describe('UserService (e2e)', () => {
       expect(response.status).toStrictEqual(500);
       expect(response.body).toStrictEqual({
         statusCode: 500,
-        message: '인증번호 전송에 실패하였습니다.',
+        message: '이메일 전송에 실패하였습니다.',
         status: 'exception',
       });
 
@@ -374,6 +374,7 @@ describe('UserService (e2e)', () => {
       const loginResponse = await request(httpServer)
         .post('/auth/signIn')
         .send({ email: testUser.email, password: testUser.password });
+      console.log(loginResponse);
 
       const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
 
@@ -432,14 +433,17 @@ describe('UserService (e2e)', () => {
       const loginResponse = await request(httpServer)
         .post('/auth/signIn')
         .send({ email: testUser.email, password: testUser.password });
+      const isRedisToken = await userRedisService.getVerificationCode(
+        testUser.email,
+      );
 
       const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
-
       const response = await request(httpServer)
         .delete('/user/deleteUser')
         .set('Cookie', `access_token=${cookies['access_token']}`)
         .send({ email: testUser.email });
 
+      expect(isRedisToken).toBeNull();
       expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
         status: 'success',

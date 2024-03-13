@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { Request, Response } from 'express';
-import { JwtGuard } from './guard/jwt.guard';
-import { AuthService } from './providers/auth.service';
-import { LocalGuard } from './guard/local.guard';
+import { JwtGuard } from '../guard/jwt.guard';
+import { AuthService } from '../providers/auth.service';
+import { LocalGuard } from '../guard/local.guard';
 import {
   GithubGuard,
   GoogleGuard,
   KakaoGuard,
   NaverGuard,
-} from './guard/social.guard';
+} from '../guard/social.guard';
 
 @Controller('auth')
 export class AuthController {
