@@ -14,6 +14,13 @@ import { GlobalConfig } from 'src/global/config.global';
 import { globalUuidUtil } from 'src/common/utils/uuid.util';
 import { globalEmailUtil } from 'src/common/utils/email.util';
 import { globalBcryptUtil } from 'src/common/utils/bcrypt.util';
+import {
+  EmailInterface,
+  NickNameInterface,
+  PasswordInterface,
+  SignUpBasicInfoInterface,
+  SignUpUserInterface,
+} from '../interface/user-info.interface';
 
 @Injectable()
 export class UserService {
@@ -22,8 +29,8 @@ export class UserService {
     private readonly userRedis: UserRedisService,
   ) {}
 
-  async isAlreadyEmail(dto: CheckEmailDto): Promise<ResponseDto> {
-    const email = dto.getEmail();
+  async isAlreadyEmail(userInfo: EmailInterface): Promise<ResponseDto> {
+    const email = userInfo.email;
     const isAlreadyEmail = await this.userRepository.findByEmail(email);
 
     if (isAlreadyEmail) {
@@ -33,9 +40,9 @@ export class UserService {
     return ResponseDto.success();
   }
 
-  async checkName(dto: CheckNameDto): Promise<ResponseDto> {
-    const userName = dto.getNickName();
-    const isAlreadyName = await this.userRepository.findByName(userName);
+  async checkName(userInfo: NickNameInterface): Promise<ResponseDto> {
+    const nickName = userInfo.nick_name;
+    const isAlreadyName = await this.userRepository.findByName(nickName);
 
     if (isAlreadyName) {
       throw new UnauthorizedException('사용할 수 없는 이름입니다.');
@@ -44,8 +51,8 @@ export class UserService {
     return ResponseDto.success();
   }
 
-  checkPassword(dto: CheckPasswordDto): ResponseDto {
-    const password = dto.getPassword();
+  checkPassword(userInfo: PasswordInterface): ResponseDto {
+    const password = userInfo.password;
     let strength = 0;
     if (password.length >= 8) strength++;
     if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
@@ -67,56 +74,52 @@ export class UserService {
     }
   }
 
-  async sendVerificationCode(
-    dto: SendVerificationCodeDto,
-  ): Promise<ResponseDto> {
+  async sendVerificationCode(userInfo: EmailInterface): Promise<ResponseDto> {
+    const email = userInfo.email;
     const code = globalUuidUtil.randomNumericString();
-    const email = dto.getEmail();
-    const redisInfo = {
+
+    await this.userRedis.setVerificationCode({
       key: email,
       value: code,
       time: 60 * 5,
-    };
-    const emailInfo = {
+    });
+    await globalEmailUtil.send({
       email,
       subject: '[APP] 인증번호 안내',
       contents: `인증번호는 ${code} 입니다.`,
-    };
-
-    await this.userRedis.setVerificationCode(redisInfo);
-    await globalEmailUtil.send(emailInfo);
+    });
 
     return ResponseDto.success();
   }
 
-  async signUp(dto: SignUpDto): Promise<ResponseDto> {
-    const userEmail = dto.getEmail();
+  async signUp(userInfo: SignUpUserInterface): Promise<ResponseDto> {
+    const userEmail = userInfo.email;
     const verificationCode = await this.userRedis.getVerificationCode(
       userEmail,
     );
 
     if (!verificationCode)
       throw new UnauthorizedException('인증번호 유효기간이 만료되었습니다.');
-    if (dto.getVerificationCode() !== verificationCode) {
+    if (userInfo.verificationCode !== verificationCode) {
       throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     }
 
-    const nick_name = dto.getNickName();
-    const userPassword = dto.getPassword();
-    const proFileImageUrl = dto.getProfileImageUrl();
-    const aboutMe = dto.getAboutMe();
+    const nick_name = userInfo.nick_name;
+    const userPassword = userInfo.password;
+    const proFileImageUrl = userInfo.profile_image_url;
+    const aboutMe = userInfo.about_me;
     const password = await globalBcryptUtil.hash(userPassword);
-    const userInfo: SignUpUser = {
+    const userBasicInfo: SignUpBasicInfoInterface = {
       email: userEmail,
       nick_name,
       password,
     };
 
-    if (aboutMe) userInfo.about_me = aboutMe;
+    if (aboutMe) userBasicInfo.about_me = aboutMe;
     if (proFileImageUrl) {
       const uuid = globalUuidUtil.v4();
       const imageUrl = `${GlobalConfig.env.imageServerUrl}/${uuid}`;
-      userInfo.profile_image_url = imageUrl;
+      userBasicInfo.profile_image_url = imageUrl;
     }
 
     await this.userRedis.deleteVerificationCode(userEmail);

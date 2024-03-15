@@ -23,24 +23,32 @@ export class UserController {
 
   @Post('/isAlreadyEmail')
   async isAlreadyEmail(@Body() dto: CheckEmailDto): Promise<ResponseDto> {
-    return await this.userService.isAlreadyEmail(dto);
+    const email = dto.getEmail();
+
+    return await this.userService.isAlreadyEmail({ email });
   }
 
   @Post('/checkName')
   async checkName(@Body() dto: CheckNameDto): Promise<ResponseDto> {
-    return await this.userService.checkName(dto);
+    const nick_name = dto.getNickName();
+
+    return await this.userService.checkName({ nick_name });
   }
 
   @Post('/checkPassword')
   checkPassword(@Body() dto: CheckPasswordDto): ResponseDto {
-    return this.userService.checkPassword(dto);
+    const password = dto.getPassword();
+
+    return this.userService.checkPassword({ password });
   }
 
   @Post('/sendVerificationCode')
   async sendVerificationCode(
     @Body() dto: SendVerificationCodeDto,
   ): Promise<ResponseDto> {
-    return await this.userService.sendVerificationCode(dto);
+    const email = dto.getEmail();
+
+    return await this.userService.sendVerificationCode({ email });
   }
 
   @Post('/signUp')

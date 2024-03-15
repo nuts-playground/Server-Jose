@@ -1,15 +1,20 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { SetVerificationCodeExpire } from '../interface/user-redis.interface';
 import { AppGlobal } from 'src/global/app.global';
 
 @Injectable()
 export class UserRedisService {
   constructor() {}
 
-  async setVerificationCode(setRedisInfo: SetVerificationCodeExpire) {
+  async setVerificationCode({
+    key,
+    value,
+    time,
+  }: {
+    key: string;
+    value: string;
+    time: number;
+  }) {
     try {
-      const { key, value, time } = setRedisInfo;
-
       await AppGlobal.redis.set(key, value, 'EX', time);
     } catch (error) {
       throw new InternalServerErrorException('잠시 후 다시 시도해 주세요.');
