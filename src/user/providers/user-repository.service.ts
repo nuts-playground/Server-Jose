@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   RepositoryUserResponse,
   SignUpUser,
-  UpdateUser,
+  UserRepositoryUpdate,
 } from '../interface/repository.interface';
 import { AppGlobal } from 'src/global/app.global';
 
@@ -54,12 +54,12 @@ export class UserRepositoryService {
   }
 
   async updateUser(
-    userInfo: UpdateUser,
+    userInfo: UserRepositoryUpdate,
   ): Promise<RepositoryUserResponse | null> {
     return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
-          email: userInfo.email,
+          id: userInfo.id,
         },
       });
 
@@ -67,7 +67,7 @@ export class UserRepositoryService {
 
       const responseUser = await tx.users.update({
         where: {
-          email: userInfo.email,
+          id: userInfo.id,
         },
         data: userInfo,
       });
@@ -76,11 +76,11 @@ export class UserRepositoryService {
     });
   }
 
-  async deleteUser(email: string): Promise<RepositoryUserResponse | null> {
+  async deleteUser(id: number): Promise<RepositoryUserResponse | null> {
     return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
-          email,
+          id,
         },
       });
 

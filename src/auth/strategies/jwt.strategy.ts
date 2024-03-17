@@ -28,6 +28,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: JwtStrategyDto): JwtStrategyValueInterface {
-    return { id: payload.sub, email: payload.email };
+    return { id: parseInt(payload.sub), email: payload.email };
   }
 }

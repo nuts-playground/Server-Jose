@@ -1,16 +1,16 @@
-export interface EmailInterface {
+export interface UserServiceEmail {
   readonly email: string;
 }
 
-export interface PasswordInterface {
+export interface UserServicePassword {
   readonly password: string;
 }
 
-export interface NickNameInterface {
+export interface UserServiceNickName {
   readonly nick_name: string;
 }
 
-export interface SignUpUserInterface {
+export interface UserServiceSignUp {
   readonly email: string;
   readonly nick_name: string;
   readonly password: string;
@@ -22,10 +22,25 @@ export interface SignUpUserInterface {
   readonly delete_yn?: string;
 }
 
-export interface SignUpBasicInfoInterface {
+export interface UserServiceUpdate {
+  readonly id: number;
+  nick_name?: string;
+  password?: string;
+  about_me?: string;
+  profile_image_url?: string;
+}
+
+export interface UserServiceDelete {
+  readonly id: number;
+}
+
+export interface UserServiceRepository {
   readonly email: string;
   readonly nick_name: string;
   readonly password: string;
   about_me?: string;
   profile_image_url?: string;
+  created_at?: string;
+  updated_at?: string;
+  delete_yn?: string;
 }

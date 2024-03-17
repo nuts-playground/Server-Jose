@@ -6,7 +6,7 @@ export interface JwtStrategyPayloadInterface {
 }
 
 export interface JwtStrategyValueInterface {
-  id: string;
+  id: number;
   email: string;
 }
 

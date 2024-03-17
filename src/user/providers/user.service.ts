@@ -1,27 +1,20 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ResponseDto } from 'src/common/dtos/response.dto';
-import { SendVerificationCodeDto } from '../dtos/send-verification-code.dto';
-import { CheckEmailDto } from '../dtos/check-email.dto';
-import { CheckPasswordDto } from '../dtos/check-password.dto';
-import { CheckNameDto } from '../dtos/check-name.dto';
-import { SignUpDto } from '../dtos/sign-up.dto';
 import { UserRepositoryService } from './user-repository.service';
-import { DeleteUserDto } from '../dtos/delete-user.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
-import { SignUpUser, UpdateUser } from '../interface/repository.interface';
 import { UserRedisService } from './user-redis.service';
 import { GlobalConfig } from 'src/global/config.global';
 import { globalUuidUtil } from 'src/common/utils/uuid.util';
 import { globalEmailUtil } from 'src/common/utils/email.util';
 import { globalBcryptUtil } from 'src/common/utils/bcrypt.util';
 import {
-  EmailInterface,
-  NickNameInterface,
-  PasswordInterface,
-  SignUpBasicInfoInterface,
-  SignUpUserInterface,
-} from '../interface/user-info.interface';
-
+  UserServiceDelete,
+  UserServiceEmail,
+  UserServiceNickName,
+  UserServicePassword,
+  UserServiceRepository,
+  UserServiceSignUp,
+  UserServiceUpdate,
+} from '../interface/user.service.interface';
 @Injectable()
 export class UserService {
   constructor(
@@ -29,7 +22,7 @@ export class UserService {
     private readonly userRedis: UserRedisService,
   ) {}
 
-  async isAlreadyEmail(userInfo: EmailInterface): Promise<ResponseDto> {
+  async isAlreadyEmail(userInfo: UserServiceEmail): Promise<ResponseDto> {
     const email = userInfo.email;
     const isAlreadyEmail = await this.userRepository.findByEmail(email);
 
@@ -40,7 +33,7 @@ export class UserService {
     return ResponseDto.success();
   }
 
-  async checkName(userInfo: NickNameInterface): Promise<ResponseDto> {
+  async checkName(userInfo: UserServiceNickName): Promise<ResponseDto> {
     const nickName = userInfo.nick_name;
     const isAlreadyName = await this.userRepository.findByName(nickName);
 
@@ -51,7 +44,7 @@ export class UserService {
     return ResponseDto.success();
   }
 
-  checkPassword(userInfo: PasswordInterface): ResponseDto {
+  checkPassword(userInfo: UserServicePassword): ResponseDto {
     const password = userInfo.password;
     let strength = 0;
     if (password.length >= 8) strength++;
@@ -74,7 +67,7 @@ export class UserService {
     }
   }
 
-  async sendVerificationCode(userInfo: EmailInterface): Promise<ResponseDto> {
+  async sendVerificationCode(userInfo: UserServiceEmail): Promise<ResponseDto> {
     const email = userInfo.email;
     const code = globalUuidUtil.randomNumericString();
 
@@ -92,7 +85,7 @@ export class UserService {
     return ResponseDto.success();
   }
 
-  async signUp(userInfo: SignUpUserInterface): Promise<ResponseDto> {
+  async signUp(userInfo: UserServiceSignUp): Promise<ResponseDto> {
     const userEmail = userInfo.email;
     const verificationCode = await this.userRedis.getVerificationCode(
       userEmail,
@@ -109,7 +102,7 @@ export class UserService {
     const proFileImageUrl = userInfo.profile_image_url;
     const aboutMe = userInfo.about_me;
     const password = await globalBcryptUtil.hash(userPassword);
-    const userBasicInfo: SignUpBasicInfoInterface = {
+    const userBasicInfo: UserServiceRepository = {
       email: userEmail,
       nick_name,
       password,
@@ -129,24 +122,20 @@ export class UserService {
     return ResponseDto.successWithJSON({ email });
   }
 
-  async updateUser(dto: UpdateUserDto): Promise<ResponseDto> {
-    const requestEmail = dto.getEmail();
-    const requestNickName = dto.getNickName();
-    const requestPassword = dto.getPassword();
-    const requestAboutMe = dto.getAboutMe();
-    const requestProfileImage = dto.getProfileImageUrl();
-    const userInfo: UpdateUser = {
-      email: requestEmail,
+  async updateUser(userInfo: UserServiceUpdate): Promise<ResponseDto> {
+    const userId = userInfo.id;
+    const updateUserInfo: UserServiceUpdate = {
+      id: userId,
     };
 
-    if (requestNickName) userInfo.nick_name = requestNickName;
-    if (requestPassword)
-      userInfo.password = await globalBcryptUtil.hash(requestPassword);
-    if (requestAboutMe) userInfo.about_me = requestAboutMe;
-    if (requestProfileImage) {
+    if (userInfo.nick_name) updateUserInfo.nick_name = userInfo.nick_name;
+    if (userInfo.password)
+      updateUserInfo.password = await globalBcryptUtil.hash(userInfo.password);
+    if (userInfo.about_me) updateUserInfo.about_me = userInfo.about_me;
+    if (userInfo.profile_image_url) {
       const uuid = globalUuidUtil.v4();
       const imageUrl = `${GlobalConfig.env.imageServerUrl}/${uuid}`;
-      userInfo.profile_image_url = imageUrl;
+      updateUserInfo.profile_image_url = imageUrl;
     }
 
     const user = await this.userRepository.updateUser(userInfo);
@@ -165,9 +154,9 @@ export class UserService {
     });
   }
 
-  async deleteUser(dto: DeleteUserDto): Promise<ResponseDto> {
-    const userEmail = dto.getEmail();
-    const user = await this.userRepository.deleteUser(userEmail);
+  async deleteUser(userInfo: UserServiceDelete): Promise<ResponseDto> {
+    const userId = userInfo.id;
+    const user = await this.userRepository.deleteUser(userId);
 
     if (!user) {
       throw new UnauthorizedException('계정 삭제에 실패하였습니다.');

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class DeleteUserDto {
   private readonly email: string;
@@ -8,6 +9,7 @@ export class DeleteUserDto {
   }
 
   @ApiProperty({ name: 'email', default: '' })
+  @Expose()
   getEmail(): string {
     return this.email;
   }

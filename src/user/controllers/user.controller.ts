@@ -4,6 +4,7 @@ import {
   Delete,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../providers/user.service';
@@ -16,6 +17,8 @@ import { SignUpDto } from '../dtos/sign-up.dto';
 import { DeleteUserDto } from '../dtos/delete-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { Request } from 'express';
+import { UserControllerUpdate } from '../interface/user.controller.interface';
 
 @Controller('user')
 export class UserController {
@@ -53,18 +56,29 @@ export class UserController {
 
   @Post('/signUp')
   async signUp(@Body() dto: SignUpDto): Promise<ResponseDto> {
-    return await this.userService.signUp(dto);
+    const signUpInfo = dto.getSignUpUserInfo();
+
+    return await this.userService.signUp(signUpInfo);
   }
 
   @UseGuards(JwtGuard)
   @Patch('/updateUser')
-  async updateUser(@Body() dto: UpdateUserDto): Promise<ResponseDto> {
-    return await this.userService.updateUser(dto);
+  async updateUser(
+    @Req() request: Request,
+    @Body() dto: UpdateUserDto,
+  ): Promise<ResponseDto> {
+    const updateInfo: UserControllerUpdate = {
+      id: request.user['id'],
+      ...dto.getUpdateInfo(),
+    };
+
+    return await this.userService.updateUser(updateInfo);
   }
 
   @UseGuards(JwtGuard)
   @Delete('/deleteUser')
-  async deleteUser(@Body() dto: DeleteUserDto): Promise<ResponseDto> {
-    return await this.userService.deleteUser(dto);
+  async deleteUser(@Req() request: Request): Promise<ResponseDto> {
+    const id = request.user['id'];
+    return await this.userService.deleteUser({ id });
   }
 }

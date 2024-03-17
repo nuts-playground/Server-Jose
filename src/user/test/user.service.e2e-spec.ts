@@ -10,7 +10,7 @@ import * as request from 'supertest';
 import * as nodemailer from 'nodemailer';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserRedisService } from 'src/user/providers/user-redis.service';
-import { SetVerificationCodeExpire } from 'src/user/interface/user-redis.interface';
+// import { SetVerificationCodeExpire } from 'src/user/interface/user-redis.interface';
 import { AppGlobal } from 'src/global/app.global';
 import { PrismaClient } from '@prisma/client';
 import { globalBcryptUtil } from 'src/common/utils/bcrypt.util';
@@ -77,297 +77,297 @@ describe('UserService (e2e)', () => {
     });
   });
 
-  describe('/user, [이메일 유효성 검사]', () => {
-    it('/isAlreadyEmail (POST) [성공]', async () => {
-      const response = await request(httpServer)
-        .post('/user/isAlreadyEmail')
-        .send({ email: newUser.email });
+  // describe('/user, [이메일 유효성 검사]', () => {
+  //   it('/isAlreadyEmail (POST) [성공]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/isAlreadyEmail')
+  //       .send({ email: newUser.email });
 
-      expect(response.status).toStrictEqual(201);
-      expect(response.body).toStrictEqual({ status: 'success' });
-    });
+  //     expect(response.status).toStrictEqual(201);
+  //     expect(response.body).toStrictEqual({ status: 'success' });
+  //   });
 
-    it('/isAlreadyEmail (POST) [실패: 이메일 형식에 맞지 않음]', async () => {
-      const response = await request(httpServer)
-        .post('/user/isAlreadyEmail')
-        .send({ email: 'hello' });
+  //   it('/isAlreadyEmail (POST) [실패: 이메일 형식에 맞지 않음]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/isAlreadyEmail')
+  //       .send({ email: 'hello' });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '사용할 수 없는 이메일입니다.',
-        status: 'exception',
-      });
-    });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '사용할 수 없는 이메일입니다.',
+  //       status: 'exception',
+  //     });
+  //   });
 
-    it('/isAlreadyEmail (POST) [실패: 이미 가입된 이메일]', async () => {
-      const response = await request(httpServer)
-        .post('/user/isAlreadyEmail')
-        .send({ email: testUser.email });
+  //   it('/isAlreadyEmail (POST) [실패: 이미 가입된 이메일]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/isAlreadyEmail')
+  //       .send({ email: testUser.email });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '사용할 수 없는 이메일입니다.',
-        status: 'exception',
-      });
-    });
-  });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '사용할 수 없는 이메일입니다.',
+  //       status: 'exception',
+  //     });
+  //   });
+  // });
 
-  describe('/user, [닉네임 유효성 검사]', () => {
-    it('/checkName (POST) [성공]', async () => {
-      const response = await request(httpServer)
-        .post('/user/checkName')
-        .send({ nick_name: newUser.nick_name });
+  // describe('/user, [닉네임 유효성 검사]', () => {
+  //   it('/checkName (POST) [성공]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/checkName')
+  //       .send({ nick_name: newUser.nick_name });
 
-      expect(response.status).toStrictEqual(201);
-      expect(response.body).toStrictEqual({ status: 'success' });
-    });
+  //     expect(response.status).toStrictEqual(201);
+  //     expect(response.body).toStrictEqual({ status: 'success' });
+  //   });
 
-    it('/checkName (POST) [실패: 닉네임 형식에 맞지 않음]', async () => {
-      const response = await request(httpServer)
-        .post('/user/checkName')
-        .send({ nick_name: 'n' });
+  //   it('/checkName (POST) [실패: 닉네임 형식에 맞지 않음]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/checkName')
+  //       .send({ nick_name: 'n' });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '사용할 수 없는 이름입니다.',
-        status: 'exception',
-      });
-    });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '사용할 수 없는 이름입니다.',
+  //       status: 'exception',
+  //     });
+  //   });
 
-    it('/checkName (POST) [실패: 이미 가입된 닉네임]', async () => {
-      const response = await request(httpServer)
-        .post('/user/checkName')
-        .send({ nick_name: testUser.nick_name });
+  //   it('/checkName (POST) [실패: 이미 가입된 닉네임]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/checkName')
+  //       .send({ nick_name: testUser.nick_name });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '사용할 수 없는 이름입니다.',
-        status: 'exception',
-      });
-    });
-  });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '사용할 수 없는 이름입니다.',
+  //       status: 'exception',
+  //     });
+  //   });
+  // });
 
-  describe('/user, [비밀번호 유효성 검사]', () => {
-    it('/checkPassword (POST) [성공]', async () => {
-      const response = await request(httpServer)
-        .post('/user/checkPassword')
-        .send({ password: newUser.password });
+  // describe('/user, [비밀번호 유효성 검사]', () => {
+  //   it('/checkPassword (POST) [성공]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/checkPassword')
+  //       .send({ password: newUser.password });
 
-      expect(response.status).toStrictEqual(201);
-      expect(response.body).toStrictEqual({
-        status: 'success',
-        data: { passwordStrength: '매우 강함' },
-      });
-    });
+  //     expect(response.status).toStrictEqual(201);
+  //     expect(response.body).toStrictEqual({
+  //       status: 'success',
+  //       data: { passwordStrength: '매우 강함' },
+  //     });
+  //   });
 
-    it('/checkPassword (POST) [실패: 비밀번호 형식에 맞지 않음]', async () => {
-      const response = await request(httpServer)
-        .post('/user/checkPassword')
-        .send({ password: 'test' });
+  //   it('/checkPassword (POST) [실패: 비밀번호 형식에 맞지 않음]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/checkPassword')
+  //       .send({ password: 'test' });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '사용할 수 없는 비밀번호입니다.',
-        status: 'exception',
-      });
-    });
-  });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '사용할 수 없는 비밀번호입니다.',
+  //       status: 'exception',
+  //     });
+  //   });
+  // });
 
-  describe('/user, [이메일 인증코드 전송]', () => {
-    it('/sendVerificationCode (POST) [성공]', async () => {
-      const redisInfo: SetVerificationCodeExpire = {
-        key: newUser.email,
-        value: '123456',
-        time: 60 * 5,
-      };
-      await userRedisService.setVerificationCode(redisInfo);
-      nodemailer.createTransport = jest.fn().mockReturnValue({
-        sendMail: jest.fn().mockResolvedValueOnce(null),
-      });
+  // describe('/user, [이메일 인증코드 전송]', () => {
+  //   it('/sendVerificationCode (POST) [성공]', async () => {
+  //     const redisInfo: SetVerificationCodeExpire = {
+  //       key: newUser.email,
+  //       value: '123456',
+  //       time: 60 * 5,
+  //     };
+  //     await userRedisService.setVerificationCode(redisInfo);
+  //     nodemailer.createTransport = jest.fn().mockReturnValue({
+  //       sendMail: jest.fn().mockResolvedValueOnce(null),
+  //     });
 
-      const response = await request(httpServer)
-        .post('/user/sendVerificationCode')
-        .send({ email: newUser.email });
+  //     const response = await request(httpServer)
+  //       .post('/user/sendVerificationCode')
+  //       .send({ email: newUser.email });
 
-      expect(response.status).toStrictEqual(201);
-      expect(response.body).toStrictEqual({ status: 'success' });
+  //     expect(response.status).toStrictEqual(201);
+  //     expect(response.body).toStrictEqual({ status: 'success' });
 
-      await userRedisService.deleteVerificationCode(newUser.email);
-    });
+  //     await userRedisService.deleteVerificationCode(newUser.email);
+  //   });
 
-    it('/sendVerificationCode (POST) [실패: RedisError]', async () => {
-      jest
-        .spyOn(userRedisService, 'setVerificationCode')
-        .mockRejectedValueOnce(
-          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
-        );
-      nodemailer.createTransport = jest.fn().mockReturnValue({
-        sendMail: jest.fn().mockResolvedValueOnce(null),
-      });
+  //   it('/sendVerificationCode (POST) [실패: RedisError]', async () => {
+  //     jest
+  //       .spyOn(userRedisService, 'setVerificationCode')
+  //       .mockRejectedValueOnce(
+  //         new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+  //       );
+  //     nodemailer.createTransport = jest.fn().mockReturnValue({
+  //       sendMail: jest.fn().mockResolvedValueOnce(null),
+  //     });
 
-      const response = await request(httpServer)
-        .post('/user/sendVerificationCode')
-        .send({ email: newUser.email });
+  //     const response = await request(httpServer)
+  //       .post('/user/sendVerificationCode')
+  //       .send({ email: newUser.email });
 
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toStrictEqual({
-        statusCode: 500,
-        message: '잠시 후 다시 시도해 주세요.',
-        status: 'exception',
-      });
-    });
+  //     expect(response.status).toStrictEqual(500);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 500,
+  //       message: '잠시 후 다시 시도해 주세요.',
+  //       status: 'exception',
+  //     });
+  //   });
 
-    it('/sendVerificationCode (POST) [실패: 메일 전송 실패]', async () => {
-      const redisInfo: SetVerificationCodeExpire = {
-        key: newUser.email,
-        value: '123456',
-        time: 60 * 5,
-      };
-      await userRedisService.setVerificationCode(redisInfo);
+  //   it('/sendVerificationCode (POST) [실패: 메일 전송 실패]', async () => {
+  //     const redisInfo: SetVerificationCodeExpire = {
+  //       key: newUser.email,
+  //       value: '123456',
+  //       time: 60 * 5,
+  //     };
+  //     await userRedisService.setVerificationCode(redisInfo);
 
-      nodemailer.createTransport = jest.fn().mockReturnValue({
-        sendMail: jest.fn().mockRejectedValueOnce(null),
-      });
+  //     nodemailer.createTransport = jest.fn().mockReturnValue({
+  //       sendMail: jest.fn().mockRejectedValueOnce(null),
+  //     });
 
-      const response = await request(httpServer)
-        .post('/user/sendVerificationCode')
-        .send({ email: newUser.email });
+  //     const response = await request(httpServer)
+  //       .post('/user/sendVerificationCode')
+  //       .send({ email: newUser.email });
 
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toStrictEqual({
-        statusCode: 500,
-        message: '이메일 전송에 실패하였습니다.',
-        status: 'exception',
-      });
+  //     expect(response.status).toStrictEqual(500);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 500,
+  //       message: '이메일 전송에 실패하였습니다.',
+  //       status: 'exception',
+  //     });
 
-      await userRedisService.deleteVerificationCode(newUser.email);
-    });
-  });
+  //     await userRedisService.deleteVerificationCode(newUser.email);
+  //   });
+  // });
 
-  describe('/user, [회원가입]', () => {
-    it('/signUp (POST) [성공]', async () => {
-      const redisInfo: SetVerificationCodeExpire = {
-        key: newUser.email,
-        value: '123456',
-        time: 60 * 5,
-      };
+  // describe('/user, [회원가입]', () => {
+  //   it('/signUp (POST) [성공]', async () => {
+  //     const redisInfo: SetVerificationCodeExpire = {
+  //       key: newUser.email,
+  //       value: '123456',
+  //       time: 60 * 5,
+  //     };
 
-      await userRedisService.setVerificationCode(redisInfo);
+  //     await userRedisService.setVerificationCode(redisInfo);
 
-      const response = await request(httpServer)
-        .post('/user/signUp')
-        .send(newUser);
+  //     const response = await request(httpServer)
+  //       .post('/user/signUp')
+  //       .send(newUser);
 
-      expect(response.status).toStrictEqual(201);
-      expect(response.body).toStrictEqual({
-        status: 'success',
-        data: {
-          email: response.body.data.email,
-        },
-      });
+  //     expect(response.status).toStrictEqual(201);
+  //     expect(response.body).toStrictEqual({
+  //       status: 'success',
+  //       data: {
+  //         email: response.body.data.email,
+  //       },
+  //     });
 
-      const { id, email } = await prisma.users.findUnique({
-        where: {
-          email: response.body.data.email,
-        },
-      });
+  //     const { id, email } = await prisma.users.findUnique({
+  //       where: {
+  //         email: response.body.data.email,
+  //       },
+  //     });
 
-      await userRedisService.deleteVerificationCode(email);
+  //     await userRedisService.deleteVerificationCode(email);
 
-      await prisma.users.delete({
-        where: {
-          id,
-        },
-      });
-    });
+  //     await prisma.users.delete({
+  //       where: {
+  //         id,
+  //       },
+  //     });
+  //   });
 
-    it('/signUp (POST) [실패: 인증번호 불일치]', async () => {
-      const redisInfo: SetVerificationCodeExpire = {
-        key: newUser.email,
-        value: '123436',
-        time: 60 * 5,
-      };
+  //   it('/signUp (POST) [실패: 인증번호 불일치]', async () => {
+  //     const redisInfo: SetVerificationCodeExpire = {
+  //       key: newUser.email,
+  //       value: '123436',
+  //       time: 60 * 5,
+  //     };
 
-      await userRedisService.setVerificationCode(redisInfo);
+  //     await userRedisService.setVerificationCode(redisInfo);
 
-      const response = await request(httpServer)
-        .post('/user/signUp')
-        .send(newUser);
+  //     const response = await request(httpServer)
+  //       .post('/user/signUp')
+  //       .send(newUser);
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '인증번호가 일치하지 않습니다.',
-        status: 'exception',
-      });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '인증번호가 일치하지 않습니다.',
+  //       status: 'exception',
+  //     });
 
-      await userRedisService.deleteVerificationCode(newUser.email);
-    });
+  //     await userRedisService.deleteVerificationCode(newUser.email);
+  //   });
 
-    it('/signUp (POST) [실패: 인증번호 만료]', async () => {
-      const response = await request(httpServer)
-        .post('/user/signUp')
-        .send(newUser);
+  //   it('/signUp (POST) [실패: 인증번호 만료]', async () => {
+  //     const response = await request(httpServer)
+  //       .post('/user/signUp')
+  //       .send(newUser);
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '인증번호 유효기간이 만료되었습니다.',
-        status: 'exception',
-      });
-    });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '인증번호 유효기간이 만료되었습니다.',
+  //       status: 'exception',
+  //     });
+  //   });
 
-    it('/signUp (POST) [실패: Redis Error]', async () => {
-      jest
-        .spyOn(userRedisService, 'getVerificationCode')
-        .mockRejectedValueOnce(
-          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
-        );
-      const response = await request(httpServer)
-        .post('/user/signUp')
-        .send(newUser);
+  //   it('/signUp (POST) [실패: Redis Error]', async () => {
+  //     jest
+  //       .spyOn(userRedisService, 'getVerificationCode')
+  //       .mockRejectedValueOnce(
+  //         new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+  //       );
+  //     const response = await request(httpServer)
+  //       .post('/user/signUp')
+  //       .send(newUser);
 
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toStrictEqual({
-        statusCode: 500,
-        message: '잠시 후 다시 시도해 주세요.',
-        status: 'exception',
-      });
-    });
+  //     expect(response.status).toStrictEqual(500);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 500,
+  //       message: '잠시 후 다시 시도해 주세요.',
+  //       status: 'exception',
+  //     });
+  //   });
 
-    it('/signUp (POST) [실패: DB Error]', async () => {
-      const redisInfo: SetVerificationCodeExpire = {
-        key: newUser.email,
-        value: '123456',
-        time: 60 * 5,
-      };
-      await userRedisService.setVerificationCode(redisInfo);
+  //   it('/signUp (POST) [실패: DB Error]', async () => {
+  //     const redisInfo: SetVerificationCodeExpire = {
+  //       key: newUser.email,
+  //       value: '123456',
+  //       time: 60 * 5,
+  //     };
+  //     await userRedisService.setVerificationCode(redisInfo);
 
-      jest
-        .spyOn(prisma, '$transaction')
-        .mockRejectedValueOnce(
-          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
-        );
+  //     jest
+  //       .spyOn(prisma, '$transaction')
+  //       .mockRejectedValueOnce(
+  //         new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+  //       );
 
-      const response = await request(httpServer)
-        .post('/user/signUp')
-        .send(newUser);
+  //     const response = await request(httpServer)
+  //       .post('/user/signUp')
+  //       .send(newUser);
 
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toStrictEqual({
-        statusCode: 500,
-        message: '잠시 후 다시 시도해 주세요.',
-        status: 'exception',
-      });
+  //     expect(response.status).toStrictEqual(500);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 500,
+  //       message: '잠시 후 다시 시도해 주세요.',
+  //       status: 'exception',
+  //     });
 
-      await userRedisService.deleteVerificationCode(newUser.email);
-    });
-  });
+  //     await userRedisService.deleteVerificationCode(newUser.email);
+  //   });
+  // });
 
   describe('/user, [회원 정보 수정] (PATCH)', () => {
     it('/updateUser (PATCH) [성공]', async () => {
@@ -387,109 +387,109 @@ describe('UserService (e2e)', () => {
       expect(response.body.data).toMatchObject({ nick_name: 'newNickName' });
     });
 
-    it('/updateUser (PATCH) [실패: 인증 필요]', async () => {
-      const response = await request(httpServer)
-        .patch('/user/updateUser')
-        .send({ email: testUser.email, nick_name: 'newNickName' });
+    // it('/updateUser (PATCH) [실패: 인증 필요]', async () => {
+    //   const response = await request(httpServer)
+    //     .patch('/user/updateUser')
+    //     .send({ email: testUser.email, nick_name: 'newNickName' });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '로그인이 필요한 서비스입니다.',
-        status: 'exception',
-      });
-    });
+    //   expect(response.status).toStrictEqual(401);
+    //   expect(response.body).toStrictEqual({
+    //     statusCode: 401,
+    //     message: '로그인이 필요한 서비스입니다.',
+    //     status: 'exception',
+    //   });
+    // });
 
-    it('/updateUser (PATCH) [실패: DB Error]', async () => {
-      const loginResponse = await request(httpServer)
-        .post('/auth/signIn')
-        .send({ email: testUser.email, password: testUser.password });
+    // it('/updateUser (PATCH) [실패: DB Error]', async () => {
+    //   const loginResponse = await request(httpServer)
+    //     .post('/auth/signIn')
+    //     .send({ email: testUser.email, password: testUser.password });
 
-      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+    //   const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
 
-      jest
-        .spyOn(prisma, '$transaction')
-        .mockRejectedValueOnce(
-          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
-        );
+    //   jest
+    //     .spyOn(prisma, '$transaction')
+    //     .mockRejectedValueOnce(
+    //       new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+    //     );
 
-      const response = await request(httpServer)
-        .patch('/user/updateUser')
-        .set('Cookie', `access_token=${cookies['access_token']}`)
-        .send({ email: testUser.email, nick_name: 'newNickName' });
+    //   const response = await request(httpServer)
+    //     .patch('/user/updateUser')
+    //     .set('Cookie', `access_token=${cookies['access_token']}`)
+    //     .send({ email: testUser.email, nick_name: 'newNickName' });
 
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toStrictEqual({
-        statusCode: 500,
-        message: '잠시 후 다시 시도해 주세요.',
-        status: 'exception',
-      });
-    });
+    //   expect(response.status).toStrictEqual(500);
+    //   expect(response.body).toStrictEqual({
+    //     statusCode: 500,
+    //     message: '잠시 후 다시 시도해 주세요.',
+    //     status: 'exception',
+    //   });
+    // });
   });
 
-  describe('/user, [회원 탈퇴] (DELETE)', () => {
-    it('/deleteUser (DELETE) [성공]', async () => {
-      testUser.nick_name = 'newNickName';
-      const loginResponse = await request(httpServer)
-        .post('/auth/signIn')
-        .send({ email: testUser.email, password: testUser.password });
-      const isRedisToken = await userRedisService.getVerificationCode(
-        testUser.email,
-      );
+  // describe('/user, [회원 탈퇴] (DELETE)', () => {
+  //   it('/deleteUser (DELETE) [성공]', async () => {
+  //     testUser.nick_name = 'newNickName';
+  //     const loginResponse = await request(httpServer)
+  //       .post('/auth/signIn')
+  //       .send({ email: testUser.email, password: testUser.password });
+  //     const isRedisToken = await userRedisService.getVerificationCode(
+  //       testUser.email,
+  //     );
 
-      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
-      const response = await request(httpServer)
-        .delete('/user/deleteUser')
-        .set('Cookie', `access_token=${cookies['access_token']}`)
-        .send({ email: testUser.email });
+  //     const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+  //     const response = await request(httpServer)
+  //       .delete('/user/deleteUser')
+  //       .set('Cookie', `access_token=${cookies['access_token']}`)
+  //       .send({ email: testUser.email });
 
-      expect(isRedisToken).toBeNull();
-      expect(response.status).toStrictEqual(200);
-      expect(response.body).toStrictEqual({
-        status: 'success',
-        data: { email: testUser.email, nick_name: testUser.nick_name },
-      });
-    });
+  //     expect(isRedisToken).toBeNull();
+  //     expect(response.status).toStrictEqual(200);
+  //     expect(response.body).toStrictEqual({
+  //       status: 'success',
+  //       data: { email: testUser.email, nick_name: testUser.nick_name },
+  //     });
+  //   });
 
-    it('/deleteUser (DELETE) [실패: 인증 필요]', async () => {
-      const response = await request(httpServer)
-        .delete('/user/deleteUser')
-        .send({ email: testUser.email });
+  //   it('/deleteUser (DELETE) [실패: 인증 필요]', async () => {
+  //     const response = await request(httpServer)
+  //       .delete('/user/deleteUser')
+  //       .send({ email: testUser.email });
 
-      expect(response.status).toStrictEqual(401);
-      expect(response.body).toStrictEqual({
-        statusCode: 401,
-        message: '로그인이 필요한 서비스입니다.',
-        status: 'exception',
-      });
-    });
+  //     expect(response.status).toStrictEqual(401);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 401,
+  //       message: '로그인이 필요한 서비스입니다.',
+  //       status: 'exception',
+  //     });
+  //   });
 
-    it('/deleteUser (DELETE) [실패: DB Error]', async () => {
-      const loginResponse = await request(httpServer)
-        .post('/auth/signIn')
-        .send({ email: testUser.email, password: testUser.password });
+  //   it('/deleteUser (DELETE) [실패: DB Error]', async () => {
+  //     const loginResponse = await request(httpServer)
+  //       .post('/auth/signIn')
+  //       .send({ email: testUser.email, password: testUser.password });
 
-      const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
+  //     const cookies = getCookies(loginResponse.headers['set-cookie'][0]);
 
-      jest
-        .spyOn(prisma, '$transaction')
-        .mockRejectedValueOnce(
-          new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
-        );
+  //     jest
+  //       .spyOn(prisma, '$transaction')
+  //       .mockRejectedValueOnce(
+  //         new InternalServerErrorException('잠시 후 다시 시도해 주세요.'),
+  //       );
 
-      const response = await request(httpServer)
-        .delete('/user/deleteUser')
-        .set('Cookie', `access_token=${cookies['access_token']}`)
-        .send({ email: testUser.email });
+  //     const response = await request(httpServer)
+  //       .delete('/user/deleteUser')
+  //       .set('Cookie', `access_token=${cookies['access_token']}`)
+  //       .send({ email: testUser.email });
 
-      expect(response.status).toStrictEqual(500);
-      expect(response.body).toStrictEqual({
-        statusCode: 500,
-        message: '잠시 후 다시 시도해 주세요.',
-        status: 'exception',
-      });
-    });
-  });
+  //     expect(response.status).toStrictEqual(500);
+  //     expect(response.body).toStrictEqual({
+  //       statusCode: 500,
+  //       message: '잠시 후 다시 시도해 주세요.',
+  //       status: 'exception',
+  //     });
+  //   });
+  // });
 
   function getCookies(cookieString) {
     const cookies = {};

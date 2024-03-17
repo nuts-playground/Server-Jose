@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+import { UserDtoSignUp } from '../interface/user.dto.interface';
 
 export class SignUpDto {
   private readonly email: string;
@@ -34,47 +36,73 @@ export class SignUpDto {
   }
 
   @ApiProperty({ name: 'email', default: '' })
+  @Expose()
   getEmail(): string {
     return this.email;
   }
 
   @ApiProperty({ name: 'name', default: '' })
+  @Expose()
   getNickName(): string {
     return this.nick_name;
   }
 
   @ApiProperty({ name: 'password', default: '' })
+  @Expose()
   getPassword(): string {
     return this.password;
   }
 
   @ApiProperty({ name: 'about_me', default: '' })
+  @Expose()
   getAboutMe(): string {
     return this.about_me;
   }
 
   @ApiProperty({ name: 'profile_image_url', default: '' })
+  @Expose()
   getProfileImageUrl(): string {
     return this.profile_image_url;
   }
 
   @ApiProperty({ name: 'created_at', default: '' })
+  @Expose()
   getCreatedAt(): string {
     return this.created_at;
   }
 
   @ApiProperty({ name: 'updated_at', default: '' })
+  @Expose()
   getUpdatedAt(): string {
     return this.updated_at;
   }
 
   @ApiProperty({ name: 'delete_yn', default: '' })
+  @Expose()
   getDeleteYn(): string {
     return this.delete_yn;
   }
 
   @ApiProperty({ name: 'verificationCode', default: '' })
+  @Expose()
   getVerificationCode(): string {
     return this.verificationCode;
+  }
+
+  @Expose()
+  getSignUpUserInfo(): UserDtoSignUp {
+    const userInfo = {
+      email: this.email,
+      nick_name: this.nick_name,
+      password: this.password,
+      verificationCode: this.verificationCode,
+      about_me: this.about_me,
+      profile_image_url: this.profile_image_url,
+      created_at: this.created_at,
+      updated_at: this.updated_at,
+      delete_yn: this.delete_yn,
+    };
+
+    return userInfo;
   }
 }

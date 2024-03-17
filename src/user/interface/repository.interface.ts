@@ -11,6 +11,14 @@ export interface RepositoryUserResponse {
   delete_yn?: string;
 }
 
+export interface UserRepositoryUpdate {
+  readonly id: number;
+  readonly nick_name?: string;
+  readonly password?: string;
+  readonly about_me?: string;
+  readonly profile_image_url?: string;
+}
+
 export interface SignUpUser {
   email: string;
   nick_name: string;
