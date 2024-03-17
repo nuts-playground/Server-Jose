@@ -11,9 +11,10 @@ import {
   UserServiceEmail,
   UserServiceNickName,
   UserServicePassword,
-  UserServiceRepository,
   UserServiceSignUp,
+  UserServiceSignUpRepository,
   UserServiceUpdate,
+  UserServiceUpdateRepository,
 } from '../interface/user.service.interface';
 @Injectable()
 export class UserService {
@@ -24,7 +25,7 @@ export class UserService {
 
   async isAlreadyEmail(userInfo: UserServiceEmail): Promise<ResponseDto> {
     const email = userInfo.email;
-    const isAlreadyEmail = await this.userRepository.findByEmail(email);
+    const isAlreadyEmail = await this.userRepository.findByEmail({ email });
 
     if (isAlreadyEmail) {
       throw new UnauthorizedException('사용할 수 없는 이메일입니다.');
@@ -34,8 +35,8 @@ export class UserService {
   }
 
   async checkName(userInfo: UserServiceNickName): Promise<ResponseDto> {
-    const nickName = userInfo.nick_name;
-    const isAlreadyName = await this.userRepository.findByName(nickName);
+    const nick_name = userInfo.nick_name;
+    const isAlreadyName = await this.userRepository.findByName({ nick_name });
 
     if (isAlreadyName) {
       throw new UnauthorizedException('사용할 수 없는 이름입니다.');
@@ -102,7 +103,7 @@ export class UserService {
     const proFileImageUrl = userInfo.profile_image_url;
     const aboutMe = userInfo.about_me;
     const password = await globalBcryptUtil.hash(userPassword);
-    const userBasicInfo: UserServiceRepository = {
+    const userBasicInfo: UserServiceSignUpRepository = {
       email: userEmail,
       nick_name,
       password,
@@ -124,7 +125,7 @@ export class UserService {
 
   async updateUser(userInfo: UserServiceUpdate): Promise<ResponseDto> {
     const userId = userInfo.id;
-    const updateUserInfo: UserServiceUpdate = {
+    const updateUserInfo: UserServiceUpdateRepository = {
       id: userId,
     };
 
@@ -145,6 +146,7 @@ export class UserService {
     }
 
     const { email, nick_name, about_me, profile_image_url, updated_at } = user;
+
     return ResponseDto.successWithJSON({
       email,
       nick_name,
@@ -156,7 +158,7 @@ export class UserService {
 
   async deleteUser(userInfo: UserServiceDelete): Promise<ResponseDto> {
     const userId = userInfo.id;
-    const user = await this.userRepository.deleteUser(userId);
+    const user = await this.userRepository.deleteUser({ id: userId });
 
     if (!user) {
       throw new UnauthorizedException('계정 삭제에 실패하였습니다.');
@@ -165,6 +167,9 @@ export class UserService {
     const { id, email, nick_name } = user;
 
     await this.userRedis.deleteVerificationCode(id.toString());
+
+    userInfo.response.clearCookie('access_token');
+    userInfo.response.clearCookie('refresh_token');
 
     return ResponseDto.successWithJSON({ email, nick_name });
   }

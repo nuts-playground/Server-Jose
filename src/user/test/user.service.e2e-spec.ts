@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RepositoryUserResponse } from 'src/user/interface/repository.interface';
+import { RepositoryUserResponse } from 'src/user/interface/user.repository.interface';
 import { UserModule } from 'src/user/user.module';
 import * as request from 'supertest';
 import * as nodemailer from 'nodemailer';

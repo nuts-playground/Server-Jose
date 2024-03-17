@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   RepositoryUserResponse,
   UpdateUser,
-} from 'src/user/interface/repository.interface';
+} from 'src/user/interface/user.repository.interface';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 
 describe('UserRepositoryService', () => {

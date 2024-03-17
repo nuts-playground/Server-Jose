@@ -1,3 +1,5 @@
+import { Response } from 'express';
+
 export interface UserServiceEmail {
   readonly email: string;
 }
@@ -32,9 +34,10 @@ export interface UserServiceUpdate {
 
 export interface UserServiceDelete {
   readonly id: number;
+  readonly response: Response;
 }
 
-export interface UserServiceRepository {
+export interface UserServiceSignUpRepository {
   readonly email: string;
   readonly nick_name: string;
   readonly password: string;
@@ -43,4 +46,12 @@ export interface UserServiceRepository {
   created_at?: string;
   updated_at?: string;
   delete_yn?: string;
+}
+
+export interface UserServiceUpdateRepository {
+  readonly id: number;
+  nick_name?: string;
+  password?: string;
+  about_me?: string;
+  profile_image_url?: string;
 }

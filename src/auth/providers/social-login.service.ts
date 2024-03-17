@@ -62,7 +62,9 @@ export class SocialLoginService {
   }
 
   private async createRandomName(name: string): Promise<string> {
-    const isAlreadyName = await this.userRepository.findByName(name);
+    const isAlreadyName = await this.userRepository.findByName({
+      nick_name: name,
+    });
 
     if (!isAlreadyName) {
       return name;

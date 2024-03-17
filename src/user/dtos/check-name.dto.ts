@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsNameAlreadyExist } from '../decorator/user.decorator';
 
-export class CheckNameDto {
+export class UserCheckNameDto {
   @IsNameAlreadyExist()
   private readonly nick_name: string;
 

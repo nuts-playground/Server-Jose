@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { UserDtoSignUp } from '../interface/user.dto.interface';
 
-export class SignUpDto {
+export class UserSignUpDto {
   private readonly email: string;
   private readonly nick_name: string;
   private readonly password: string;

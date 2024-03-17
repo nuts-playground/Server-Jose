@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import {
-  RepositoryUserResponse,
-  SignUpUser,
+  UserRepositoryFindByEmail,
+  UserRepositoryFindById,
+  UserRepositoryFindByNickName,
+  UserRepositoryResponse,
+  UserRepositorySignUp,
   UserRepositoryUpdate,
-} from '../interface/repository.interface';
+  UserRepositryDelete,
+} from '../interface/user.repository.interface';
 import { AppGlobal } from 'src/global/app.global';
 
 @Injectable()
 export class UserRepositoryService {
   constructor() {}
 
-  async findById(id: number): Promise<RepositoryUserResponse> {
+  async findById(
+    userInfo: UserRepositoryFindById,
+  ): Promise<UserRepositoryResponse> {
+    const id = userInfo.id;
+
     return AppGlobal.prisma.users.findUnique({
       where: {
         id,
@@ -18,7 +26,11 @@ export class UserRepositoryService {
     });
   }
 
-  async findByEmail(email: string): Promise<RepositoryUserResponse> {
+  async findByEmail(
+    userInfo: UserRepositoryFindByEmail,
+  ): Promise<UserRepositoryResponse> {
+    const email = userInfo.email;
+
     return AppGlobal.prisma.users.findUnique({
       where: {
         email,
@@ -26,7 +38,11 @@ export class UserRepositoryService {
     });
   }
 
-  async findByName(nick_name: string): Promise<RepositoryUserResponse> {
+  async findByName(
+    userInfo: UserRepositoryFindByNickName,
+  ): Promise<UserRepositoryResponse> {
+    const nick_name = userInfo.nick_name;
+
     return AppGlobal.prisma.users.findUnique({
       where: {
         nick_name,
@@ -34,7 +50,9 @@ export class UserRepositoryService {
     });
   }
 
-  async saveUser(userInfo: SignUpUser): Promise<RepositoryUserResponse> {
+  async saveUser(
+    userInfo: UserRepositorySignUp,
+  ): Promise<UserRepositoryResponse> {
     return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.create({
         data: userInfo,
@@ -55,7 +73,7 @@ export class UserRepositoryService {
 
   async updateUser(
     userInfo: UserRepositoryUpdate,
-  ): Promise<RepositoryUserResponse | null> {
+  ): Promise<UserRepositoryResponse | null> {
     return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {
@@ -76,7 +94,11 @@ export class UserRepositoryService {
     });
   }
 
-  async deleteUser(id: number): Promise<RepositoryUserResponse | null> {
+  async deleteUser(
+    userInfo: UserRepositryDelete,
+  ): Promise<UserRepositoryResponse | null> {
+    const id = userInfo.id;
+
     return AppGlobal.prisma.$transaction(async (tx) => {
       const user = await tx.users.findUnique({
         where: {

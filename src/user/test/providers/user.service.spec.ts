@@ -5,7 +5,7 @@ import { CheckEmailDto } from 'src/user/dtos/check-email.dto';
 import { CheckNameDto } from 'src/user/dtos/check-name.dto';
 import { CheckPasswordDto } from 'src/user/dtos/check-password.dto';
 import { SendVerificationCodeDto } from 'src/user/dtos/send-verification-code.dto';
-import { RepositoryUserResponse } from 'src/user/interface/repository.interface';
+import { RepositoryUserResponse } from 'src/user/interface/user.repository.interface';
 import { UserRedisService } from 'src/user/providers/user-redis.service';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { UserService } from 'src/user/providers/user.service';

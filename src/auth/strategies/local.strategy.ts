@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string): Promise<AccessToken> {
-    const { id } = await this.userRepository.findByEmail(email);
+    const { id } = await this.userRepository.findByEmail({ email });
     const { access_token, refresh_token } = await globalJwtUtil.getTokens({
       sub: id.toString(),
       email,

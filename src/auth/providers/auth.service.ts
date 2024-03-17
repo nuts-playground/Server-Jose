@@ -35,7 +35,7 @@ export class AuthService {
       profile_image_url,
       created_at,
       updated_at,
-    } = await this.userRepository.findById(id);
+    } = await this.userRepository.findById({ id });
 
     return {
       email,

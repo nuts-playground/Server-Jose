@@ -5,19 +5,19 @@ import {
   Patch,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../providers/user.service';
 import { ResponseDto } from 'src/common/dtos/response.dto';
-import { SendVerificationCodeDto } from '../dtos/send-verification-code.dto';
-import { CheckEmailDto } from '../dtos/check-email.dto';
-import { CheckPasswordDto } from '../dtos/check-password.dto';
-import { CheckNameDto } from '../dtos/check-name.dto';
-import { SignUpDto } from '../dtos/sign-up.dto';
-import { DeleteUserDto } from '../dtos/delete-user.dto';
+import { UserSendVerificationCodeDto } from '../dtos/send-verification-code.dto';
+import { UserCheckEmailDto } from '../dtos/check-email.dto';
+import { UserCheckPasswordDto } from '../dtos/check-password.dto';
+import { UserCheckNameDto } from '../dtos/check-name.dto';
+import { UserSignUpDto } from '../dtos/sign-up.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UserControllerUpdate } from '../interface/user.controller.interface';
 
 @Controller('user')
@@ -25,21 +25,21 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/isAlreadyEmail')
-  async isAlreadyEmail(@Body() dto: CheckEmailDto): Promise<ResponseDto> {
+  async isAlreadyEmail(@Body() dto: UserCheckEmailDto): Promise<ResponseDto> {
     const email = dto.getEmail();
 
     return await this.userService.isAlreadyEmail({ email });
   }
 
   @Post('/checkName')
-  async checkName(@Body() dto: CheckNameDto): Promise<ResponseDto> {
+  async checkName(@Body() dto: UserCheckNameDto): Promise<ResponseDto> {
     const nick_name = dto.getNickName();
 
     return await this.userService.checkName({ nick_name });
   }
 
   @Post('/checkPassword')
-  checkPassword(@Body() dto: CheckPasswordDto): ResponseDto {
+  checkPassword(@Body() dto: UserCheckPasswordDto): ResponseDto {
     const password = dto.getPassword();
 
     return this.userService.checkPassword({ password });
@@ -47,7 +47,7 @@ export class UserController {
 
   @Post('/sendVerificationCode')
   async sendVerificationCode(
-    @Body() dto: SendVerificationCodeDto,
+    @Body() dto: UserSendVerificationCodeDto,
   ): Promise<ResponseDto> {
     const email = dto.getEmail();
 
@@ -55,7 +55,7 @@ export class UserController {
   }
 
   @Post('/signUp')
-  async signUp(@Body() dto: SignUpDto): Promise<ResponseDto> {
+  async signUp(@Body() dto: UserSignUpDto): Promise<ResponseDto> {
     const signUpInfo = dto.getSignUpUserInfo();
 
     return await this.userService.signUp(signUpInfo);
@@ -77,8 +77,12 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Delete('/deleteUser')
-  async deleteUser(@Req() request: Request): Promise<ResponseDto> {
+  async deleteUser(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<ResponseDto> {
     const id = request.user['id'];
-    return await this.userService.deleteUser({ id });
+
+    return await this.userService.deleteUser({ id, response });
   }
 }
