@@ -21,19 +21,21 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    await this.authService.signIn(request, response);
+    await this.authService.signIn({ request, response });
   }
 
   @UseGuards(JwtGuard)
   @Post('/signOut')
   async signOut(@Res({ passthrough: true }) response: Response) {
-    await this.authService.signOut(response);
+    await this.authService.signOut({ response });
   }
 
   @UseGuards(JwtGuard)
   @Get('/profile')
   async getProfile(@Req() request: Request): Promise<ResponseDto> {
-    const userProfile = await this.authService.getProfile(request.user['id']);
+    const userProfile = await this.authService.getProfile({
+      id: request.user['id'],
+    });
 
     return ResponseDto.successWithJSON(userProfile);
   }
@@ -45,7 +47,7 @@ export class AuthController {
   ) {
     const refreshToken = request.cookies['refresh_token'];
 
-    await this.authService.refreshToken(response, refreshToken);
+    await this.authService.refreshToken({ response, refreshToken });
   }
 
   @UseGuards(GoogleGuard)
@@ -58,7 +60,7 @@ export class AuthController {
     @Req() request: Request,
     @Res() response: Response,
   ) {
-    return await this.authService.googleLogin(request, response);
+    return await this.authService.socialLogin({ request, response });
   }
 
   @UseGuards(GithubGuard)
@@ -71,7 +73,7 @@ export class AuthController {
     @Req() request: Request,
     @Res() response: Response,
   ) {
-    await this.authService.githubLogin(request, response);
+    await this.authService.socialLogin({ request, response });
   }
 
   @UseGuards(KakaoGuard)
@@ -81,7 +83,7 @@ export class AuthController {
   @UseGuards(KakaoGuard)
   @Get('/kakao/callback')
   async kakaoLoginCallback(@Req() request: Request, @Res() response: Response) {
-    await this.authService.kakaoLogin(request, response);
+    await this.authService.socialLogin({ request, response });
   }
 
   @UseGuards(NaverGuard)
@@ -91,6 +93,6 @@ export class AuthController {
   @UseGuards(NaverGuard)
   @Get('/naver/callback')
   async naverLoginCallback(@Req() request: Request, @Res() response: Response) {
-    await this.authService.naverLogin(request, response);
+    await this.authService.socialLogin({ request, response });
   }
 }

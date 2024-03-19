@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import {
   JwtStrategyDto,
   JwtStrategyValueInterface,
-} from '../interface/jwt.strategy.interface';
+} from '../interface/auth.jwt-strategy.interface';
 import { GlobalConfig } from 'src/global/config.global';
 
 @Injectable()

@@ -1,10 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { JwtStrategyDto } from '../interface/jwt.strategy.interface';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { SocialLoginService } from './social-login.service';
 import { globalResponseHeadersUtil } from 'src/common/utils/response.util';
 import { globalJwtUtil } from 'src/common/utils/jwt.util';
+import {
+  AuthSergviceSignOut,
+  AuthServiceGetProfile,
+  AuthServiceRefreshToken,
+  AuthServiceSignIn,
+  AuthServiceSocialLogin,
+} from '../interface/auth.service.interface';
 
 @Injectable()
 export class AuthService {
@@ -13,21 +18,21 @@ export class AuthService {
     private readonly socialLoginService: SocialLoginService,
   ) {}
 
-  async signIn(request: Request, response: Response) {
+  async signIn({ request, response }: AuthServiceSignIn) {
     globalResponseHeadersUtil.setCookiesForGuard({ request, response });
 
     response.redirect('/');
     response.end();
   }
 
-  async signOut(response: Response) {
+  async signOut({ response }: AuthSergviceSignOut) {
     response.clearCookie('access_token');
     response.clearCookie('refresh_token');
     response.redirect('/');
     response.end();
   }
 
-  async getProfile(id: number): Promise<any> {
+  async getProfile({ id }: AuthServiceGetProfile): Promise<any> {
     const {
       email,
       nick_name,
@@ -47,7 +52,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(response: Response, refreshToken: string) {
+  async refreshToken({ response, refreshToken }: AuthServiceRefreshToken) {
     try {
       const { sub, email } = await globalJwtUtil.verifyRefreshToken(
         refreshToken,
@@ -62,39 +67,14 @@ export class AuthService {
         access_token,
         refresh_token,
       });
+
       response.end();
     } catch (err) {
       throw new UnauthorizedException('The token is not valid');
     }
   }
 
-  async setToken(payload: JwtStrategyDto, response: Response) {
-    const { access_token, refresh_token } = await globalJwtUtil.getTokens(
-      payload,
-    );
-
-    globalResponseHeadersUtil.setCookies({
-      response,
-      access_token,
-      refresh_token,
-    });
-
-    response.end();
-  }
-
-  async googleLogin(request: Request, response: Response) {
-    await this.socialLoginService.commonSocialLogin(request, response);
-  }
-
-  async githubLogin(request: Request, response: Response) {
-    await this.socialLoginService.commonSocialLogin(request, response);
-  }
-
-  async kakaoLogin(request: Request, response: Response) {
-    await this.socialLoginService.commonSocialLogin(request, response);
-  }
-
-  async naverLogin(request: Request, response: Response) {
+  async socialLogin({ request, response }: AuthServiceSocialLogin) {
     await this.socialLoginService.commonSocialLogin(request, response);
   }
 }

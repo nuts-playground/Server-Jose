@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
-import { AccessToken } from '../interface/local.strategy.interface';
+import { LocalStrategyResponse } from '../interface/auth.local-strategy.interface';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { AuthRedisService } from '../providers/auth-redis.service';
-import { SetRefreshToken } from '../interface/auth-redis.interface';
 import { GlobalConfig } from 'src/global/config.global';
 import { globalJwtUtil } from 'src/common/utils/jwt.util';
+import { AuthRedisSetToken } from '../interface/auth.redis.interface';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -17,16 +17,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string): Promise<AccessToken> {
+  async validate(email: string): Promise<LocalStrategyResponse> {
     const { id } = await this.userRepository.findByEmail({ email });
     const { access_token, refresh_token } = await globalJwtUtil.getTokens({
       sub: id.toString(),
       email,
     });
     const jwtExpire = GlobalConfig.env.jwtExpiresRefreshTokenTime;
-    const redisInfo: SetRefreshToken = {
-      key: id.toString(),
-      value: refresh_token,
+    const redisInfo: AuthRedisSetToken = {
+      id: id.toString(),
+      token: refresh_token,
       time: jwtExpire,
     };
 

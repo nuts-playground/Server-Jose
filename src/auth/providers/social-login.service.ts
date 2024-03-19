@@ -45,8 +45,8 @@ export class SocialLoginService {
     });
     const redisExpireTime = GlobalConfig.env.jwtExpiresRefreshTokenTime;
     const redisInfo = {
-      key: isAlreadyEmail.id.toString(),
-      value: refresh_token,
+      id: isAlreadyEmail.id.toString(),
+      token: refresh_token,
       time: redisExpireTime,
     };
 
