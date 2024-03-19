@@ -73,8 +73,8 @@ export class UserService {
     const code = globalUuidUtil.randomNumericString();
 
     await this.userRedis.setVerificationCode({
-      key: email,
-      value: code,
+      email,
+      verificationCode: code,
       time: 60 * 5,
     });
     await globalEmailUtil.send({
@@ -88,9 +88,9 @@ export class UserService {
 
   async signUp(userInfo: UserServiceSignUp): Promise<ResponseDto> {
     const userEmail = userInfo.email;
-    const verificationCode = await this.userRedis.getVerificationCode(
-      userEmail,
-    );
+    const verificationCode = await this.userRedis.getVerificationCode({
+      email: userEmail,
+    });
 
     if (!verificationCode)
       throw new UnauthorizedException('인증번호 유효기간이 만료되었습니다.');
@@ -115,10 +115,9 @@ export class UserService {
       const imageUrl = `${GlobalConfig.env.imageServerUrl}/${uuid}`;
       userBasicInfo.profile_image_url = imageUrl;
     }
-
-    await this.userRedis.deleteVerificationCode(userEmail);
-
     const { email } = await this.userRepository.saveUser(userInfo);
+
+    await this.userRedis.deleteVerificationCode({ email });
 
     return ResponseDto.successWithJSON({ email });
   }
@@ -166,7 +165,7 @@ export class UserService {
 
     const { id, email, nick_name } = user;
 
-    await this.userRedis.deleteVerificationCode(id.toString());
+    await this.userRedis.deleteToken({ id: id.toString() });
 
     userInfo.response.clearCookie('access_token');
     userInfo.response.clearCookie('refresh_token');
