@@ -1,5 +1,5 @@
 export interface UserRepositoryResponse {
-  readonly id?: number;
+  readonly id: number;
   readonly email: string;
   readonly nick_name: string;
   readonly password?: string;

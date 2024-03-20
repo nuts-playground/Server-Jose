@@ -17,7 +17,8 @@ export class LocalGuard extends AuthGuard('local') {
     const request = context.switchToHttp().getRequest();
     const email = request.body.email;
     const password = request.body.password;
-    const user = await this.userRepository.findByEmail(email);
+
+    const user = await this.userRepository.findByEmail({ email });
 
     if (user) {
       const isPassword = await globalBcryptUtil.compare({

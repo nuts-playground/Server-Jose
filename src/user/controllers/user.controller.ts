@@ -80,9 +80,8 @@ export class UserController {
   async deleteUser(
     @Req() request: Request,
     @Res() response: Response,
-  ): Promise<ResponseDto> {
+  ): Promise<void> {
     const id = request.user['id'];
-
-    return await this.userService.deleteUser({ id, response });
+    await this.userService.deleteUser({ id, response });
   }
 }

@@ -18,7 +18,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     done: (error: any, user?: any, info?: any) => void,
   ) {
     try {
-      console.log(profile);
       const { displayName, provider } = profile;
       const json = profile._json;
       const user = {

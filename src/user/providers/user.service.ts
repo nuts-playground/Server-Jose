@@ -115,7 +115,7 @@ export class UserService {
       const imageUrl = `${GlobalConfig.env.imageServerUrl}/${uuid}`;
       userBasicInfo.profile_image_url = imageUrl;
     }
-    const { email } = await this.userRepository.saveUser(userInfo);
+    const { email } = await this.userRepository.saveUser(userBasicInfo);
 
     await this.userRedis.deleteVerificationCode({ email });
 
@@ -155,7 +155,7 @@ export class UserService {
     });
   }
 
-  async deleteUser(userInfo: UserServiceDelete): Promise<ResponseDto> {
+  async deleteUser(userInfo: UserServiceDelete): Promise<void> {
     const userId = userInfo.id;
     const user = await this.userRepository.deleteUser({ id: userId });
 
@@ -163,13 +163,13 @@ export class UserService {
       throw new UnauthorizedException('계정 삭제에 실패하였습니다.');
     }
 
-    const { id, email, nick_name } = user;
+    const { id } = user;
 
     await this.userRedis.deleteToken({ id: id.toString() });
 
     userInfo.response.clearCookie('access_token');
     userInfo.response.clearCookie('refresh_token');
 
-    return ResponseDto.successWithJSON({ email, nick_name });
+    userInfo.response.redirect('/');
   }
 }
