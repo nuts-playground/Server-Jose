@@ -1,22 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClient } from '@prisma/client';
+import { AppGlobal } from 'src/global/app.global';
 import {
-  RepositoryUserResponse,
-  UpdateUser,
+  UserRepositoryResponse,
+  UserRepositoryUpdate,
 } from 'src/user/interface/user.repository.interface';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 
 describe('UserRepositoryService', () => {
   let userRepository: UserRepositoryService;
-  let prisma: PrismaService;
-  let testUser: RepositoryUserResponse;
+  let prisma: PrismaClient;
+  let testUser: UserRepositoryResponse;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserRepositoryService, PrismaService],
+      providers: [UserRepositoryService],
     }).compile();
 
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = AppGlobal.prisma;
     userRepository = module.get<UserRepositoryService>(UserRepositoryService);
 
     testUser = await prisma.users.create({
@@ -34,14 +35,16 @@ describe('UserRepositoryService', () => {
 
   describe('findById [아이디로 계정 찾기]', () => {
     it('아이디가 있을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.findById(
-        testUser.id,
-      );
+      const user: UserRepositoryResponse = await userRepository.findById({
+        id: testUser.id,
+      });
       expect(user).toStrictEqual(testUser);
     });
 
     it('아이디가 없을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.findById(0);
+      const user: UserRepositoryResponse = await userRepository.findById({
+        id: 0,
+      });
 
       expect(user).toBeNull();
     });
@@ -49,44 +52,44 @@ describe('UserRepositoryService', () => {
 
   describe('findByEmail [이메일로 계정 찾기]', () => {
     it('이메일이 있을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.findByEmail(
-        testUser.email,
-      );
+      const user: UserRepositoryResponse = await userRepository.findByEmail({
+        email: testUser.email,
+      });
       expect(user).toStrictEqual(testUser);
     });
 
     it('이메일이 없을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.findByEmail(
-        'failEamil',
-      );
+      const user: UserRepositoryResponse = await userRepository.findByEmail({
+        email: 'failEamil',
+      });
       expect(user).toBeNull();
     });
   });
 
   describe('findByName [닉네임으로 계정 찾기]', () => {
     it('닉네임이 있을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.findByName(
-        testUser.nick_name,
-      );
+      const user: UserRepositoryResponse = await userRepository.findByName({
+        nick_name: testUser.nick_name,
+      });
       expect(user).toStrictEqual(testUser);
     });
 
     it('닉네임이 없을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.findByName(
-        'failNickName',
-      );
+      const user: UserRepositoryResponse = await userRepository.findByName({
+        nick_name: 'failNickName',
+      });
       expect(user).toBeNull();
     });
   });
 
   describe('updateUser [계정 정보 수정]', () => {
     it('정상적으로 수정할 때', async () => {
-      const updateData: UpdateUser = {
-        email: testUser.email,
+      const updateData: UserRepositoryUpdate = {
+        id: testUser.id,
         nick_name: 'updateNickName',
       };
 
-      const user: RepositoryUserResponse = await userRepository.updateUser(
+      const user: UserRepositoryResponse = await userRepository.updateUser(
         updateData,
       );
 
@@ -94,12 +97,12 @@ describe('UserRepositoryService', () => {
     });
 
     it('수정할 계정이 없을 때', async () => {
-      const updateData: UpdateUser = {
-        email: 'failEmail',
+      const updateData: UserRepositoryUpdate = {
+        id: 0,
         nick_name: 'updateNickName',
       };
 
-      const user: RepositoryUserResponse = await userRepository.updateUser(
+      const user: UserRepositoryResponse = await userRepository.updateUser(
         updateData,
       );
 
@@ -109,23 +112,24 @@ describe('UserRepositoryService', () => {
 
   describe('deleteUser [계정 삭제]', () => {
     it('정상적으로 삭제할 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.deleteUser(
-        testUser.email,
-      );
+      const user: UserRepositoryResponse = await userRepository.deleteUser({
+        id: testUser.id,
+      });
 
       expect(user.delete_yn).toStrictEqual('Y');
     });
 
     it('삭제할 계정이 없을 때', async () => {
-      const user: RepositoryUserResponse = await userRepository.deleteUser(
-        'failEmail',
-      );
+      const user: UserRepositoryResponse = await userRepository.deleteUser({
+        id: 0,
+      });
 
       expect(user).toBeNull();
     });
   });
 
   afterAll(async () => {
+    AppGlobal.redis.disconnect();
     await prisma.users.delete({ where: { id: testUser.id } });
   });
 });

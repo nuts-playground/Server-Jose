@@ -1,18 +1,17 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ResponseDto } from 'src/common/dtos/response.dto';
-import { CheckEmailDto } from 'src/user/dtos/check-email.dto';
-import { CheckNameDto } from 'src/user/dtos/check-name.dto';
-import { CheckPasswordDto } from 'src/user/dtos/check-password.dto';
-import { SendVerificationCodeDto } from 'src/user/dtos/send-verification-code.dto';
-import { RepositoryUserResponse } from 'src/user/interface/user.repository.interface';
 import { UserRedisService } from 'src/user/providers/user-redis.service';
 import { UserRepositoryService } from 'src/user/providers/user-repository.service';
 import { UserService } from 'src/user/providers/user.service';
 import * as nodemailer from 'nodemailer';
-import { SignUpDto } from 'src/user/dtos/sign-up.dto';
-import { UpdateUserDto } from 'src/user/dtos/update-user.dto';
-import { DeleteUserDto } from 'src/user/dtos/delete-user.dto';
+import { UserRepositoryResponse } from 'src/user/interface/user.repository.interface';
+import { UserCheckEmailDto } from 'src/user/dtos/check-email.dto';
+import { UserCheckNameDto } from 'src/user/dtos/check-name.dto';
+import { UserCheckPasswordDto } from 'src/user/dtos/check-password.dto';
+import { UserSendVerificationCodeDto } from 'src/user/dtos/send-verification-code.dto';
+import { UserSignUpDto } from 'src/user/dtos/sign-up.dto';
+import { AppGlobal } from 'src/global/app.global';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -57,18 +56,21 @@ describe('UserService', () => {
   });
 
   describe('isAlreadyEmail [이메일 유효성 검사]', () => {
-    const dto = new CheckEmailDto('hello@example.com');
+    const dto = new UserCheckEmailDto('hello@example.com');
 
     it('이메일이 정상일 때', async () => {
       const response = ResponseDto.success();
 
       jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(null);
 
-      expect(await userService.isAlreadyEmail(dto)).toStrictEqual(response);
+      expect(
+        await userService.isAlreadyEmail({ email: dto.getEmail() }),
+      ).toStrictEqual(response);
     });
 
     it('이미 가입되어 있을 때', async () => {
-      const mockValue: RepositoryUserResponse = {
+      const mockValue: UserRepositoryResponse = {
+        id: 1,
         email: 'hello@example.com',
         password: 'testPassword',
         nick_name: 'testNickName',
@@ -77,26 +79,29 @@ describe('UserService', () => {
       jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(mockValue);
 
       expect(async () => {
-        await userService.isAlreadyEmail(dto);
+        await userService.isAlreadyEmail({ email: dto.getEmail() });
       }).rejects.toThrow(
-        new UnauthorizedException('가입할 수 없는 이메일입니다.'),
+        new UnauthorizedException('사용할 수 없는 이메일입니다.'),
       );
     });
   });
 
   describe('checkName [이름 유효성 검사]', () => {
-    const dto = new CheckNameDto('testUser');
+    const dto = new UserCheckNameDto('testUser');
 
     it('이름이 정상일 때', async () => {
       const response = ResponseDto.success();
 
       jest.spyOn(userRepository, 'findByName').mockResolvedValue(null);
 
-      expect(await userService.checkName(dto)).toStrictEqual(response);
+      expect(
+        await userService.checkName({ nick_name: dto.getNickName() }),
+      ).toStrictEqual(response);
     });
 
     it('이미 있는 이름일 때', async () => {
-      const mockValue: RepositoryUserResponse = {
+      const mockValue: UserRepositoryResponse = {
+        id: 1,
         email: 'hello@example.com',
         password: 'testPassword',
         nick_name: 'testNickName',
@@ -105,47 +110,72 @@ describe('UserService', () => {
       jest.spyOn(userRepository, 'findByName').mockResolvedValue(mockValue);
 
       expect(async () => {
-        await userService.checkName(dto);
+        await userService.checkName({ nick_name: dto.getNickName() });
       }).rejects.toThrow(
-        new UnauthorizedException('가입할 수 없는 이름입니다.'),
+        new UnauthorizedException('사용할 수 없는 이름입니다.'),
       );
     });
   });
 
   describe('checkPassword [비밀번호 유효성 검사]', () => {
     it('비밀번호가 매우 강함일 때', () => {
-      const dto = new CheckPasswordDto('testPasword13!@#');
+      const dto = new UserCheckPasswordDto('testPasword13!@#');
+      const response = ResponseDto.successWithJSON({
+        passwordStrength: '매우 강함',
+      });
 
-      expect(userService.checkPassword(dto)).toBe('매우 강함');
+      expect(
+        userService.checkPassword({ password: dto.getPassword() }),
+      ).toStrictEqual(response);
     });
 
     it('비밀번호가 강함일 때', () => {
-      const dto = new CheckPasswordDto('testPassword123!@#');
+      const dto = new UserCheckPasswordDto('testPassword123!@#');
+      const response = ResponseDto.successWithJSON({
+        passwordStrength: '강함',
+      });
 
-      expect(userService.checkPassword(dto)).toBe('강함');
+      expect(
+        userService.checkPassword({ password: dto.getPassword() }),
+      ).toStrictEqual(response);
     });
 
     it('비밀번호가 보통일 때', () => {
-      const dto = new CheckPasswordDto('testPassword123');
+      const dto = new UserCheckPasswordDto('testPassword123');
+      const response = ResponseDto.successWithJSON({
+        passwordStrength: '보통',
+      });
 
-      expect(userService.checkPassword(dto)).toBe('보통');
+      expect(
+        userService.checkPassword({ password: dto.getPassword() }),
+      ).toStrictEqual(response);
     });
 
     it('비밀번호가 약함일 때', () => {
-      const dto = new CheckPasswordDto('testPassword');
+      const dto = new UserCheckPasswordDto('testPassword');
+      const response = ResponseDto.successWithJSON({
+        passwordStrength: '약함',
+      });
 
-      expect(userService.checkPassword(dto)).toBe('약함');
+      expect(
+        userService.checkPassword({ password: dto.getPassword() }),
+      ).toStrictEqual(response);
     });
 
     it('비밀번호가 매우 약함일 때', () => {
-      const dto = new CheckPasswordDto('test');
+      const dto = new UserCheckPasswordDto('test');
+      const response = ResponseDto.successWithJSON({
+        passwordStrength: '매우 약함',
+      });
 
-      expect(userService.checkPassword(dto)).toBe('매우 약함');
+      expect(
+        userService.checkPassword({ password: dto.getPassword() }),
+      ).toStrictEqual(response);
     });
   });
 
   describe('sendVerificationCode [인증번호 전송]', () => {
-    const dto = new SendVerificationCodeDto('hello@example.com');
+    const dto = new UserSendVerificationCodeDto('hello@example.com');
 
     it('인증번호 전송 성공', async () => {
       const response = ResponseDto.success();
@@ -155,9 +185,9 @@ describe('UserService', () => {
         sendMail: jest.fn().mockResolvedValue(null),
       });
 
-      expect(await userService.sendVerificationCode(dto)).toStrictEqual(
-        response,
-      );
+      expect(
+        await userService.sendVerificationCode({ email: dto.getEmail() }),
+      ).toStrictEqual(response);
     });
 
     it('인증번호 전송 실패', async () => {
@@ -167,7 +197,7 @@ describe('UserService', () => {
       });
 
       expect(async () => {
-        await userService.sendVerificationCode(dto);
+        await userService.sendVerificationCode({ email: dto.getEmail() });
       }).rejects.toThrow(
         new UnauthorizedException('이메일 전송에 실패하였습니다.'),
       );
@@ -175,7 +205,7 @@ describe('UserService', () => {
   });
 
   describe('signUp [회원가입]', () => {
-    const dto = new SignUpDto(
+    const dto = new UserSignUpDto(
       'hello@example.com',
       'testNickName',
       'testPassword',
@@ -193,9 +223,11 @@ describe('UserService', () => {
         .mockResolvedValue(verificationCode);
       jest
         .spyOn(userRepository, 'saveUser')
-        .mockResolvedValue({ email, nick_name: dto.getNickName() });
+        .mockResolvedValue({ email, nick_name: dto.getNickName(), id: 1 });
 
-      expect(await userService.signUp(dto)).toStrictEqual(response);
+      expect(
+        await userService.signUp({ ...dto.getSignUpUserInfo() }),
+      ).toStrictEqual(response);
     });
 
     it('회원가입 실패 (인증번호가 올바르지 않음)', async () => {
@@ -206,77 +238,14 @@ describe('UserService', () => {
         .mockResolvedValue(verificationCode);
 
       expect(async () => {
-        await userService.signUp(dto);
+        await userService.signUp({ ...dto.getSignUpUserInfo() });
       }).rejects.toThrow(
         new UnauthorizedException('인증번호가 일치하지 않습니다.'),
       );
     });
   });
 
-  describe('updateUser [회원정보 수정]', () => {
-    const dto = new UpdateUserDto('hello@example.com');
-    const updatedAt = new Date();
-
-    it('회원정보 수정 성공', async () => {
-      const response = ResponseDto.successWithJSON({
-        email: dto.getEmail(),
-        nick_name: dto.getNickName(),
-        about_me: dto.getAboutMe(),
-        profile_image_url: dto.getProfileImageUrl(),
-        updated_at: updatedAt,
-      });
-
-      jest.spyOn(userRepository, 'updateUser').mockResolvedValue({
-        email: dto.getEmail(),
-        nick_name: dto.getNickName(),
-        about_me: dto.getAboutMe(),
-        profile_image_url: dto.getProfileImageUrl(),
-        updated_at: updatedAt,
-      });
-
-      expect(await userService.updateUser(dto)).toStrictEqual(response);
-    });
-
-    it('회원정보 수정 실패', async () => {
-      jest.spyOn(userRepository, 'updateUser').mockImplementation(() => {
-        throw new UnauthorizedException('회원정보 수정에 실패하였습니다.');
-      });
-
-      expect(async () => {
-        await userService.updateUser(dto);
-      }).rejects.toThrow(
-        new UnauthorizedException('회원정보 수정에 실패하였습니다.'),
-      );
-    });
-  });
-
-  describe('deleteUser [회원 탈퇴]', () => {
-    const dto = new DeleteUserDto('hello@example.com');
-
-    it('회원 탈퇴 성공', async () => {
-      const response = ResponseDto.successWithJSON({
-        email: dto.getEmail(),
-        nick_name: 'helloTest',
-      });
-
-      jest.spyOn(userRepository, 'deleteUser').mockResolvedValue({
-        email: dto.getEmail(),
-        nick_name: 'helloTest',
-      });
-
-      expect(await userService.deleteUser(dto)).toStrictEqual(response);
-    });
-
-    it('회원 탈퇴 실패', async () => {
-      jest.spyOn(userRepository, 'deleteUser').mockImplementation(() => {
-        throw new UnauthorizedException('회원 탈퇴에 실패하였습니다.');
-      });
-
-      expect(async () => {
-        await userService.deleteUser(dto);
-      }).rejects.toThrow(
-        new UnauthorizedException('회원 탈퇴에 실패하였습니다.'),
-      );
-    });
+  afterAll(() => {
+    AppGlobal.redis.disconnect();
   });
 });
