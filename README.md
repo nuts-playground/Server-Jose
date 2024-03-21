@@ -2,8 +2,4 @@
 
 ## TODO
 
-- UnitTest
-- e2eTest
-- 게시판 기능
-- 파일 서버
-- Redis 서비스 의존성 제거
+- 2024-03-21 이제 board를 만들자!
