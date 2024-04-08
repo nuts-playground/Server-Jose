@@ -21,7 +21,7 @@ export class SocialLoginService {
     let isAlreadyEmail = await this.userRepository.findByEmail(userEmail);
 
     if (isAlreadyEmail && isAlreadyEmail.provider !== provider) {
-      // 다른 소셜 로그인으로 가입한 이메일이 이미 존재할 경우 리다이렉트 url 추가해야함
+      // TODO 다른 소셜 로그인으로 가입한 이메일이 이미 존재할 경우 리다이렉트 url 추가해야함
       response.redirect(`${GlobalConfig.env.clientUrl}`);
       response.end();
 
